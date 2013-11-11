@@ -36,4 +36,4 @@ deck.o: deck.cpp deck.hh
 	g++ -c deck.cpp $(CPPFLAGS)
 
 clear:
-	rm *.o & rm *.gch
+	rm *.o & rm *.gch & rm main
