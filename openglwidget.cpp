@@ -1,0 +1,1243 @@
+#include "openglwidget.hh"
+
+#include "openglwindow.hh"
+
+
+// // // //  Modelle/Texturen definieren
+// #include "modelle.hh"
+
+
+
+
+
+// // // // // // // // // 
+void idle_draw(void* p_)
+{
+   if (p_ != NULL)
+   {
+      Openglwidget* glwidget = reinterpret_cast<Openglwidget*>(p_);
+      if (glwidget->idle_redraw) 
+      {
+         glwidget->redraw();
+      }
+   }
+}
+
+
+Openglwidget::Openglwidget(int position_x_, int position_y_, int breite_, int hoehe_, const char* titel) : Fl_Gl_Window(position_x_, position_y_, breite_,hoehe_, titel)
+{
+   idle_redraw = false;
+   antialiasing = false;
+   
+   
+   fenster = ((Openglwindow*)parent());
+//     modelle_laden();
+   
+   tex = new Texturensammlung;
+   gettimeofday(&zeit, 0);
+   
+   fenster_breite = breite_;
+   fenster_hoehe = hoehe_;
+
+   licht_pos[0]  = 0  ; licht_pos[1]  = 0  ; licht_pos[2]  = 0  ; licht_pos[3]  = 0  ;
+   
+   licht_ambi[0] = 0.0; licht_ambi[1] = 0.0; licht_ambi[2] = 0.0; licht_ambi[3] = 1.0;
+   licht_diff[0] = 1.0; licht_diff[1] = 1.0; licht_diff[2] = 1.0; licht_diff[3] = 1.0;
+   licht_spec[0] = 1.0; licht_spec[1] = 1.0; licht_spec[2] = 1.0; licht_spec[3] = 1.0;
+
+   sonne_ambi[0] = 0.0; sonne_ambi[1] = 0.0; sonne_ambi[2] = 0.0; sonne_ambi[3] = 1.0;
+   sonne_diff[0] = 1.0; sonne_diff[1] = 1.0; sonne_diff[2] = 1.0; sonne_diff[3] = 1.0;
+   sonne_spec[0] = 1.0; sonne_spec[1] = 1.0; sonne_spec[2] = 1.0; sonne_spec[3] = 1.0;
+
+   spot_pos[0]  = 0  ; spot_pos[1]  = 0  ; spot_pos[2]  = 4  ; spot_pos[3]  = 0  ;
+   spot_dir[0]  = 1  ; spot_dir[1]  = 1  ; spot_dir[2]  = 0  ;
+   spot_ambi[0] = 1.0; spot_ambi[1] = 0.8; spot_ambi[2] = 0.0; spot_ambi[3] = 1.0;
+   spot_diff[0] = 1.0; spot_diff[1] = 0.5; spot_diff[2] = 0.5; spot_diff[3] = 1.0;
+   spot_spec[0] = 1.0; spot_spec[1] = 0.5; spot_spec[2] = 0.5; spot_spec[3] = 1.0;
+
+   view_angle = 45;
+   
+   fps_counter = 0;
+   fps_average = 0.0;
+   fps_sum = 0.0;
+
+   kamera_x = 0;
+   kamera_y = 0;
+   kamera_z = 0;
+   
+   x_offset = 0;
+   y_offset = 0;
+   z_offset = 0;
+   
+   kamera_radius = 0;
+   kamera_phi = 0;
+   
+   pos_x = 0;
+   pos_y = 0;
+   pos_z = 0;
+   pos_z_soll = 0;
+   
+   pos_radius = 5;
+   pos_radius_soll = 5;
+   pos_phi = 0;
+   
+   phi   = 0;
+   phi_soll = 0;
+   theta = 45;
+   theta_soll = 45;
+   zoom  = 1.0;
+   zoom_soll  = 1.0;
+   
+   target_id = 0;
+   target_x = 0;
+   target_y = 0;
+   target_z = 0;
+
+   station = NULL;
+   
+   mode(FL_RGB | FL_DEPTH | FL_DOUBLE);// | FL_STEREO);
+}
+
+void Openglwidget::set_station(Station* station_)
+{
+   station = station_;
+}
+
+
+void Openglwidget::resize(int position_x_, int position_y_, int breite_, int hoehe_)
+{
+   Fl_Gl_Window::resize(position_x_, position_y_, breite_, hoehe_);
+   fenster_breite = breite_;
+   fenster_hoehe = hoehe_;
+   breite_zu_hoehe = float(fenster_breite) / float(fenster_hoehe);
+}
+
+
+#define NEAR_CLIP 0.01
+#define FAR_CLIP 2000
+
+
+
+void Openglwidget::draw()
+{
+   if (idle_draw) gettimeofday(&zeit, 0);
+   if (!valid())
+   {
+      std::cout << "initialisiere opengl...\n";
+      initialisiere_gl();
+      tex->texturen_laden();
+   }
+
+// // // // // // // // // // // // // // // // // // // // // // // //    perspektive setzen
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+   glViewport(0, 0, fenster_breite, fenster_hoehe);
+   gluPerspective(view_angle,breite_zu_hoehe,NEAR_CLIP,FAR_CLIP);
+// // // // // // // // // // // // // // // // // // // // // // // //    
+
+   kamera_x = (1.0-zoom)*pos_radius*cos(phi*RAD)          +x_offset;
+   kamera_y = (1.0-zoom)*pos_radius*sin(phi*RAD)          +y_offset;
+   kamera_z = pos_z-pow(zoom,2)*pos_radius/tan(theta*RAD);// +z_offset;
+   
+   pos_x = pos_radius*cos(phi*RAD) +x_offset;
+   pos_y = pos_radius*sin(phi*RAD) +y_offset;
+//    pos_z = pos_z                   +z_offset;
+   
+   oben_x = 0;//cos(phi*RAD)*sin(theta*RAD);
+   oben_y = 0;//sin(phi*RAD)*sin(theta*RAD);
+   oben_z = 1;//cos(theta*RAD);
+   
+   glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity();
+   gluLookAt(kamera_x, kamera_y, kamera_z, pos_x, pos_y, pos_z, oben_x, oben_y, oben_z);
+   
+   float flare_theta = atan2(sqrt(pow(pos_y-kamera_y,2) + pow(pos_z-kamera_z,2)),pos_x-kamera_x);
+   float flare_phi = atan2(pos_z-kamera_z,pos_y-kamera_y);
+
+
+// // // // // // // // // // // // // // // // // // // // // // // //     Licht
+    
+   licht_pos[0] = kamera_x;  // Kameralicht
+   licht_pos[1] = kamera_y;
+   licht_pos[2] = kamera_z;
+   licht_pos[3] = 1.0;
+   glLightfv(GL_LIGHT0, GL_POSITION, licht_pos);
+   glLightfv(GL_LIGHT0, GL_AMBIENT, licht_ambi);
+   glLightfv(GL_LIGHT0, GL_DIFFUSE, licht_diff);
+   glLightfv(GL_LIGHT0, GL_SPECULAR, licht_spec);
+   glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.01);
+
+   sonne_pos[0] = 1000.0;  // Sonnenlicht
+   sonne_pos[1] = 0.0;
+   sonne_pos[2] = 0.0;
+   sonne_pos[3] = 0.0;
+   glLightfv(GL_LIGHT1, GL_POSITION, sonne_pos);
+   glLightfv(GL_LIGHT1, GL_AMBIENT, sonne_ambi);
+   glLightfv(GL_LIGHT1, GL_DIFFUSE, sonne_diff);
+   glLightfv(GL_LIGHT1, GL_SPECULAR, sonne_spec);
+   glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 1.0);
+   
+// // // // // // // // //    Testlicht
+   
+//    float zeit_tmp = zeit_aktuell();
+//    spot_pos[0] = 0.0;
+//    spot_pos[1] = 0.0;
+//    spot_pos[2] = 4.0;
+//    spot_pos[3] = 0.5;
+//    spot_dir[0] = cos(zeit_tmp*4);
+//    spot_dir[1] = sin(zeit_tmp*4);
+//    glLightfv(GL_LIGHT2, GL_POSITION,       spot_pos);
+//    glLightf (GL_LIGHT2, GL_SPOT_CUTOFF,    20);
+//    glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, spot_dir);
+//    glLightf (GL_LIGHT2, GL_SPOT_EXPONENT,  30);
+//    glLightfv(GL_LIGHT2, GL_AMBIENT,        spot_ambi);
+//    glLightfv(GL_LIGHT2, GL_DIFFUSE,        spot_diff);
+//    glLightfv(GL_LIGHT2, GL_SPECULAR,       spot_spec);
+//    glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION,  1.0);
+//    glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION,    0.0);
+//    glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, 0.0);
+//    glEnable (GL_LIGHT2);
+   
+// // // // // // // // // // // // // // // // // // // // // // // //    
+   
+   glEnable(GL_LIGHTING);
+   glDisable(GL_LIGHT1);
+   glEnable(GL_LIGHT0);
+   
+   zeichne();
+   
+   glGetIntegerv(GL_VIEWPORT, viewport);
+   glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix);
+   glGetDoublev(GL_PROJECTION_MATRIX, project_matrix);
+   
+// // // // // // // // // // // // // // // Umgebung // // // // // //
+   
+   set_material_std();
+   glDisable(GL_LIGHT0);
+   glEnable(GL_LIGHT1);
+
+//    glRotatef( 90, 1.0, 0.0, 0.0);
+   zeichne_system(sys);
+//    glRotatef(-90, 1.0, 0.0, 0.0);
+   
+   glDisable(GL_LIGHTING);
+   glBindTexture(GL_TEXTURE_2D, tex->tex_stars->id);
+   glColor3f(1.0, 1.0, 1.0);
+   glhilf::draw_star_map(1100.0, 1, 2);
+   glBindTexture(GL_TEXTURE_2D, 0);
+// // // // // // // // // // // // // Sonne
+   glTranslatef(1000, 0.0, 0.0);
+   glColor3f(1.0, 1.0, 0.7);
+   glhilf::draw_texture_sphere(15, 100, 100);
+   
+   glEnable(GL_BLEND);
+   glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+      glBindTexture(GL_TEXTURE_2D, tex->tex_sonne->id);
+      glColor4f(1.0, 1.0, 0.7, 0.4);
+      glBegin(GL_QUADS);
+         glTexCoord2f(0,0); glVertex3f(0.0,-50,-50);
+         glTexCoord2f(0,1); glVertex3f(0.0,-50, 50);
+         glTexCoord2f(1,1); glVertex3f(0.0, 50, 50);
+         glTexCoord2f(1,0); glVertex3f(0.0, 50,-50);
+      glEnd();
+      glTranslatef(-1000, 0.0, 0.0);
+      
+   glGetIntegerv(GL_VIEWPORT, viewport2);
+   glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix2);
+   glGetDoublev(GL_PROJECTION_MATRIX, project_matrix2);
+   
+   gluProject(1000, 0, 0, model_matrix2, project_matrix2, viewport2, &fenster_x, &fenster_y, &fenster_z);
+      
+   
+   if(fenster_x >= 0 && fenster_x <= fenster_breite && fenster_y >= 0 && fenster_y <= fenster_hoehe) // Flare zeichnen
+   {
+      GLfloat z_tmp;
+      glReadPixels(fenster_x, fenster_y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z_tmp);
+//       std::cout << fenster_x << " , " << fenster_y << " , " << fenster_z << " , " << z_tmp << " , " << std::endl;
+      
+      if (fabs(z_tmp-fenster_z) < 1e-6)
+      {
+         glColor4f(1.0, 1.0, 0.7, 0.4);
+         glDisable(GL_DEPTH_TEST);
+         glRotatef(flare_phi/RAD, 1, 0, 0);
+      
+         glRotatef(flare_theta*10, 0, 0, 1);
+         glTranslatef(1000, 0.0, 0.0);
+         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[0]->id);
+         glBegin(GL_QUADS);
+            glTexCoord2f(0,0); glVertex3f(0.0,-250,-250);
+            glTexCoord2f(0,1); glVertex3f(0.0,-250, 250);
+            glTexCoord2f(1,1); glVertex3f(0.0, 250, 250);
+            glTexCoord2f(1,0); glVertex3f(0.0, 250,-250);
+         glEnd();
+         glTranslatef(-1000, 0.0, 0.0);
+         glRotatef(-flare_theta*20, 0, 0, 1);
+         
+         glRotatef(flare_theta*30, 0, 0, 1);
+         glTranslatef(1000, 0.0, 0.0);
+         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[1]->id);
+         glBegin(GL_QUADS);
+            glTexCoord2f(0,0); glVertex3f(0.0,-250,-250);
+            glTexCoord2f(0,1); glVertex3f(0.0,-250, 250);
+            glTexCoord2f(1,1); glVertex3f(0.0, 250, 250);
+            glTexCoord2f(1,0); glVertex3f(0.0, 250,-250);
+         glEnd();
+         glTranslatef(-1000, 0.0, 0.0);
+         glRotatef(-flare_theta*20, 0, 0, 1);
+         
+         glRotatef(flare_theta*40, 0, 0, 1);
+         glTranslatef(1000, 0.0, 0.0);
+         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[2]->id);
+         glBegin(GL_QUADS);
+            glTexCoord2f(0,0); glVertex3f(0.0,-500,-250);
+            glTexCoord2f(0,1); glVertex3f(0.0,-500, 250);
+            glTexCoord2f(1,1); glVertex3f(0.0, 500, 250);
+            glTexCoord2f(1,0); glVertex3f(0.0, 500,-250);
+         glEnd();
+         glTranslatef(-1000, 0.0, 0.0);
+         glRotatef(-flare_theta*20, 0, 0, 1);
+         
+         glRotatef(flare_theta*50, 0, 0, 1);
+         glTranslatef(1000, 0.0, 0.0);
+         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[3]->id);
+         glBegin(GL_QUADS);
+            glTexCoord2f(0,0); glVertex3f(0.0,-250,-250);
+            glTexCoord2f(0,1); glVertex3f(0.0,-250, 250);
+            glTexCoord2f(1,1); glVertex3f(0.0, 250, 250);
+            glTexCoord2f(1,0); glVertex3f(0.0, 250,-250);
+         glEnd();
+         glTranslatef(-1000, 0.0, 0.0);
+         glRotatef(-flare_theta*20, 0, 0, 1);
+         glRotatef(-phi*2, 0, 0, 1);
+         
+         glRotatef(flare_theta*50, 0, 0, 1);
+         glTranslatef(1000, 0.0, 0.0);
+         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[4]->id);
+         glBegin(GL_QUADS);
+            glTexCoord2f(0,0); glVertex3f(0.0,-1000,-1000);
+            glTexCoord2f(0,1); glVertex3f(0.0,-1000, 1000);
+            glTexCoord2f(1,1); glVertex3f(0.0, 1000, 1000);
+            glTexCoord2f(1,0); glVertex3f(0.0, 1000,-1000);
+         glEnd();
+         glTranslatef(-1000, 0.0, 0.0);
+         glRotatef(-flare_theta*20, 0, 0, 1);
+         
+         glEnable(GL_DEPTH_TEST);
+      }
+   }
+   
+   glBindTexture(GL_TEXTURE_2D, 0);
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   glDisable(GL_BLEND);
+   
+// // // // // // // // // // // // // // // // // // // // // // // // //    UI Elemente zeichnen
+//     
+// #define LEISTE_U_HOEHE 100
+// 
+//     glPushMatrix();
+//     glMatrixMode(GL_PROJECTION);
+//     glPushMatrix();
+//     
+//     glDisable(GL_LIGHTING);
+//     glDisable(GL_DEPTH_TEST);
+//     
+//     glViewport(0, 0, fenster_breite, LEISTE_U_HOEHE);
+//     glLoadIdentity();
+//     glOrtho(0.0, 1.0, 0.0, 1.0, -10, 10);
+// //     gluPerspective(45,breite_zu_hoehe,NEAR_CLIP,FAR_CLIP);
+//     glMatrixMode(GL_MODELVIEW);
+//     glLoadIdentity();
+//     
+//     gluLookAt(0, 0, 0, 
+//               0, 0,-1,
+//               0, 1, 0);
+// 
+//     glColor3f(1.0, 1.0, 1.0);
+//     std::stringstream text;
+// //     text.precision(4);
+//     
+//     text << gebiet->rohstoffe[R_HOLZ];
+//     glRasterPos3f(0.1,0.5,0); gl_font(1, 12); gl_draw(text.str().c_str());
+//     text.str(""); text.clear();
+//     
+//     text << gebiet->rohstoffe[R_LEHM];
+//     glRasterPos3f(0.2,0.5,0); gl_font(1, 12); gl_draw(text.str().c_str());
+//     text.str(""); text.clear();
+// 
+//     text << gebiet->rohstoffe[R_STROH];
+//     glRasterPos3f(0.3,0.5,0); gl_font(1, 12); gl_draw(text.str().c_str());
+//     text.str(""); text.clear();
+// 
+//     text << gebiet->produktion[R_BAU];
+//     glRasterPos3f(0.4,0.5,0); gl_font(1, 12); gl_draw(text.str().c_str());
+//     text.str(""); text.clear();
+// 
+//     glEnable(GL_LIGHTING);
+//     glEnable(GL_DEPTH_TEST);
+//     
+//     glPopMatrix();
+//     glMatrixMode(GL_PROJECTION);
+//     glPopMatrix();
+   
+   zeit_frame = zeit_diff(zeit);
+//    std::cout << zeit_frame << std::endl;
+   
+   if (phi != phi_soll || pos_z != pos_z_soll || theta != theta_soll || zoom != zoom_soll || pos_radius != pos_radius_soll)
+   {
+      float zeit_faktor;
+      if (zeit_frame > 0.1)
+         zeit_faktor = 0.1;
+      else
+         zeit_faktor = zeit_frame;
+      
+      if (fabs(phi_soll-phi) > 0.1)
+      {
+         phi += 0.9*(phi_soll - phi)*zeit_faktor*10;
+      }
+      else
+         phi = phi_soll;
+      
+      if (fabs(pos_z_soll - pos_z) > 0.001)
+      {
+         pos_z += 0.9*(pos_z_soll - pos_z)*zeit_faktor*10;
+      }
+      else
+         pos_z = pos_z_soll;
+      
+      if (fabs(theta_soll - theta) > 0.01)
+      {
+         theta += 0.9*(theta_soll - theta)*zeit_faktor*10;
+      }
+      else
+         theta = theta_soll;
+      
+      if (fabs(zoom_soll - zoom) > 0.001)
+      {
+         zoom += 0.9*(zoom_soll - zoom)*zeit_faktor*10;
+      }
+      else
+         zoom = zoom_soll;
+      
+      if (fabs(pos_radius_soll - pos_radius) > 0.001)
+      {
+         pos_radius += 0.9*(pos_radius_soll - pos_radius)*zeit_faktor*10;
+      }
+      else
+         pos_radius = pos_radius_soll;
+      
+      if (!idle_redraw)
+      {
+         idle_redraw = true;
+         Fl::add_idle(idle_draw, this);
+      }
+   }
+   else
+   {
+      idle_redraw = false;
+      Fl::remove_idle(idle_draw, this);
+   }
+   
+   fps_counter++;
+   fps_sum += 1.0/zeit_frame;
+   
+   if (fps_counter>=40)
+   {
+      fps_average = fps_sum/40.0;
+      fps_sum = 0.0;
+      fps_counter = 0;
+      std::cout << "FPS: " << fps_average << "\r" << std::flush;
+   }
+}
+
+
+void Openglwidget::zeichne()
+{
+// // // // // // // // // // // // // // // // // // // // // // // //    clear buffer(s)
+   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+// // // // // // // // // // // // // // // // // // // // // // // //     Matrix vorbereiten
+
+   glInitNames();
+   glPushName(0);
+   zeichne_station();
+
+//    glLoadName(aktuelle_id++); //
+
+//    glhilf::draw_tube_mesh(0, 0, 0, 0, 0, 1, 1, 20);
+//    glTranslatef(0,0,1);
+//    glhilf::draw_tube_mesh(0, 0, 0, 0, 0, 1, 1, 20);
+//    glTranslatef(0,0,1);
+//    glhilf::draw_tube_mesh(0, 0, 0, 0, 0, 1, 1, 20);
+//    glTranslatef(0,0,1);
+//    glhilf::draw_tube_mesh(0, 0, 0, 0, 0, 1, 1, 20);
+//    glTranslatef(0,0,-3);
+   
+}
+
+
+void Openglwidget::zeichne_station()
+{
+   if (station == NULL)
+      return;
+
+   for (int i=0; i<station->district_count; i++)
+      zeichne_district(station->district[i]);
+   
+}
+
+#define STEP 0.05
+
+void Openglwidget::zeichne_district(District& district)
+{
+   if (!district.aktiv)
+      zeichne_district_outside(district);
+   else
+   {
+   float x1, y1, z1, x2, y2, z2;
+   float delta_p = STEP/district.radius_min;
+   float radius_;
+   
+   for(int r=0; r<=district.deck_count; r++)
+   {
+//       if (r%3==0) glColor3f(1,0,0);
+//       if (r%3==1) glColor3f(0,1,0);
+//       if (r%3==2) glColor3f(0,0,1);
+      glColor3f(0.5, 0.5, 0.5+r*0.1);
+      glColor3f(0.5, 0.5, 0.5+r*0.1);
+      glColor3f(0.5, 0.5, 0.5+r*0.1);
+      
+      for(int y=0; y<district.size_y; y=y+1)
+      {
+         for(int x=0; x<district.size_x; x=x+1)
+         {
+            radius_ = district.radius_min + 2*r*STEP;
+            
+               x1 = cos((x  )*delta_p + district.phi_min)*radius_;
+               y1 = sin((x  )*delta_p + district.phi_min)*(radius_);
+               z1 = y*STEP + district.z_min;
+               
+               x2 = cos((x+1)*delta_p + district.phi_min)*radius_;
+               y2 = sin((x+1)*delta_p + district.phi_min)*(radius_);
+               z2 = z1;
+               
+            glBegin(GL_LINES);
+               glVertex3f(x1, y1, z1);
+               glVertex3f(x2, y2, z2);
+               
+               x2 = x1;
+               y2 = y1;
+               z2 = (y+1)*STEP + district.z_min;
+               
+               glVertex3f(x1, y1, z1);
+               glVertex3f(x2, y2, z2);
+               
+               x2 = cos((x)*delta_p + district.phi_min)*(radius_+2*STEP);
+               y2 = sin((x)*delta_p + district.phi_min)*(radius_+2*STEP);
+               z2 = z1;
+               
+               glVertex3f(x1, y1, z1);
+               glVertex3f(x2, y2, z2);
+            glEnd();
+         }
+         
+      }
+   }
+//    
+//    for (int i=0; i<district.deck_count; i++)
+//       zeichne_deck(district.deck[i]);
+   }
+}
+
+#define DELTA_P 0.1
+
+void Openglwidget::zeichne_district_outside(District& district)
+{
+   glLoadName(district.objekt_id);
+   glEnable(GL_LIGHT1);
+   
+   glColor3f(0.5, 0.5, 0.5);
+   
+   set_material_ambi(0.00, 0.00, 0.00, 1.0);
+   set_material_diff(0.30, 0.30, 0.50, 1.0);
+   set_material_spec(0.70, 0.70, 1.00, 1.0);
+   set_material_shin(90.0);
+   
+   float x1, y1, z1;
+   float x2, y2, z2;
+   float x3, y3, z3;
+   float x4, y4, z4;
+   
+   float p_min = district.phi_min;
+   float p_max = district.phi_max;
+   
+   if (p_max < p_min) p_max += 2*PI;
+   
+   float r_min = district.radius_min;
+   float r_max = district.radius_max;
+   
+   float z_min = district.z_min;
+   float z_max = district.z_max;
+
+   float cosp1 = cos(p_min);
+   float sinp1 = sin(p_min);
+   float cosp2, sinp2;
+   
+   float texcoord_x1, texcoord_y1;
+   float texcoord_x2, texcoord_y2;
+   
+   x1 = r_min * cosp1;
+   y1 = r_min * sinp1;
+   
+   x2 = r_max * cosp1;
+   y2 = r_max * sinp1;
+   
+   glBegin(GL_QUADS);
+         glNormal3f(sinp1, -cosp1, 0.0);
+      glVertex3f(x1, y1, z_min);
+      glVertex3f(x1, y1, z_max);
+      glVertex3f(x2, y2, z_max);
+      glVertex3f(x2, y2, z_min);
+   glEnd();
+   
+   glBindTexture(GL_TEXTURE_2D, tex->tex_district->id);
+   
+   while(p_min != p_max)
+   {
+      texcoord_x1 = z_min*0.25;
+      texcoord_x2 = z_max*0.25;
+      
+      texcoord_y1 = p_min*2/(PI);
+      
+      p_min += DELTA_P;
+      if (p_min > p_max) p_min = p_max;
+      
+      texcoord_y2 = p_min*2/(PI);
+      
+      cosp2 = cosp1;
+      sinp2 = sinp1;
+      
+      cosp1 = cos(p_min);
+      sinp1 = sin(p_min);
+      
+      x3 = r_min * cosp1;
+      y3 = r_min * sinp1;
+      
+      x4 = r_max * cosp1;
+      y4 = r_max * sinp1;
+      
+      glBegin(GL_QUADS);
+            glNormal3f(0.0, 0.0, -1.0);
+         glVertex3f(x3, y3, z_min);
+         glVertex3f(x1, y1, z_min);
+         glVertex3f(x2, y2, z_min);
+         glVertex3f(x4, y4, z_min);
+         
+            glNormal3f(cosp1, sinp1, 0.0);
+         glTexCoord2f(texcoord_x1, texcoord_y1);   glVertex3f(x4, y4, z_min);
+            glNormal3f(cosp2, sinp2, 0.0);
+         glTexCoord2f(texcoord_x1, texcoord_y2);   glVertex3f(x2, y2, z_min);
+         glTexCoord2f(texcoord_x2, texcoord_y2);   glVertex3f(x2, y2, z_max);
+            glNormal3f(cosp1, sinp1, 0.0);
+         glTexCoord2f(texcoord_x2, texcoord_y1);   glVertex3f(x4, y4, z_max);
+         
+            glNormal3f(0.0, 0.0, 1.0);
+         glVertex3f(x4, y4, z_max);
+         glVertex3f(x2, y2, z_max);
+         glVertex3f(x1, y1, z_max);
+         glVertex3f(x3, y3, z_max);
+         
+            glNormal3f(-cosp1, -sinp1, 0.0);
+         glTexCoord2f(texcoord_x1, texcoord_y1);   glVertex3f(x3, y3, z_max);
+            glNormal3f(-cosp2, -sinp2, 0.0);
+         glTexCoord2f(texcoord_x1, texcoord_y2);   glVertex3f(x1, y1, z_max);
+         glTexCoord2f(texcoord_x2, texcoord_y2);   glVertex3f(x1, y1, z_min);
+            glNormal3f(-cosp1, -sinp1, 0.0);
+         glTexCoord2f(texcoord_x2, texcoord_y1);   glVertex3f(x3, y3, z_min);
+      glEnd();
+      
+      x1 = x3; y1 = y3;
+      x2 = x4; y2 = y4;
+   }
+   
+   glBegin(GL_QUADS);
+         glNormal3f(-sinp1, cosp1, 0.0);
+      glVertex3f(x2, y2, z_min);
+      glVertex3f(x2, y2, z_max);
+      glVertex3f(x1, y1, z_max);
+      glVertex3f(x1, y1, z_min);
+   glEnd();
+   
+   glBindTexture(GL_TEXTURE_2D, 0);
+   set_material_std();
+   glDisable(GL_LIGHT1);
+}
+
+
+void Openglwidget::set_view_to(Mausobjekt* mo_)
+{
+   if (mo_ == NULL)
+      return;
+   
+   if (mo_->objekt_typ == "District")
+   {
+      District* dis = (District*) mo_;
+      
+      station->set_aktiv(dis);
+      pos_radius_soll = dis->radius_min;
+      pos_z_soll = (dis->z_min+dis->z_max)*0.5;
+      phi_soll = dis->phi_min<dis->phi_max?(dis->phi_min+dis->phi_max)*0.5/RAD:(dis->phi_min+dis->phi_max+2*PI)*0.5/RAD;
+      zoom_soll = 0.4; 
+   }
+}
+
+
+void Openglwidget::zeichne_deck(Deck& deck)
+{
+   
+}
+
+
+Mausobjekt* Openglwidget::get_target()
+{
+   if (target_id == 0)
+      return NULL;
+   
+   for(int i=0; i<station->district_count; i++)
+   {
+      if (station->district[i].objekt_id == (int)target_id)
+      {
+         return (Mausobjekt*) &(station->district[i]);
+      }
+   }
+}
+
+
+void Openglwidget::selektiere_id()
+{
+    float maus_x = Fl::event_x();
+    float maus_y = fenster_hoehe-Fl::event_y();
+    
+    GLuint sel_buffer[256];
+    glSelectBuffer (256, sel_buffer);
+    GLint hits = 0;
+
+    glViewport(0, 0, fenster_breite, fenster_hoehe);
+
+    glMatrixMode(GL_PROJECTION);
+    glRenderMode(GL_SELECT);
+    glLoadIdentity();
+    gluPickMatrix(maus_x, maus_y, 1, 1, viewport); // nur an der Mausposition gucken
+    gluPerspective(view_angle,breite_zu_hoehe,NEAR_CLIP,FAR_CLIP);
+// // // // // // // // // render
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity;
+    zeichne();
+// // // // // // // // //
+    hits = glRenderMode(GL_RENDER);
+    std::cout << hits << " Objekte getroffen" << std::endl;
+
+    if (hits) // wenn was angeklickt wurde, soll das "vorderste" gewählt werden
+    {
+    //  Organisation des Buffers:
+    //     Anzahl der Namen auf dem Stack
+    //     Kleinster Abstand
+    //     Größter Abstand
+    //     Objektname
+
+        target_id = sel_buffer[3];
+        int abstand = sel_buffer[1];
+
+        for (int i = 1; i <hits; i++)
+        {
+            if (sel_buffer[(i*4)+1] < abstand)
+            {
+                target_id = sel_buffer[(i*4)+3];
+                abstand   = sel_buffer[(i*4)+1];
+            }
+        }
+    }
+    else
+        target_id = 0; // nichts gefunden :(
+
+}
+
+
+void Openglwidget::set_material_std()
+{
+   set_material_ambi(0.0, 0.0, 0.0, 1.0);
+   set_material_diff(0.8, 0.8, 0.8, 1.0);
+   set_material_spec(0.0, 0.0, 0.0, 1.0);
+   set_material_shin(0);
+}
+
+
+void Openglwidget::set_material(MATERIAL material)
+{
+   switch(material)
+   {
+      case MAT_KUPFER:
+         set_material_ambi(0.23, 0.09, 0.03, 1.0);
+         set_material_diff(0.55, 0.21, 0.07, 1.0);
+         set_material_spec(0.58, 0.22, 0.07, 1.0);
+         set_material_shin(51.2);
+      break;
+      
+      case MAT_GUMMI:
+         set_material_ambi(0.02, 0.02, 0.02, 1.0);
+         set_material_diff(0.01, 0.01, 0.01, 1.0);
+         set_material_spec(0.40, 0.40, 0.40, 1.0);
+         set_material_shin(10.0);
+      break;
+      
+      case MAT_PLASTIK:
+         set_material_ambi(0.00, 0.00, 0.00, 1.0);
+         set_material_diff(0.01, 0.01, 0.01, 1.0);
+         set_material_spec(0.50, 0.50, 0.50, 1.0);
+         set_material_shin(32.0);
+      break;
+      
+      case MAT_MESSING:
+         set_material_ambi(0.33, 0.22, 0.03, 1.0);
+         set_material_diff(0.78, 0.57, 0.11, 1.0);
+         set_material_spec(0.99, 0.94, 0.81, 1.0);
+         set_material_shin(27.9);
+      break;
+      
+      case MAT_SILBER:
+         set_material_ambi(0.23, 0.23, 0.23, 1.0);
+         set_material_diff(0.28, 0.28, 0.28, 1.0);
+         set_material_spec(0.77, 0.77, 0.77, 1.0);
+         set_material_shin(89.6);
+      break;
+      
+      case MAT_GOLD:
+         set_material_ambi(0.25, 0.22, 0.06, 1.0);
+         set_material_diff(0.35, 0.31, 0.09, 1.0);
+         set_material_spec(0.90, 0.72, 0.21, 1.0);
+         set_material_shin(83.2);
+      break;
+      
+      default:
+         set_material_std();
+   }
+}
+
+
+void Openglwidget::set_material_ambi(float ambi1, float ambi2, float ambi3, float ambi4)
+{
+   mat_ambi[0] = ambi1;
+   mat_ambi[1] = ambi2;
+   mat_ambi[2] = ambi3;
+   mat_ambi[3] = ambi4;
+   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambi);
+}
+
+
+void Openglwidget::set_material_diff(float diff1, float diff2, float diff3, float diff4)
+{
+   mat_diff[0] = diff1;
+   mat_diff[1] = diff2;
+   mat_diff[2] = diff3;
+   mat_diff[3] = diff4;
+   glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diff);
+}
+
+
+void Openglwidget::set_material_spec(float spec1, float spec2, float spec3, float spec4)
+{
+   mat_spec[0] = spec1;
+   mat_spec[1] = spec2;
+   mat_spec[2] = spec3;
+   mat_spec[3] = spec4;
+   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_spec);
+}
+
+
+void Openglwidget::set_material_shin(float shin1)
+{
+   mat_shin = shin1;
+   glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shin1);
+}
+
+
+void Openglwidget::selektiere_pos()
+{
+    if (target_id)
+    {
+        float maus_x = Fl::event_x();
+        float maus_y = fenster_hoehe-Fl::event_y();
+        float abstand;
+        
+        glReadPixels(maus_x, maus_y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &abstand);
+        gluUnProject(maus_x, maus_y, abstand, model_matrix, project_matrix, viewport, &target_x, &target_y, &target_z);
+    }
+    else
+    {
+        target_x = -1;
+        target_y = -1;
+        target_z = -1;
+    }
+}
+
+
+void Openglwidget::initialisiere_gl()
+{
+   glLineWidth(2);
+   glPolygonOffset(1.0,1.0);
+   glEnable(GL_POLYGON_OFFSET_FILL);
+   glClearColor(0.0, 0.0, 0.0, 1.0);
+
+   glEnable(GL_DEPTH_TEST);
+   glDepthFunc(GL_LEQUAL);
+
+   glEnable(GL_LIGHT0);
+   glEnable(GL_LIGHT1);
+   glEnable(GL_LIGHT2);
+   glEnable(GL_COLOR_MATERIAL);
+   glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+   glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+   glFrontFace(GL_CW);
+
+   glShadeModel(GL_SMOOTH); // glShadeModel(GL_SMOOTH) oder  glShadeModel(GL_FLAT)
+
+   glEnable(GL_TEXTURE_2D);
+   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+   glEnable(GL_BLEND);
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//     glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+//     glBlendFunc(GL_ONE, GL_ONE);
+   
+   breite_zu_hoehe = float(fenster_breite) / float(fenster_hoehe);
+   take_focus();
+}
+
+
+void Openglwidget::zeichne_system(System& system_)
+{
+  // Sonne
+//    glPushMatrix();
+  
+// //   glDisable(GL_LIGHTING);
+// // //   glMaterialf(GL_FRONT, GL_AMBIENT, (0, 0, 0, 1.0)); 
+// // //   glMaterialf(GL_FRONT, GL_DIFFUSE, (0, 0, 0, 1.0)); 
+// //   
+// // //   glMaterialf(GL_FRONT_AND_BACK, GL_EMISSION, (1, 1, 1, 1.0)); 
+// //   glColor3f(1.0, 1.0, 0.7);
+// //   glutSolidSphere(system_.sonnenradius, 40, 40);
+// //   
+// //   
+// // //   glMaterialf(GL_FRONT, GL_AMBIENT, (0.2, 0.2, 0.2, 1.0)); 
+// // //   glMaterialf(GL_FRONT, GL_DIFFUSE, (0.8, 0.8, 0.8, 1.0)); 
+// //   glEnable(GL_LIGHTING);
+
+  
+  for(int i=0; i<system_.anzahl_planeten; i++)
+  {
+    switch(system_.planeten[i].klasse)
+    {
+      glColor3f(0.5, 0.5, 0.5);
+      case 'A':
+        glPushMatrix();
+          glRotatef(system_.planeten[i].phase, 0.0, 0.0, 1.0);
+          glTranslatef((i+1)*200/system_.anzahl_planeten, 0, 0);
+          
+//           glColor3f(0.6, 0.4, 0.4);
+          glColor3f(1.0, 1.0, 1.0);
+          glRotatef(5, 1.0, 1.0, 0.0);
+          glBindTexture(GL_TEXTURE_2D, tex->tex_planet[system_.planeten[i].textur_ind]->id);
+          
+          for (int j=0; j<system_.planeten[i].spezial; j++)
+          {
+            glhilf::zeichne_ring(system_.planeten[i].radius*(1.2+j*j*0.2), system_.planeten[i].radius*(0.4*j+0.15), 40);
+          }
+          
+          glColor3f(0.8, 0.8, 0.8);
+          glhilf::draw_texture_sphere(system_.planeten[i].radius, 20, 40);
+          glBindTexture(GL_TEXTURE_2D, 0);
+        glPopMatrix();
+        break;
+      
+      case 'K':
+        glPushMatrix();
+          glRotatef(system_.planeten[i].phase, 0.0, 0.0, 1.0);
+          glTranslatef((i+1)*200/system_.anzahl_planeten, 0, 0);
+          glBindTexture(GL_TEXTURE_2D, tex->tex_planet[system_.planeten[i].textur_ind]->id);
+          glhilf::draw_texture_sphere(system_.planeten[i].radius, 20, 40);
+          glBindTexture(GL_TEXTURE_2D, 0);
+        glPopMatrix();
+        break;
+      
+      case 'M':
+        glPushMatrix();
+          glRotatef(system_.planeten[i].phase, 0.0, 0.0, 1.0);
+          glTranslatef((i+1)*200/system_.anzahl_planeten, 0, 0);
+          glBindTexture(GL_TEXTURE_2D, tex->tex_planet[system_.planeten[i].textur_ind]->id);
+          glColor3f(1.0, 1.0, 1.0);
+          glhilf::draw_texture_sphere(system_.planeten[i].radius, 20, 40);
+          glBindTexture(GL_TEXTURE_2D, 0);
+        glPopMatrix();
+        break;
+      
+    }
+  }
+}
+
+
+int Openglwidget::handle(int event)
+{
+    //     Fl::lock();
+    bool strg  = false;
+    bool shift = false;
+
+    if (Fl::event_state() == FL_CTRL)
+    {
+        strg = true;
+    }
+    if (Fl::event_state() == FL_SHIFT)
+        shift = true;
+
+    switch (event)
+    {
+        case FL_MOVE:
+//             if (platziere_gebaeude) redraw();
+            return 1;
+        case FL_FOCUS:
+        case FL_UNFOCUS:
+        return 1;
+
+        case FL_PUSH:
+//             if (shift)
+//             {
+//             }
+//             else
+//             {
+               selektiere_id();
+               selektiere_pos();
+               std::cout << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")" << std::endl;
+               set_view_to(get_target());
+//                if (platziere_gebaeude)
+//                {
+//                   if (gebiet->pruefe_bauplatz(target_x, target_y, fenster->baumenu->laenge->value(), fenster->baumenu->breite->value(), fenster->baumenu->orientierung->value()))
+//                   {
+//                      gebiet->add_gebaeude(target_x, target_y, fenster->baumenu->laenge->value(), fenster->baumenu->breite->value(), fenster->baumenu->orientierung->value(), GEBAEUDETYP(fenster->baumenu->gebaeudetyp->value()));
+//                      fenster->baumenu->hide();
+//                      platziere_gebaeude = false;
+//                   }
+//                }
+//                else if(target_id != 0)
+//                {
+//                   fenster->infomenu->hide();
+//                   fenster->infomenu->set_info(get_target());
+//                   fenster->infomenu->show();
+//                }
+//             }
+               fenster->redraw();
+//             redraw();
+            return 1;
+
+        case FL_MOUSEWHEEL:
+//             std::cout << Fl::event_dy() << std::endl;
+            zoom_soll += Fl::event_dy()*zoom_soll*0.1;
+            if (zoom_soll > pos_radius) zoom_soll = pos_radius;
+            else if (zoom_soll < 0.1) zoom_soll = 0.1;
+            redraw();
+            return 1;
+
+        case FL_KEYBOARD:
+        int key = Fl::event_key();
+        switch (key)
+        {
+    //         case 27 : // Das ist die Esc-Taste. Das Programm wird beendet.
+    //           std::cout << "Schluss.\n";
+    //           this->hide();
+    //           return 1;
+
+    //         case 32 : // Leertaste
+    //           if (animation)
+    //           {
+    //             animation = false;
+    //           }
+    //           else
+    //           {
+    //             animation = true;
+    //             gettimeofday(&aktuelle_zeit_referenz, 0);
+    //           }
+    //           redraw();
+    //           return 1;
+
+
+            case '+' :
+            if (strg) { }
+            else { zoom_soll = zoom_soll*0.95; }
+            redraw();
+            return 1;
+
+            case '-' :
+            if (strg) { }
+            else { zoom_soll = zoom_soll*1.05; }
+            redraw();
+            return 1;
+
+            case 'a' : // Die Kamera bewegt sich "nach links" (An der Blickrichtung orientiert)
+            y_offset -= 0.25;
+//             pos_x -= 0.01*zoom*sin(phi*RAD);
+//             pos_y += 0.01*zoom*cos(phi*RAD);
+            redraw();
+            return 1;
+
+            case 'd' : // ...nach rechts...
+            y_offset += 0.25;
+//             pos_x += 0.01*zoom*sin(phi*RAD);
+//             pos_y -= 0.01*zoom*cos(phi*RAD);
+            redraw();
+            return 1;
+
+            case 'w' : // ...nach oben...
+            x_offset += 0.25;
+//             pos_x += 0.01*zoom*cos(phi*RAD);
+//             pos_y += 0.01*zoom*sin(phi*RAD);
+            redraw();
+            return 1;
+
+            case 's' : // ...nach unten
+            x_offset -= 0.25;
+//             pos_x -= 0.01*zoom*cos(phi*RAD);
+//             pos_y -= 0.01*zoom*sin(phi*RAD);
+            redraw();
+            return 1;
+
+            case 'q' : // ...nach unten...
+            z_offset -= 0.25;
+//             pos_z -= 0.01*zoom;
+            redraw();
+            return 1;
+
+            case 'e' : // ...nach oben
+            z_offset += 0.25;
+//             pos_z += 0.01*zoom;
+            redraw();
+            return 1;
+
+            case 'b' :
+//                 if (platziere_gebaeude)
+//                 {   platziere_gebaeude = false;
+//                     std::cout << "Abgebrochen." << std::endl;
+//                     fenster->baumenu->hide();
+//                 }
+//                 else
+//                 {   platziere_gebaeude = true;
+//                     std::cout << "Lege Bauplatz fest..." << std::endl;
+//                     fenster->infomenu->hide();
+//                     fenster->baumenu->show();
+//                 }
+//                 redraw();
+                return 1;
+
+            case 'n' :
+//             gebiet->tick();
+//             redraw();
+            return 1;
+
+#define UNIT 0.1
+         
+         case FL_Up :
+            if (strg) { }
+            else
+            {   pos_z_soll += UNIT;
+            }
+            redraw();
+            return 1;
+
+         case FL_Down : // ...nach unten...
+            if (strg) { }
+            else
+            {  pos_z_soll -= UNIT;
+            }
+            redraw();
+            return 1;
+
+         case FL_Left :
+            if (strg) { }
+            else
+            { 
+               phi_soll += 5;
+               if (phi_soll > 360)
+               {
+                  phi -= 360; 
+                  phi_soll -= 360; 
+               }
+            }
+            redraw();
+            return 1;
+
+         case FL_Right :
+            if (strg) { }
+            else
+            {
+               phi_soll -= 5;
+               if (phi_soll < 0)
+               {
+                  phi += 360; 
+                  phi_soll += 360; 
+               }
+            }
+            redraw();
+            return 1;
+
+         case FL_Page_Up :
+            if (strg) { }
+            else
+            {
+               theta_soll += 5;
+               if (theta_soll > 90)
+               {
+                  theta_soll = 90;
+               }
+            }
+            redraw();
+            return 1;
+
+         case FL_Page_Down :
+            if (strg) { }
+            else
+            {
+               theta_soll -= 5;
+               if (theta_soll < 10)
+               {
+                  theta_soll = 10; 
+               }
+            }
+            redraw();
+            return 1;
+            
+            case FL_F+1 :
+               if(!antialiasing)
+               {
+                  mode(FL_RGB | FL_DEPTH | FL_MULTISAMPLE | FL_DOUBLE);
+                  glEnable(GL_MULTISAMPLE);
+                  antialiasing = true;
+               }
+               else
+               {
+                  mode(FL_RGB | FL_DEPTH | FL_DOUBLE);
+                  glDisable(GL_MULTISAMPLE);
+                  antialiasing = false;
+               }
+               
+               redraw();
+               return 1;
+    //
+    //         case FL_F+2 : // Nur die y-Komponente des E-Feldes wird angezeigt.
+    //           monitor->feld_num=1;
+    //           redraw();
+    //           return 1;
+    //
+
+        }
+    }
+
+    return Fl_Gl_Window::handle(event);
+}
+
+
+
