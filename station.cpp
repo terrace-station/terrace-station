@@ -1,52 +1,48 @@
 #include "station.hh"
 
-#include "district.hh"
-
-Station::Station(int district_count_)
-{
-   district_count = district_count_;
-   
-   district = new District[district_count];
-   
-}
-
+#define PI          3.14125
+#define CF_MIN      600     // Minimum circumference
+#define CF_DELTA    100     // Difference in circumference
+#define NR_OF_ZONES 4
 
 Station::Station()
 {
-   district_count = rand()%12+1;
-   
-   district = new District[district_count];
-   
+    int x, y, width, height, cf, nr, nr_of_decks;
+    float radius;
+    std::srand(std::time(0));
+    for (int zone = 0; zone < NR_OF_ZONES; ++zone)
+    {
+        cf = CF_MIN + zone * CF_DELTA;
+        radius = cf / (2 * PI);
+        nr = rand() % 3 + 1;
+        if (nr == 1) {
+            width = cf;
+        } else {
+            width = cf / (2 * nr) + rand() % (cf / (3 * nr));
+        }
+        nr_of_decks = rand() % 3 + 2;
+        y = - (rand() % 100 + 1);
+        height = 100 + rand() % 100 + 1;
+        for (int i = 0; i < nr; ++i)
+        {
+            x = i * cf / nr;
+            District district(radius, x, y, width, height, nr_of_decks);
+            districts.push_back(district);
+        }
+    }
 }
 
-
-Station::~Station()
-{
-   delete[] district;
+std::vector<District> Station::get_districts() {
+    return districts;
 }
-
-
-void Station::set_aktiv(District* dis_)
+    
+std::string Station::str()
 {
-   for (int i=0; i<district_count; i++)
-   {
-      if (&district[i] == dis_)
-         district[i].aktiv = true;
-      else
-         district[i].aktiv = false;
-   }
-}
-
-
-void Station::text_ausgabe()
-{
-   std::cout << "station:" << std::endl;
-   std::cout << "\tdistricts: " << district_count << std::endl;
-   
-   for (int i=0; i< district_count; i++)
-   {
-      std::cout << "district: " << i+1 << " :" << std::endl;
-      district[i].text_ausgabe();
-      std::cout << std::endl;
-   }
+    std::stringstream ss;
+    ss << "Station:" << std::endl;
+    for (std::vector<District>::iterator it = districts.begin(); it != districts.end(); it++)
+    {
+        ss << it->str();
+    }
+    return ss.str();
 }

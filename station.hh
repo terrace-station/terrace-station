@@ -2,26 +2,24 @@
 #define STATION_HH
 
 #include <stdlib.h>
-#include <iostream>
+#include <string>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
 
-class District;
+#include "district.hh"
 
 
 class Station
 {
+    std::vector<District> districts;
+    
 public:
-   
-   int district_count;
-   
-   District* district;
-   
-   void text_ausgabe();
-   void set_aktiv(District* dis_);
-   
-   Station();
-   Station(int district_count_);
-   ~Station();
-};
+    Station();
+    
+    std::vector<District> get_districts();
 
+    std::string str();
+};
 
 #endif

@@ -9,23 +9,22 @@
 
 class Room;
 
-/**
- * Rect
- */
+
 class Rect
 {
-public:
     int left, top, right, bottom;
-
-    /**
-     * Default constructor
-     */
+    
+public:
     Rect(int left, int top, int right, int bottom);
     
-    int width();
-    int height();
-    int area();
-    float aspect();
+    int get_left();
+    int get_top();
+    int get_right();
+    int get_bottom();
+    int get_width();
+    int get_height();
+    int get_area();
+    float get_aspect();
     bool intersects(Rect other);
     bool intersects(Room other);
     std::string str();

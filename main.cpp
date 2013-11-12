@@ -14,7 +14,7 @@ int main()
    fenster1.show();
    
    Station station1;
-   station1.text_ausgabe();
+   std::cout << station1.str();
    fenster1.glwidget->set_station(&station1);
    
    Fl::run();

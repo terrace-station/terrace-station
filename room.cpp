@@ -1,21 +1,18 @@
 #include "room.hh"
 #include "rect.hh"
 
-Room::Room(std::string style, std::list<Rect> rects)
+Room::Room(std::string style, Rect rect)
 {
     this->style = style;
-    for (std::list<Rect>::iterator it = rects.begin(); it!=rects.end(); it++)
-    {
-        this->rects.push_back(*it);
-    }
+    this->rects.push_back(rect);
 }
 
-int Room::area()
+int Room::get_area()
 {
     int result = 0;
     for (std::list<Rect>::iterator it = rects.begin(); it!=rects.end(); it++)
     {
-        result += it->area();
+        result += it->get_area();
     }
     return result;
 }
@@ -42,10 +39,22 @@ bool Room::intersects(Room other)
     return false;
 }
 
+std::string Room::get_style() {
+    return style;
+}
+
+std::list<Rect> Room::get_rects() {
+    return rects;
+}
+
 std::string Room::str()
 {
     std::stringstream ss;
-    ss << "Room: style = " << style << ", area = " << area();
-    ss << ", nr of rects = " << rects.size();
+    ss << "      Room:      (style = " << style << ", area = " << get_area();
+    ss << ", nr of rects = " << rects.size() << ")" << std::endl;
+    for (std::list<Rect>::iterator it = rects.begin(); it != rects.end(); it++)
+    {
+        ss << it->str();
+    }
     return ss.str();
 }

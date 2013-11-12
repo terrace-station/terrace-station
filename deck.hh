@@ -1,22 +1,33 @@
 #ifndef DECK_HH
 #define DECK_HH
 
+#include <stdlib.h>
+#include <string>
+#include <list>
 
-class District;
+#include "room.hh"
+#include "wall.hh"
+#include "door.hh"
+#include "rect.hh"
 
 
 class Deck
 {
+    std::list<Room> rooms;
+    void init();
+    
 public:
-   
-   District* district;
-   
-   int size_x, size_y;
-   
-   
-   Deck();
-   ~Deck();
+    Deck(float radius, int x, int y, int size_x, int size_y);
+    
+    float radius;
+    int x;
+    int y;
+    int size_x;
+    int size_y;
+    std::list<Room> get_rooms();
+    
+    std::string str();
+    
 };
-
 
 #endif
