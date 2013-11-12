@@ -8,7 +8,8 @@
 
 #include "wall.hh"
 #include "door.hh"
-#include "rect.hh"
+
+class Rect;
 
 /**
  * Room

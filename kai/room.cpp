@@ -1,4 +1,5 @@
 #include "room.hh"
+#include "rect.hh"
 
 Room::Room(std::string style, std::list<Rect> rects)
 {

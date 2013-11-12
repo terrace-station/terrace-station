@@ -7,6 +7,8 @@
 #include <list>
 #include <vector>
 
+class Room;
+
 /**
  * Rect
  */
@@ -25,6 +27,7 @@ public:
     int area();
     float aspect();
     bool intersects(Rect other);
+    bool intersects(Room other);
     std::string str();
     
 };

@@ -1,4 +1,5 @@
 #include "rect.hh"
+#include "room.hh"
 
 Rect::Rect(int left, int top, int right, int bottom)
 {
@@ -39,6 +40,10 @@ float Rect::aspect()
 bool Rect::intersects(Rect other)
 {
     return left < other.right && other.left < right && top < other.bottom && other.top < bottom;
+}
+
+bool Rect::intersects(Room other) {
+    return other.intersects(*this);
 }
 
 std::string Rect::str()
