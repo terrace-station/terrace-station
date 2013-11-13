@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
    
    Station station1;
    std::cout << station1.str();
-//    glwidget.set_station(&station1);
+   glwidget.set_station(&station1);
    
    SDL_Init(SDL_INIT_VIDEO);
 
