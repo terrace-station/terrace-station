@@ -1,9 +1,9 @@
-OBJEKTE  = openglwidget.o openglwindow.o mausobjekt.o textur.o targetinfomenu.o system.o texturensammlung.o deck.o district.o station.o
+OBJEKTE  = openglwidget.o mausobjekt.o textur.o system.o texturensammlung.o deck.o district.o station.o
 CPP      = g++
 CPPFLAGS = -g
 
 main: main.cpp $(OBJEKTE)
-	$(CPP) $(CPPFLAGS) -o main main.cpp $(OBJEKTE) -lGL -lGLU -lfltk_gl -lfltk
+	$(CPP) $(CPPFLAGS) -o main main.cpp $(OBJEKTE) -lGL -lGLU -lSDL
 
 system.o: system.hh system.cpp glhilf.h
 	$(CPP) $(CPPFLAGS) -c system.cpp
@@ -22,9 +22,6 @@ texturensammlung.o: texturensammlung.cpp texturensammlung.hh textur.o
 
 mausobjekt.o: mausobjekt.cpp mausobjekt.hh
 	g++ -c mausobjekt.cpp $(CPPFLAGS)
-
-targetinfomenu.o: targetinfomenu.cpp targetinfomenu.hh mausobjekt.o
-	g++ -c targetinfomenu.cpp $(CPPFLAGS)
 
 station.o: station.cpp station.hh district.o
 	g++ -c station.cpp $(CPPFLAGS)

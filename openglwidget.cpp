@@ -1,36 +1,17 @@
 #include "openglwidget.hh"
 
-#include "openglwindow.hh"
 
 
 // // // //  Modelle/Texturen definieren
 // #include "modelle.hh"
 
 
-
-
-
-// // // // // // // // // 
-void idle_draw(void* p_)
+Openglwidget::Openglwidget(int breite_, int hoehe_)
 {
-   if (p_ != NULL)
-   {
-      Openglwidget* glwidget = reinterpret_cast<Openglwidget*>(p_);
-      if (glwidget->idle_redraw) 
-      {
-         glwidget->redraw();
-      }
-   }
-}
-
-
-Openglwidget::Openglwidget(int position_x_, int position_y_, int breite_, int hoehe_, const char* titel) : Fl_Gl_Window(position_x_, position_y_, breite_,hoehe_, titel)
-{
-   idle_redraw = false;
+//    idle_redraw = false;
+   running = true;
    antialiasing = false;
    
-   
-   fenster = ((Openglwindow*)parent());
 //     modelle_laden();
    
    tex = new Texturensammlung;
@@ -95,7 +76,7 @@ Openglwidget::Openglwidget(int position_x_, int position_y_, int breite_, int ho
 
    station = NULL;
    
-   mode(FL_RGB | FL_DEPTH | FL_DOUBLE);// | FL_STEREO);
+//    mode(FL_RGB | FL_DEPTH | FL_DOUBLE);// | FL_STEREO);
 }
 
 void Openglwidget::set_station(Station* station_)
@@ -104,13 +85,13 @@ void Openglwidget::set_station(Station* station_)
 }
 
 
-void Openglwidget::resize(int position_x_, int position_y_, int breite_, int hoehe_)
-{
-   Fl_Gl_Window::resize(position_x_, position_y_, breite_, hoehe_);
-   fenster_breite = breite_;
-   fenster_hoehe = hoehe_;
-   breite_zu_hoehe = float(fenster_breite) / float(fenster_hoehe);
-}
+// void Openglwidget::resize(int position_x_, int position_y_, int breite_, int hoehe_)
+// {
+//    Fl_Gl_Window::resize(position_x_, position_y_, breite_, hoehe_);
+//    fenster_breite = breite_;
+//    fenster_hoehe = hoehe_;
+//    breite_zu_hoehe = float(fenster_breite) / float(fenster_hoehe);
+// }
 
 
 #define NEAR_CLIP 0.01
@@ -120,13 +101,6 @@ void Openglwidget::resize(int position_x_, int position_y_, int breite_, int hoe
 
 void Openglwidget::draw()
 {
-   if (idle_draw) gettimeofday(&zeit, 0);
-   if (!valid())
-   {
-      std::cout << "initialisiere opengl...\n";
-      initialisiere_gl();
-      tex->texturen_laden();
-   }
 
 // // // // // // // // // // // // // // // // // // // // // // // //    perspektive setzen
    glMatrixMode(GL_PROJECTION);
@@ -425,17 +399,17 @@ void Openglwidget::draw()
       else
          pos_radius = pos_radius_soll;
       
-      if (!idle_redraw)
-      {
-         idle_redraw = true;
-         Fl::add_idle(idle_draw, this);
-      }
+//       if (!idle_redraw)
+//       {
+//          idle_redraw = true;
+//          Fl::add_idle(idle_draw, this);
+//       }
    }
-   else
-   {
-      idle_redraw = false;
-      Fl::remove_idle(idle_draw, this);
-   }
+//    else
+//    {
+//       idle_redraw = false;
+//       Fl::remove_idle(idle_draw, this);
+//    }
    
    fps_counter++;
    fps_sum += 1.0/zeit_frame;
@@ -447,6 +421,8 @@ void Openglwidget::draw()
       fps_counter = 0;
       std::cout << "FPS: " << fps_average << "\r" << std::flush;
    }
+   
+   SDL_GL_SwapBuffers();
 }
 
 
@@ -713,8 +689,8 @@ Mausobjekt* Openglwidget::get_target()
 
 void Openglwidget::selektiere_id()
 {
-    float maus_x = Fl::event_x();
-    float maus_y = fenster_hoehe-Fl::event_y();
+//     float maus_x = Fl::event_x();
+//     float maus_y = fenster_hoehe-Fl::event_y();
     
     GLuint sel_buffer[256];
     glSelectBuffer (256, sel_buffer);
@@ -725,7 +701,7 @@ void Openglwidget::selektiere_id()
     glMatrixMode(GL_PROJECTION);
     glRenderMode(GL_SELECT);
     glLoadIdentity();
-    gluPickMatrix(maus_x, maus_y, 1, 1, viewport); // nur an der Mausposition gucken
+//     gluPickMatrix(maus_x, maus_y, 1, 1, viewport); // nur an der Mausposition gucken
     gluPerspective(view_angle,breite_zu_hoehe,NEAR_CLIP,FAR_CLIP);
 // // // // // // // // // render
     glMatrixMode(GL_MODELVIEW);
@@ -863,12 +839,12 @@ void Openglwidget::selektiere_pos()
 {
     if (target_id)
     {
-        float maus_x = Fl::event_x();
-        float maus_y = fenster_hoehe-Fl::event_y();
+//         float maus_x = Fl::event_x();
+//         float maus_y = fenster_hoehe-Fl::event_y();
         float abstand;
         
-        glReadPixels(maus_x, maus_y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &abstand);
-        gluUnProject(maus_x, maus_y, abstand, model_matrix, project_matrix, viewport, &target_x, &target_y, &target_z);
+//         glReadPixels(maus_x, maus_y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &abstand);
+//         gluUnProject(maus_x, maus_y, abstand, model_matrix, project_matrix, viewport, &target_x, &target_y, &target_z);
     }
     else
     {
@@ -908,7 +884,6 @@ void Openglwidget::initialisiere_gl()
 //     glBlendFunc(GL_ONE, GL_ONE);
    
    breite_zu_hoehe = float(fenster_breite) / float(fenster_hoehe);
-   take_focus();
 }
 
 
@@ -983,261 +958,214 @@ void Openglwidget::zeichne_system(System& system_)
 }
 
 
-int Openglwidget::handle(int event)
+void Openglwidget::events()
 {
-    //     Fl::lock();
-    bool strg  = false;
-    bool shift = false;
+   SDL_Event event;
 
-    if (Fl::event_state() == FL_CTRL)
-    {
-        strg = true;
+   while(SDL_PollEvent(&event)) 
+   {
+
+      switch( event.type ) 
+      {
+         case SDL_KEYDOWN:
+            handle_keydown(&event.key.keysym);
+            break;
+         case SDL_QUIT:
+            running = false;
+            break;
+        }
     }
-    if (Fl::event_state() == FL_SHIFT)
-        shift = true;
+}
 
-    switch (event)
-    {
-        case FL_MOVE:
-//             if (platziere_gebaeude) redraw();
-            return 1;
-        case FL_FOCUS:
-        case FL_UNFOCUS:
-        return 1;
+void Openglwidget::handle_keydown(SDL_keysym* keysym)
+{
+   switch( keysym->sym )
+   {
+      case SDLK_ESCAPE:
+         running = false;
+         break;
+         
+      case SDLK_SPACE:
+         break;
+         
+      default:
+         break;
+         
+      case SDLK_PLUS:
+         zoom_soll = zoom_soll*0.98;
+         break;
+         
+      case '-' :
+         zoom_soll = zoom_soll*1.02;
+         break;
+         
+      case 'a' : // Die Kamera bewegt sich "nach links" (An der Blickrichtung orientiert)
+         y_offset -= 0.25;
+         break;
 
-        case FL_PUSH:
-//             if (shift)
-//             {
-//             }
-//             else
-//             {
-               selektiere_id();
-               selektiere_pos();
-               std::cout << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")" << std::endl;
-               set_view_to(get_target());
-//                if (platziere_gebaeude)
-//                {
-//                   if (gebiet->pruefe_bauplatz(target_x, target_y, fenster->baumenu->laenge->value(), fenster->baumenu->breite->value(), fenster->baumenu->orientierung->value()))
-//                   {
-//                      gebiet->add_gebaeude(target_x, target_y, fenster->baumenu->laenge->value(), fenster->baumenu->breite->value(), fenster->baumenu->orientierung->value(), GEBAEUDETYP(fenster->baumenu->gebaeudetyp->value()));
-//                      fenster->baumenu->hide();
-//                      platziere_gebaeude = false;
-//                   }
-//                }
-//                else if(target_id != 0)
-//                {
-//                   fenster->infomenu->hide();
-//                   fenster->infomenu->set_info(get_target());
-//                   fenster->infomenu->show();
-//                }
-//             }
-               fenster->redraw();
-//             redraw();
-            return 1;
+      case 'd' : // ...nach rechts...
+         y_offset += 0.25;
+         break;
 
-        case FL_MOUSEWHEEL:
-//             std::cout << Fl::event_dy() << std::endl;
-            zoom_soll += Fl::event_dy()*zoom_soll*0.1;
-            if (zoom_soll > pos_radius) zoom_soll = pos_radius;
-            else if (zoom_soll < 0.1) zoom_soll = 0.1;
-            redraw();
-            return 1;
+      case 'w' : // ...nach oben...
+         x_offset += 0.25;
+         break;
 
-        case FL_KEYBOARD:
-        int key = Fl::event_key();
-        switch (key)
-        {
-    //         case 27 : // Das ist die Esc-Taste. Das Programm wird beendet.
-    //           std::cout << "Schluss.\n";
-    //           this->hide();
-    //           return 1;
+      case 's' : // ...nach unten
+         x_offset -= 0.25;
+         break;
 
-    //         case 32 : // Leertaste
-    //           if (animation)
-    //           {
-    //             animation = false;
-    //           }
-    //           else
-    //           {
-    //             animation = true;
-    //             gettimeofday(&aktuelle_zeit_referenz, 0);
-    //           }
-    //           redraw();
-    //           return 1;
+      case 'q' : // ...nach unten...
+         z_offset -= 0.25;
+         break;
 
+      case 'e' : // ...nach oben
+         z_offset += 0.25;
+         break;
 
-            case '+' :
-            if (strg) { }
-            else { zoom_soll = zoom_soll*0.95; }
-            redraw();
-            return 1;
-
-            case '-' :
-            if (strg) { }
-            else { zoom_soll = zoom_soll*1.05; }
-            redraw();
-            return 1;
-
-            case 'a' : // Die Kamera bewegt sich "nach links" (An der Blickrichtung orientiert)
-            y_offset -= 0.25;
-//             pos_x -= 0.01*zoom*sin(phi*RAD);
-//             pos_y += 0.01*zoom*cos(phi*RAD);
-            redraw();
-            return 1;
-
-            case 'd' : // ...nach rechts...
-            y_offset += 0.25;
-//             pos_x += 0.01*zoom*sin(phi*RAD);
-//             pos_y -= 0.01*zoom*cos(phi*RAD);
-            redraw();
-            return 1;
-
-            case 'w' : // ...nach oben...
-            x_offset += 0.25;
-//             pos_x += 0.01*zoom*cos(phi*RAD);
-//             pos_y += 0.01*zoom*sin(phi*RAD);
-            redraw();
-            return 1;
-
-            case 's' : // ...nach unten
-            x_offset -= 0.25;
-//             pos_x -= 0.01*zoom*cos(phi*RAD);
-//             pos_y -= 0.01*zoom*sin(phi*RAD);
-            redraw();
-            return 1;
-
-            case 'q' : // ...nach unten...
-            z_offset -= 0.25;
-//             pos_z -= 0.01*zoom;
-            redraw();
-            return 1;
-
-            case 'e' : // ...nach oben
-            z_offset += 0.25;
-//             pos_z += 0.01*zoom;
-            redraw();
-            return 1;
-
-            case 'b' :
-//                 if (platziere_gebaeude)
-//                 {   platziere_gebaeude = false;
-//                     std::cout << "Abgebrochen." << std::endl;
-//                     fenster->baumenu->hide();
-//                 }
-//                 else
-//                 {   platziere_gebaeude = true;
-//                     std::cout << "Lege Bauplatz fest..." << std::endl;
-//                     fenster->infomenu->hide();
-//                     fenster->baumenu->show();
-//                 }
-//                 redraw();
-                return 1;
-
-            case 'n' :
-//             gebiet->tick();
-//             redraw();
-            return 1;
 
 #define UNIT 0.1
          
-         case FL_Up :
-            if (strg) { }
-            else
-            {   pos_z_soll += UNIT;
-            }
-            redraw();
-            return 1;
+      case SDLK_UP:
+         pos_z_soll += UNIT;
+         break;
 
-         case FL_Down : // ...nach unten...
-            if (strg) { }
-            else
-            {  pos_z_soll -= UNIT;
-            }
-            redraw();
-            return 1;
+      case SDLK_DOWN: // ...nach unten...
+         pos_z_soll -= UNIT;
+         break;
 
-         case FL_Left :
-            if (strg) { }
-            else
-            { 
-               phi_soll += 5;
-               if (phi_soll > 360)
-               {
-                  phi -= 360; 
-                  phi_soll -= 360; 
-               }
-            }
-            redraw();
-            return 1;
+      case SDLK_LEFT:
+         phi_soll += 3;
+         if (phi_soll > 360)
+         {
+            phi -= 360; 
+            phi_soll -= 360; 
+         }
+         break;
 
-         case FL_Right :
-            if (strg) { }
-            else
-            {
-               phi_soll -= 5;
-               if (phi_soll < 0)
-               {
-                  phi += 360; 
-                  phi_soll += 360; 
-               }
-            }
-            redraw();
-            return 1;
+      case SDLK_RIGHT:
+         phi_soll -= 3;
+         if (phi_soll < 0)
+         {
+            phi += 360; 
+            phi_soll += 360; 
+         }
+         break;
 
-         case FL_Page_Up :
-            if (strg) { }
-            else
-            {
-               theta_soll += 5;
-               if (theta_soll > 90)
-               {
-                  theta_soll = 90;
-               }
-            }
-            redraw();
-            return 1;
+      case SDLK_PAGEUP:
+         theta_soll += 1;
+         if (theta_soll > 90)
+         {
+            theta_soll = 90;
+         }
+         break;
 
-         case FL_Page_Down :
-            if (strg) { }
-            else
-            {
-               theta_soll -= 5;
-               if (theta_soll < 10)
-               {
-                  theta_soll = 10; 
-               }
-            }
-            redraw();
-            return 1;
-            
-            case FL_F+1 :
-               if(!antialiasing)
-               {
-                  mode(FL_RGB | FL_DEPTH | FL_MULTISAMPLE | FL_DOUBLE);
-                  glEnable(GL_MULTISAMPLE);
-                  antialiasing = true;
-               }
-               else
-               {
-                  mode(FL_RGB | FL_DEPTH | FL_DOUBLE);
-                  glDisable(GL_MULTISAMPLE);
-                  antialiasing = false;
-               }
-               
-               redraw();
-               return 1;
-    //
-    //         case FL_F+2 : // Nur die y-Komponente des E-Feldes wird angezeigt.
-    //           monitor->feld_num=1;
-    //           redraw();
-    //           return 1;
-    //
-
-        }
-    }
-
-    return Fl_Gl_Window::handle(event);
+      case SDLK_PAGEDOWN:
+         theta_soll -= 1;
+         if (theta_soll < 10)
+         {
+            theta_soll = 10; 
+         }
+         break;
+         
+//             case FL_F+1 :
+//                if(!antialiasing)
+//                {
+//                   mode(FL_RGB | FL_DEPTH | FL_MULTISAMPLE | FL_DOUBLE);
+//                   glEnable(GL_MULTISAMPLE);
+//                   antialiasing = true;
+//                }
+//                else
+//                {
+//                   mode(FL_RGB | FL_DEPTH | FL_DOUBLE);
+//                   glDisable(GL_MULTISAMPLE);
+//                   antialiasing = false;
+//                }
+//                
+//                redraw();
+//                return 1;
+//     //
+//     //         case FL_F+2 : // Nur die y-Komponente des E-Feldes wird angezeigt.
+//     //           monitor->feld_num=1;
+//     //           redraw();
+//     //           return 1;
+         
+   }
 }
+
+// int Openglwidget::handle(int event)
+// {
+//     //     Fl::lock();
+//     bool strg  = false;
+//     bool shift = false;
+// 
+//     if (Fl::event_state() == FL_CTRL)
+//     {
+//         strg = true;
+//     }
+//     if (Fl::event_state() == FL_SHIFT)
+//         shift = true;
+// 
+//     switch (event)
+//     {
+//         case FL_MOVE:
+// //             if (platziere_gebaeude) redraw();
+//             return 1;
+//         case FL_FOCUS:
+//         case FL_UNFOCUS:
+//         return 1;
+// 
+//         case FL_PUSH:
+// //             if (shift)
+// //             {
+// //             }
+// //             else
+// //             {
+//                selektiere_id();
+//                selektiere_pos();
+//                std::cout << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")" << std::endl;
+//                set_view_to(get_target());
+//                redraw();
+//             return 1;
+// 
+//         case FL_MOUSEWHEEL:
+// //             std::cout << Fl::event_dy() << std::endl;
+//             zoom_soll += Fl::event_dy()*zoom_soll*0.1;
+//             if (zoom_soll > pos_radius) zoom_soll = pos_radius;
+//             else if (zoom_soll < 0.1) zoom_soll = 0.1;
+//             redraw();
+//             return 1;
+// 
+//         case FL_KEYBOARD:
+//         int key = Fl::event_key();
+//         switch (key)
+//         {
+//     //         case 27 : // Das ist die Esc-Taste. Das Programm wird beendet.
+//     //           std::cout << "Schluss.\n";
+//     //           this->hide();
+//     //           return 1;
+// 
+//     //         case 32 : // Leertaste
+//     //           if (animation)
+//     //           {
+//     //             animation = false;
+//     //           }
+//     //           else
+//     //           {
+//     //             animation = true;
+//     //             gettimeofday(&aktuelle_zeit_referenz, 0);
+//     //           }
+//     //           redraw();
+//     //           return 1;
+// 
+// 
+//     //
+// 
+//         }
+//     }
+// 
+//     return Fl_Gl_Window::handle(event);
+// }
 
 
 

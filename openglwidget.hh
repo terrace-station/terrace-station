@@ -4,10 +4,9 @@
 #include <sstream>
 #include <iostream>
 
-#include <FL/Fl_Gl_Window.H>
-#include <FL/Fl.H>
-#include <FL/glu.h>
-#include <FL/gl.h>
+#include <SDL/SDL.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 
 #include "glhilf.h"
 #include "textur.hh"
@@ -23,14 +22,13 @@
 
 void idle_redraw(void* arg);
 
-class Openglwindow;
-
-class Openglwidget : public Fl_Gl_Window
+class Openglwidget
 {
 private:
-
-   Openglwindow* fenster;
+public:
    
+   bool running;
+
    float view_angle;
    
    GLint viewport[4], viewport2[4];
@@ -41,8 +39,12 @@ private:
    GLint aktuelle_id;
    void draw();
    void initialisiere_gl();
-   int handle(int);
    
+//    int handle(int);
+   
+   void events();
+   void handle_keydown(SDL_keysym* keysym);
+
    void zeichne();
    void selektiere_id();
    void selektiere_pos();
@@ -56,7 +58,6 @@ private:
    
 // // // // // // 
    
-public:
    
    Station* station;
    
@@ -141,7 +142,7 @@ public:
    void zeichne_district_outside(District& district);
    void zeichne_deck(Deck& deck);
 
-   Openglwidget(int position_x_, int position_y_, int breite_, int hoehe_, const char* titel);
+   Openglwidget(int breite_, int hoehe_);
 };
 
 

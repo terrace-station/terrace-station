@@ -3,7 +3,7 @@
 
 #include <string>
 #include <fstream>
-#include <FL/glu.h>
+#include <GL/glu.h>
 
 class Textur 
 {
