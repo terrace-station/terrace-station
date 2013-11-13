@@ -8,18 +8,30 @@
 
 Openglwidget::Openglwidget(int breite_, int hoehe_)
 {
+   gettimeofday(&zeit, 0);
+   tex = new Texturensammlung;
+   
 //    idle_redraw = false;
    running = true;
    antialiasing = false;
+   fullscreen = false;
+   
+   info = SDL_GetVideoInfo();
+   
+   bpp = info->vfmt->BitsPerPixel;
+   
+   fullscreen_x = info->current_w;
+   fullscreen_y = info->current_h;
+   
+   window_x = breite_;
+   window_y = hoehe_;
+
+   fenster_breite = window_x;
+   fenster_hoehe =  window_y;
    
 //     modelle_laden();
    
-   tex = new Texturensammlung;
-   gettimeofday(&zeit, 0);
    
-   fenster_breite = breite_;
-   fenster_hoehe = hoehe_;
-
    licht_pos[0]  = 0  ; licht_pos[1]  = 0  ; licht_pos[2]  = 0  ; licht_pos[3]  = 0  ;
    
    licht_ambi[0] = 0.0; licht_ambi[1] = 0.0; licht_ambi[2] = 0.0; licht_ambi[3] = 1.0;
@@ -952,6 +964,35 @@ void Openglwidget::zeichne_system(System& system_)
    glDisable(GL_BLEND);
 }
 
+void Openglwidget::toggle_fullscreen()
+{
+         if (fullscreen)
+            set_fullscreen(false);
+         else
+            set_fullscreen(true);
+}
+
+
+void Openglwidget::set_fullscreen(bool wert)
+{
+         if (!wert)
+         {
+            fenster_breite = window_x;
+            fenster_hoehe  = window_y;
+            SDL_SetVideoMode(window_x, window_y, bpp, SDL_OPENGL);
+            initialisiere_gl();
+            fullscreen = false;
+         }
+         else
+         {
+            fenster_breite = fullscreen_x;
+            fenster_hoehe  = fullscreen_y;
+            SDL_SetVideoMode(fullscreen_x, fullscreen_y, bpp, SDL_OPENGL | SDL_FULLSCREEN);
+            initialisiere_gl();
+            fullscreen = true;
+         }
+}
+
 
 void Openglwidget::events()
 {
@@ -1028,6 +1069,11 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
       case 'e' : // ...nach oben
          z_offset += 0.25;
          break;
+         
+      case 'f' : // fullscreen
+         toggle_fullscreen();
+         break;
+
 
 
 #define UNIT 1.0
@@ -1073,6 +1119,7 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
             theta_soll = 10; 
          }
          break;
+         
          
 //             case FL_F+1 :
 //                if(!antialiasing)
