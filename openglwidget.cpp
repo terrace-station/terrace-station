@@ -1,6 +1,9 @@
 #include "openglwidget.hh"
 
 
+#include "openglwidget_material.h"
+#include "openglwidget_events.h"
+
 
 // // // //  Modelle/Texturen definieren
 // #include "modelle.hh"
@@ -70,8 +73,8 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    pos_z = 0;
    pos_z_soll = 0;
    
-   pos_radius = 5;
-   pos_radius_soll = 5;
+   pos_radius = 95;
+   pos_radius_soll = 95;
    pos_phi = 0;
    
    phi   = 0;
@@ -330,6 +333,7 @@ void Openglwidget::draw()
 }
 
 
+
 void Openglwidget::zeichne()
 {
 // // // // // // // // // // // // // // // // // // // // // // // //    clear buffer(s)
@@ -554,18 +558,15 @@ void Openglwidget::zeichne_district_outside(District& district)
 }
 
 
-void Openglwidget::set_view_to(Mausobjekt* mo_)
+void Openglwidget::set_view_to(Mausobjekt& mo_)
 {
-   if (mo_ == NULL)
-      return;
-   
-   if (mo_->objekt_typ == "District")
+   if (mo_.objekt_typ == "District")
    {
-      District* dis = (District*) mo_;
+      District& dis = (District&) mo_;
       //~ station->set_aktiv(dis);
-      pos_radius_soll = dis->get_radius_min();
-      pos_z_soll = (dis->get_z_min()+dis->get_z_max())*0.5;
-      phi_soll = dis->get_phi_min()<dis->get_phi_max()?(dis->get_phi_min()+dis->get_phi_max())*0.5/RAD:(dis->get_phi_min()+dis->get_phi_max()+2*PI)*0.5/RAD;
+      pos_radius_soll = dis.get_radius_min();
+      pos_z_soll = (dis.get_z_min()+dis.get_z_max())*0.5;
+      phi_soll = dis.get_phi_min()<dis.get_phi_max()?(dis.get_phi_min()+dis.get_phi_max())*0.5/RAD:(dis.get_phi_min()+dis.get_phi_max()+2*PI)*0.5/RAD;
       zoom_soll = 0.4; 
    }
 }
@@ -577,10 +578,10 @@ void Openglwidget::zeichne_deck(Deck& deck)
 }
 
 
-Mausobjekt* Openglwidget::get_target()
+Mausobjekt& Openglwidget::get_target()
 {
    if (target_id == 0)
-      return NULL;
+      return nichts;
    
    //~ for(int i=0; i<station->district_count; i++)
    //~ {
@@ -593,7 +594,7 @@ Mausobjekt* Openglwidget::get_target()
    {
       if (station->get_districts()[i].objekt_id == (int)target_id)
       {
-         return (Mausobjekt*) &(station->get_districts()[i]);
+         return (Mausobjekt&) (station->get_districts()[i]);
       }
    }
 }
@@ -651,102 +652,6 @@ void Openglwidget::selektiere_id()
 }
 
 
-void Openglwidget::set_material_std()
-{
-   set_material_ambi(0.0, 0.0, 0.0, 1.0);
-   set_material_diff(0.8, 0.8, 0.8, 1.0);
-   set_material_spec(0.0, 0.0, 0.0, 1.0);
-   set_material_shin(0);
-}
-
-
-void Openglwidget::set_material(MATERIAL material)
-{
-   switch(material)
-   {
-      case MAT_KUPFER:
-         set_material_ambi(0.23, 0.09, 0.03, 1.0);
-         set_material_diff(0.55, 0.21, 0.07, 1.0);
-         set_material_spec(0.58, 0.22, 0.07, 1.0);
-         set_material_shin(51.2);
-      break;
-      
-      case MAT_GUMMI:
-         set_material_ambi(0.02, 0.02, 0.02, 1.0);
-         set_material_diff(0.01, 0.01, 0.01, 1.0);
-         set_material_spec(0.40, 0.40, 0.40, 1.0);
-         set_material_shin(10.0);
-      break;
-      
-      case MAT_PLASTIK:
-         set_material_ambi(0.00, 0.00, 0.00, 1.0);
-         set_material_diff(0.01, 0.01, 0.01, 1.0);
-         set_material_spec(0.50, 0.50, 0.50, 1.0);
-         set_material_shin(32.0);
-      break;
-      
-      case MAT_MESSING:
-         set_material_ambi(0.33, 0.22, 0.03, 1.0);
-         set_material_diff(0.78, 0.57, 0.11, 1.0);
-         set_material_spec(0.99, 0.94, 0.81, 1.0);
-         set_material_shin(27.9);
-      break;
-      
-      case MAT_SILBER:
-         set_material_ambi(0.23, 0.23, 0.23, 1.0);
-         set_material_diff(0.28, 0.28, 0.28, 1.0);
-         set_material_spec(0.77, 0.77, 0.77, 1.0);
-         set_material_shin(89.6);
-      break;
-      
-      case MAT_GOLD:
-         set_material_ambi(0.25, 0.22, 0.06, 1.0);
-         set_material_diff(0.35, 0.31, 0.09, 1.0);
-         set_material_spec(0.90, 0.72, 0.21, 1.0);
-         set_material_shin(83.2);
-      break;
-      
-      default:
-         set_material_std();
-   }
-}
-
-
-void Openglwidget::set_material_ambi(float ambi1, float ambi2, float ambi3, float ambi4)
-{
-   mat_ambi[0] = ambi1;
-   mat_ambi[1] = ambi2;
-   mat_ambi[2] = ambi3;
-   mat_ambi[3] = ambi4;
-   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambi);
-}
-
-
-void Openglwidget::set_material_diff(float diff1, float diff2, float diff3, float diff4)
-{
-   mat_diff[0] = diff1;
-   mat_diff[1] = diff2;
-   mat_diff[2] = diff3;
-   mat_diff[3] = diff4;
-   glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diff);
-}
-
-
-void Openglwidget::set_material_spec(float spec1, float spec2, float spec3, float spec4)
-{
-   mat_spec[0] = spec1;
-   mat_spec[1] = spec2;
-   mat_spec[2] = spec3;
-   mat_spec[3] = spec4;
-   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_spec);
-}
-
-
-void Openglwidget::set_material_shin(float shin1)
-{
-   mat_shin = shin1;
-   glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shin1);
-}
 
 
 void Openglwidget::selektiere_pos()
@@ -964,6 +869,7 @@ void Openglwidget::zeichne_system(System& system_)
    glDisable(GL_BLEND);
 }
 
+
 void Openglwidget::toggle_fullscreen()
 {
          if (fullscreen)
@@ -992,262 +898,6 @@ void Openglwidget::set_fullscreen(bool wert)
             fullscreen = true;
          }
 }
-
-
-void Openglwidget::events()
-{
-   while(SDL_PollEvent(&event)) 
-   {
-      switch( event.type ) 
-      {
-//          case SDL_MOUSEMOTION:
-//             handle_mousemotion
-//             break;
-//             
-         case SDL_MOUSEBUTTONDOWN:
-            handle_mousebuttondown(event.button);
-            break;
-         
-         case SDL_KEYDOWN:
-            handle_keydown(event.key.keysym);
-            break;
-            
-         case SDL_QUIT:
-            running = false;
-            break;
-        }
-    }
-}
-
-
-void Openglwidget::handle_keydown(SDL_keysym& keysym)
-{
-   switch( keysym.sym )
-   {
-      case SDLK_ESCAPE:
-         running = false;
-         break;
-         
-      case SDLK_SPACE:
-         break;
-         
-      default:
-         break;
-         
-      case SDLK_PLUS:
-         zoom_soll = zoom_soll*0.98;
-         if (zoom_soll < 0.1) zoom_soll = 0.1;
-         break;
-         
-#define ZOOM_CAP 5
-         
-      case '-' :
-         zoom_soll = zoom_soll*1.02;
-         if (zoom_soll > ZOOM_CAP) zoom_soll = ZOOM_CAP;
-         break;
-         
-      case 'a' : // Die Kamera bewegt sich "nach links" (An der Blickrichtung orientiert)
-         y_offset -= 0.25;
-         break;
-
-      case 'd' : // ...nach rechts...
-         y_offset += 0.25;
-         break;
-
-      case 'w' : // ...nach oben...
-         x_offset += 0.25;
-         break;
-
-      case 's' : // ...nach unten
-         x_offset -= 0.25;
-         break;
-
-      case 'q' : // ...nach unten...
-         z_offset -= 0.25;
-         break;
-
-      case 'e' : // ...nach oben
-         z_offset += 0.25;
-         break;
-         
-      case 'f' : // fullscreen
-         toggle_fullscreen();
-         break;
-
-
-
-#define UNIT 1.0
-         
-      case SDLK_UP:
-         pos_z_soll += UNIT;
-         break;
-
-      case SDLK_DOWN: // ...nach unten...
-         pos_z_soll -= UNIT;
-         break;
-
-      case SDLK_LEFT:
-         phi_soll += 5;
-         if (phi_soll > 360)
-         {
-            phi -= 360; 
-            phi_soll -= 360; 
-         }
-         break;
-
-      case SDLK_RIGHT:
-         phi_soll -= 5;
-         if (phi_soll < 0)
-         {
-            phi += 360; 
-            phi_soll += 360; 
-         }
-         break;
-
-      case SDLK_PAGEUP:
-         theta_soll += 1;
-         if (theta_soll > 90)
-         {
-            theta_soll = 90;
-         }
-         break;
-
-      case SDLK_PAGEDOWN:
-         theta_soll -= 1;
-         if (theta_soll < 10)
-         {
-            theta_soll = 10; 
-         }
-         break;
-         
-         
-//             case FL_F+1 :
-//                if(!antialiasing)
-//                {
-//                   mode(FL_RGB | FL_DEPTH | FL_MULTISAMPLE | FL_DOUBLE);
-//                   glEnable(GL_MULTISAMPLE);
-//                   antialiasing = true;
-//                }
-//                else
-//                {
-//                   mode(FL_RGB | FL_DEPTH | FL_DOUBLE);
-//                   glDisable(GL_MULTISAMPLE);
-//                   antialiasing = false;
-//                }
-//                
-//                redraw();
-//                return 1;
-//     //
-//     //         case FL_F+2 : // Nur die y-Komponente des E-Feldes wird angezeigt.
-//     //           monitor->feld_num=1;
-//     //           redraw();
-//     //           return 1;
-         
-   }
-}
-
-
-void Openglwidget::handle_mousebuttondown(SDL_MouseButtonEvent& button)
-{
-   switch(button.button)
-   {
-      case SDL_BUTTON_LEFT:
-         selektiere_id();
-         selektiere_pos();
-         std::cout << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")" << std::endl;
-         set_view_to(get_target());
-         break;
-         
-      case SDL_BUTTON_RIGHT:
-         break;
-         
-      case SDL_BUTTON_WHEELUP:
-         zoom_soll -= zoom_soll*0.15;
-         if (zoom_soll < 0.1) zoom_soll = 0.1;
-         break;
-
-      case SDL_BUTTON_WHEELDOWN:
-         zoom_soll += zoom_soll*0.15;
-         if (zoom_soll > ZOOM_CAP) zoom_soll = ZOOM_CAP;
-         break;
-   }
-}
-
-
-
-// int Openglwidget::handle(int event)
-// {
-//     //     Fl::lock();
-//     bool strg  = false;
-//     bool shift = false;
-// 
-//     if (Fl::event_state() == FL_CTRL)
-//     {
-//         strg = true;
-//     }
-//     if (Fl::event_state() == FL_SHIFT)
-//         shift = true;
-// 
-//     switch (event)
-//     {
-//         case FL_MOVE:
-// //             if (platziere_gebaeude) redraw();
-//             return 1;
-//         case FL_FOCUS:
-//         case FL_UNFOCUS:
-//         return 1;
-// 
-//         case FL_PUSH:
-// //             if (shift)
-// //             {
-// //             }
-// //             else
-// //             {
-//                selektiere_id();
-//                selektiere_pos();
-//                std::cout << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")" << std::endl;
-//                set_view_to(get_target());
-//                redraw();
-//             return 1;
-// 
-//         case FL_MOUSEWHEEL:
-// //             std::cout << Fl::event_dy() << std::endl;
-//             zoom_soll += Fl::event_dy()*zoom_soll*0.1;
-//             if (zoom_soll > pos_radius) zoom_soll = pos_radius;
-//             else if (zoom_soll < 0.1) zoom_soll = 0.1;
-//             redraw();
-//             return 1;
-// 
-//         case FL_KEYBOARD:
-//         int key = Fl::event_key();
-//         switch (key)
-//         {
-//     //         case 27 : // Das ist die Esc-Taste. Das Programm wird beendet.
-//     //           std::cout << "Schluss.\n";
-//     //           this->hide();
-//     //           return 1;
-// 
-//     //         case 32 : // Leertaste
-//     //           if (animation)
-//     //           {
-//     //             animation = false;
-//     //           }
-//     //           else
-//     //           {
-//     //             animation = true;
-//     //             gettimeofday(&aktuelle_zeit_referenz, 0);
-//     //           }
-//     //           redraw();
-//     //           return 1;
-// 
-// 
-//     //
-// 
-//         }
-//     }
-// 
-//     return Fl_Gl_Window::handle(event);
-// }
 
 
 

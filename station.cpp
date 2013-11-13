@@ -7,6 +7,7 @@
 
 Station::Station()
 {
+   districts.reserve(30);
     int x, y, width, height, cf, nr, nr_of_decks;
     float radius;
     std::srand(std::time(0));

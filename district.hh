@@ -19,6 +19,7 @@ class District: public Mausobjekt
     
 public:
     District(float radius, int x, int y, int size_x, int size_y, int nr_of_decks);
+    District();
     
     float get_radius_min();
     float get_radius_max();

@@ -14,7 +14,7 @@ system.o: system.hh system.cpp glhilf.h
 openglwindow.o: openglwindow.cpp openglwindow.hh openglwidget.o
 	$(CPP) -c openglwindow.cpp $(CPPFLAGS)
 
-openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h textur.o zeit.h station.o mausobjekt.o
+openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h textur.o zeit.h station.o mausobjekt.o openglwidget_material.h openglwidget_events.h
 	$(CPP) -c openglwidget.cpp $(CPPFLAGS)
 
 textur.o: textur.cpp textur.hh
@@ -29,7 +29,7 @@ mausobjekt.o: mausobjekt.cpp mausobjekt.hh
 station.o: station.cpp station.hh district.o
 	$(CPP) -c station.cpp $(CPPFLAGS)
 
-district.o: district.cpp district.hh deck.o
+district.o: district.cpp district.hh deck.o mausobjekt.o
 	$(CPP) -c district.cpp $(CPPFLAGS)
 
 deck.o: deck.cpp deck.hh

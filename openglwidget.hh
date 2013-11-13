@@ -69,9 +69,9 @@ public:
 // // // // // // sonstiges
 
    System sys;
+   Mausobjekt nichts;
    
 // // // // // // 
-   
    
    Station* station;
    
@@ -148,8 +148,8 @@ public:
    float fps_average;
    float fps_sum;
 
-   Mausobjekt* get_target();
-   void set_view_to(Mausobjekt* mo_);
+   Mausobjekt& get_target();
+   void set_view_to(Mausobjekt& mo_);
 
    void set_station(Station* station_);
    void zeichne_system(System& system_);
