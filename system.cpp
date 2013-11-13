@@ -9,21 +9,21 @@ void Planet::erstelle_zufall()
       case 0:
         klasse = 'A';
         spezial = rand()%4;
-        radius = 8.0 + float(rand()%500)/500.0;
+        radius = 80.0 + float(rand()%5000)/500.0;
         textur_ind = rand()%4+6;
         break;
         
       case 1:
         klasse = 'J';
         spezial = rand()%3;
-        radius = 1.0 + float(rand()%400)/400.0; 
+        radius = 10.0 + float(rand()%4000)/400.0; 
         textur_ind = rand()%4;
         break;
         
       case 2:
         klasse = 'K';
         spezial = rand()%3+3;
-        radius = 1.0 + float(rand()%400)/400.0; 
+        radius = 10.0 + float(rand()%4000)/400.0; 
         textur_ind = rand()%6;
         break;
       
@@ -37,13 +37,16 @@ void Planet::erstelle_zufall()
 
 System::System()
 {
-   sonnenradius = 10.0 + float(rand()%30);
+   sonnenradius = 150;
    
-   position[0] = 0;
+   position[0] = 10000;
    position[1] = 0;
    position[2] = 0;
    
-   anzahl_planeten = 1+rand()%10;
+   abstand_max = sqrt(pow(position[0],2) + pow(position[1],2) + pow(position[2],2)) + sonnenradius;
+   abstand_umlaufbahn = 500;
+   
+   anzahl_planeten = 3+rand()%6;
    
    planeten = new Planet[anzahl_planeten];
    
@@ -62,7 +65,10 @@ System::System(float pos_x_, float pos_y_, float pos_z_)
    position[1] = pos_y_;
    position[2] = pos_z_;
    
-   anzahl_planeten = 1+rand()%10;
+   abstand_max = sqrt(pow(position[0],2) + pow(position[1],2) + pow(position[2],2)) + sonnenradius;
+   abstand_umlaufbahn = 1000;
+   
+   anzahl_planeten = 3+rand()%6;
    
    planeten = new Planet[anzahl_planeten];
    
@@ -80,6 +86,9 @@ System::System(int anzahl_, float pos_x_, float pos_y_, float pos_z_) : anzahl_p
    position[0] = pos_x_;
    position[1] = pos_y_;
    position[2] = pos_z_;
+   
+   abstand_max = sqrt(pow(position[0],2) + pow(position[1],2) + pow(position[2],2)) + sonnenradius;
+   abstand_umlaufbahn = 1000;
    
    planeten = new Planet[anzahl_planeten];
    

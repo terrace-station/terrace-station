@@ -25,6 +25,12 @@ void idle_redraw(void* arg);
 class Openglwidget
 {
 private:
+   
+   SDL_Event event;
+   
+   float flare_theta;
+   float flare_phi;
+   
 public:
    
    bool running;
@@ -43,7 +49,8 @@ public:
 //    int handle(int);
    
    void events();
-   void handle_keydown(SDL_keysym* keysym);
+   void handle_keydown(SDL_keysym& keysym);
+   void handle_mousebuttondown(SDL_MouseButtonEvent& button);
 
    void zeichne();
    void selektiere_id();
