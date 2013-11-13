@@ -20,6 +20,8 @@ public:
    int anzahl_planeten;
    float position[3];
    float sonnenradius;
+   float abstand_max;
+   float abstand_umlaufbahn;
    
    Planet* planeten;
    void zeichne_system();

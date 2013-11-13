@@ -8,18 +8,30 @@
 
 Openglwidget::Openglwidget(int breite_, int hoehe_)
 {
+   gettimeofday(&zeit, 0);
+   tex = new Texturensammlung;
+   
 //    idle_redraw = false;
    running = true;
    antialiasing = false;
+   fullscreen = false;
+   
+   info = SDL_GetVideoInfo();
+   
+   bpp = info->vfmt->BitsPerPixel;
+   
+   fullscreen_x = info->current_w;
+   fullscreen_y = info->current_h;
+   
+   window_x = breite_;
+   window_y = hoehe_;
+
+   fenster_breite = window_x;
+   fenster_hoehe =  window_y;
    
 //     modelle_laden();
    
-   tex = new Texturensammlung;
-   gettimeofday(&zeit, 0);
    
-   fenster_breite = breite_;
-   fenster_hoehe = hoehe_;
-
    licht_pos[0]  = 0  ; licht_pos[1]  = 0  ; licht_pos[2]  = 0  ; licht_pos[3]  = 0  ;
    
    licht_ambi[0] = 0.0; licht_ambi[1] = 0.0; licht_ambi[2] = 0.0; licht_ambi[3] = 1.0;
@@ -94,8 +106,8 @@ void Openglwidget::set_station(Station* station_)
 // }
 
 
-#define NEAR_CLIP 0.01
-#define FAR_CLIP 2000
+#define NEAR_CLIP 1.00
+#define FAR_CLIP 20000
 
 
 
@@ -111,7 +123,7 @@ void Openglwidget::draw()
 
    kamera_x = (1.0-zoom)*pos_radius*cos(phi*RAD)          +x_offset;
    kamera_y = (1.0-zoom)*pos_radius*sin(phi*RAD)          +y_offset;
-   kamera_z = pos_z-pow(zoom,2)*pos_radius/tan(theta*RAD);// +z_offset;
+   kamera_z = pos_z-pow(zoom,1.3)*pos_radius/tan(theta*RAD);// +z_offset;
    
    pos_x = pos_radius*cos(phi*RAD) +x_offset;
    pos_y = pos_radius*sin(phi*RAD) +y_offset;
@@ -125,9 +137,8 @@ void Openglwidget::draw()
    glLoadIdentity();
    gluLookAt(kamera_x, kamera_y, kamera_z, pos_x, pos_y, pos_z, oben_x, oben_y, oben_z);
    
-   float flare_theta = atan2(sqrt(pow(pos_y-kamera_y,2) + pow(pos_z-kamera_z,2)),pos_x-kamera_x);
-   float flare_phi = atan2(pos_z-kamera_z,pos_y-kamera_y);
-
+   flare_theta = atan2(sqrt(pow(pos_y-kamera_y,2) + pow(pos_z-kamera_z,2)),pos_x-kamera_x);
+   flare_phi = atan2(pos_z-kamera_z,pos_y-kamera_y);
 
 // // // // // // // // // // // // // // // // // // // // // // // //     Licht
     
@@ -139,7 +150,9 @@ void Openglwidget::draw()
    glLightfv(GL_LIGHT0, GL_AMBIENT, licht_ambi);
    glLightfv(GL_LIGHT0, GL_DIFFUSE, licht_diff);
    glLightfv(GL_LIGHT0, GL_SPECULAR, licht_spec);
-   glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.01);
+   glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION,  1.0);
+   glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION,    0.0);
+   glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0);
 
    sonne_pos[0] = 1000.0;  // Sonnenlicht
    sonne_pos[1] = 0.0;
@@ -194,115 +207,6 @@ void Openglwidget::draw()
    zeichne_system(sys);
 //    glRotatef(-90, 1.0, 0.0, 0.0);
    
-   glDisable(GL_LIGHTING);
-   glBindTexture(GL_TEXTURE_2D, tex->tex_stars->id);
-   glColor3f(1.0, 1.0, 1.0);
-   glhilf::draw_star_map(1100.0, 1, 2);
-   glBindTexture(GL_TEXTURE_2D, 0);
-// // // // // // // // // // // // // Sonne
-   glTranslatef(1000, 0.0, 0.0);
-   glColor3f(1.0, 1.0, 0.7);
-   glhilf::draw_texture_sphere(15, 100, 100);
-   
-   glEnable(GL_BLEND);
-   glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-      glBindTexture(GL_TEXTURE_2D, tex->tex_sonne->id);
-      glColor4f(1.0, 1.0, 0.7, 0.4);
-      glBegin(GL_QUADS);
-         glTexCoord2f(0,0); glVertex3f(0.0,-50,-50);
-         glTexCoord2f(0,1); glVertex3f(0.0,-50, 50);
-         glTexCoord2f(1,1); glVertex3f(0.0, 50, 50);
-         glTexCoord2f(1,0); glVertex3f(0.0, 50,-50);
-      glEnd();
-      glTranslatef(-1000, 0.0, 0.0);
-      
-   glGetIntegerv(GL_VIEWPORT, viewport2);
-   glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix2);
-   glGetDoublev(GL_PROJECTION_MATRIX, project_matrix2);
-   
-   gluProject(1000, 0, 0, model_matrix2, project_matrix2, viewport2, &fenster_x, &fenster_y, &fenster_z);
-      
-   
-   if(fenster_x >= 0 && fenster_x <= fenster_breite && fenster_y >= 0 && fenster_y <= fenster_hoehe) // Flare zeichnen
-   {
-      GLfloat z_tmp;
-      glReadPixels(fenster_x, fenster_y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z_tmp);
-//       std::cout << fenster_x << " , " << fenster_y << " , " << fenster_z << " , " << z_tmp << " , " << std::endl;
-      
-      if (fabs(z_tmp-fenster_z) < 1e-6)
-      {
-         glColor4f(1.0, 1.0, 0.7, 0.4);
-         glDisable(GL_DEPTH_TEST);
-         glRotatef(flare_phi/RAD, 1, 0, 0);
-      
-         glRotatef(flare_theta*10, 0, 0, 1);
-         glTranslatef(1000, 0.0, 0.0);
-         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[0]->id);
-         glBegin(GL_QUADS);
-            glTexCoord2f(0,0); glVertex3f(0.0,-250,-250);
-            glTexCoord2f(0,1); glVertex3f(0.0,-250, 250);
-            glTexCoord2f(1,1); glVertex3f(0.0, 250, 250);
-            glTexCoord2f(1,0); glVertex3f(0.0, 250,-250);
-         glEnd();
-         glTranslatef(-1000, 0.0, 0.0);
-         glRotatef(-flare_theta*20, 0, 0, 1);
-         
-         glRotatef(flare_theta*30, 0, 0, 1);
-         glTranslatef(1000, 0.0, 0.0);
-         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[1]->id);
-         glBegin(GL_QUADS);
-            glTexCoord2f(0,0); glVertex3f(0.0,-250,-250);
-            glTexCoord2f(0,1); glVertex3f(0.0,-250, 250);
-            glTexCoord2f(1,1); glVertex3f(0.0, 250, 250);
-            glTexCoord2f(1,0); glVertex3f(0.0, 250,-250);
-         glEnd();
-         glTranslatef(-1000, 0.0, 0.0);
-         glRotatef(-flare_theta*20, 0, 0, 1);
-         
-         glRotatef(flare_theta*40, 0, 0, 1);
-         glTranslatef(1000, 0.0, 0.0);
-         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[2]->id);
-         glBegin(GL_QUADS);
-            glTexCoord2f(0,0); glVertex3f(0.0,-500,-250);
-            glTexCoord2f(0,1); glVertex3f(0.0,-500, 250);
-            glTexCoord2f(1,1); glVertex3f(0.0, 500, 250);
-            glTexCoord2f(1,0); glVertex3f(0.0, 500,-250);
-         glEnd();
-         glTranslatef(-1000, 0.0, 0.0);
-         glRotatef(-flare_theta*20, 0, 0, 1);
-         
-         glRotatef(flare_theta*50, 0, 0, 1);
-         glTranslatef(1000, 0.0, 0.0);
-         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[3]->id);
-         glBegin(GL_QUADS);
-            glTexCoord2f(0,0); glVertex3f(0.0,-250,-250);
-            glTexCoord2f(0,1); glVertex3f(0.0,-250, 250);
-            glTexCoord2f(1,1); glVertex3f(0.0, 250, 250);
-            glTexCoord2f(1,0); glVertex3f(0.0, 250,-250);
-         glEnd();
-         glTranslatef(-1000, 0.0, 0.0);
-         glRotatef(-flare_theta*20, 0, 0, 1);
-         glRotatef(-phi*2, 0, 0, 1);
-         
-         glRotatef(flare_theta*50, 0, 0, 1);
-         glTranslatef(1000, 0.0, 0.0);
-         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[4]->id);
-         glBegin(GL_QUADS);
-            glTexCoord2f(0,0); glVertex3f(0.0,-1000,-1000);
-            glTexCoord2f(0,1); glVertex3f(0.0,-1000, 1000);
-            glTexCoord2f(1,1); glVertex3f(0.0, 1000, 1000);
-            glTexCoord2f(1,0); glVertex3f(0.0, 1000,-1000);
-         glEnd();
-         glTranslatef(-1000, 0.0, 0.0);
-         glRotatef(-flare_theta*20, 0, 0, 1);
-         
-         glEnable(GL_DEPTH_TEST);
-      }
-   }
-   
-   glBindTexture(GL_TEXTURE_2D, 0);
-   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   glDisable(GL_BLEND);
    
 // // // // // // // // // // // // // // // // // // // // // // // // //    UI Elemente zeichnen
 //     
@@ -366,35 +270,35 @@ void Openglwidget::draw()
       
       if (fabs(phi_soll-phi) > 0.1)
       {
-         phi += 0.9*(phi_soll - phi)*zeit_faktor*10;
+         phi += 0.9*(phi_soll - phi)*zeit_faktor*8;
       }
       else
          phi = phi_soll;
       
       if (fabs(pos_z_soll - pos_z) > 0.001)
       {
-         pos_z += 0.9*(pos_z_soll - pos_z)*zeit_faktor*10;
+         pos_z += 0.9*(pos_z_soll - pos_z)*zeit_faktor*8;
       }
       else
          pos_z = pos_z_soll;
       
       if (fabs(theta_soll - theta) > 0.01)
       {
-         theta += 0.9*(theta_soll - theta)*zeit_faktor*10;
+         theta += 0.9*(theta_soll - theta)*zeit_faktor*8;
       }
       else
          theta = theta_soll;
       
       if (fabs(zoom_soll - zoom) > 0.001)
       {
-         zoom += 0.9*(zoom_soll - zoom)*zeit_faktor*10;
+         zoom += 0.9*(zoom_soll - zoom)*zeit_faktor*8;
       }
       else
          zoom = zoom_soll;
       
       if (fabs(pos_radius_soll - pos_radius) > 0.001)
       {
-         pos_radius += 0.9*(pos_radius_soll - pos_radius)*zeit_faktor*10;
+         pos_radius += 0.9*(pos_radius_soll - pos_radius)*zeit_faktor*8;
       }
       else
          pos_radius = pos_radius_soll;
@@ -580,8 +484,8 @@ void Openglwidget::zeichne_district_outside(District& district)
    
    while(p_min != p_max)
    {
-      texcoord_x1 = z_min*0.25;
-      texcoord_x2 = z_max*0.25;
+      texcoord_x1 = z_min*0.01;
+      texcoord_x2 = z_max*0.01;
       
       texcoord_y1 = p_min*2/(PI);
       
@@ -658,7 +562,6 @@ void Openglwidget::set_view_to(Mausobjekt* mo_)
    if (mo_->objekt_typ == "District")
    {
       District* dis = (District*) mo_;
-      
       //~ station->set_aktiv(dis);
       pos_radius_soll = dis->get_radius_min();
       pos_z_soll = (dis->get_z_min()+dis->get_z_max())*0.5;
@@ -698,8 +601,10 @@ Mausobjekt* Openglwidget::get_target()
 
 void Openglwidget::selektiere_id()
 {
-//     float maus_x = Fl::event_x();
-//     float maus_y = fenster_hoehe-Fl::event_y();
+    float maus_x = event.button.x;
+    float maus_y = fenster_hoehe-event.button.y;
+    
+    std::cout << "x: " << event.button.x << ", y:" << event.button.y << std::endl;
     
     GLuint sel_buffer[256];
     glSelectBuffer (256, sel_buffer);
@@ -710,7 +615,7 @@ void Openglwidget::selektiere_id()
     glMatrixMode(GL_PROJECTION);
     glRenderMode(GL_SELECT);
     glLoadIdentity();
-//     gluPickMatrix(maus_x, maus_y, 1, 1, viewport); // nur an der Mausposition gucken
+    gluPickMatrix(maus_x, maus_y, 1, 1, viewport); // nur an der Mausposition gucken
     gluPerspective(view_angle,breite_zu_hoehe,NEAR_CLIP,FAR_CLIP);
 // // // // // // // // // render
     glMatrixMode(GL_MODELVIEW);
@@ -848,12 +753,12 @@ void Openglwidget::selektiere_pos()
 {
     if (target_id)
     {
-//         float maus_x = Fl::event_x();
-//         float maus_y = fenster_hoehe-Fl::event_y();
+        float maus_x = event.button.x;
+        float maus_y = fenster_hoehe-event.button.y;
         float abstand;
         
-//         glReadPixels(maus_x, maus_y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &abstand);
-//         gluUnProject(maus_x, maus_y, abstand, model_matrix, project_matrix, viewport, &target_x, &target_y, &target_z);
+        glReadPixels(maus_x, maus_y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &abstand);
+        gluUnProject(maus_x, maus_y, abstand, model_matrix, project_matrix, viewport, &target_x, &target_y, &target_z);
     }
     else
     {
@@ -898,87 +803,215 @@ void Openglwidget::initialisiere_gl()
 
 void Openglwidget::zeichne_system(System& system_)
 {
-  // Sonne
-//    glPushMatrix();
-  
-// //   glDisable(GL_LIGHTING);
-// // //   glMaterialf(GL_FRONT, GL_AMBIENT, (0, 0, 0, 1.0)); 
-// // //   glMaterialf(GL_FRONT, GL_DIFFUSE, (0, 0, 0, 1.0)); 
-// //   
-// // //   glMaterialf(GL_FRONT_AND_BACK, GL_EMISSION, (1, 1, 1, 1.0)); 
-// //   glColor3f(1.0, 1.0, 0.7);
-// //   glutSolidSphere(system_.sonnenradius, 40, 40);
-// //   
-// //   
-// // //   glMaterialf(GL_FRONT, GL_AMBIENT, (0.2, 0.2, 0.2, 1.0)); 
-// // //   glMaterialf(GL_FRONT, GL_DIFFUSE, (0.8, 0.8, 0.8, 1.0)); 
-// //   glEnable(GL_LIGHTING);
-
-  
-  for(int i=0; i<system_.anzahl_planeten; i++)
-  {
-    switch(system_.planeten[i].klasse)
-    {
-      glColor3f(0.5, 0.5, 0.5);
-      case 'A':
-        glPushMatrix();
-          glRotatef(system_.planeten[i].phase, 0.0, 0.0, 1.0);
-          glTranslatef((i+1)*200/system_.anzahl_planeten, 0, 0);
-          
-//           glColor3f(0.6, 0.4, 0.4);
-          glColor3f(1.0, 1.0, 1.0);
-          glRotatef(5, 1.0, 1.0, 0.0);
-          glBindTexture(GL_TEXTURE_2D, tex->tex_planet[system_.planeten[i].textur_ind]->id);
-          
-          for (int j=0; j<system_.planeten[i].spezial; j++)
-          {
-            glhilf::zeichne_ring(system_.planeten[i].radius*(1.2+j*j*0.2), system_.planeten[i].radius*(0.4*j+0.15), 40);
-          }
-          
-          glColor3f(0.8, 0.8, 0.8);
-          glhilf::draw_texture_sphere(system_.planeten[i].radius, 20, 40);
-          glBindTexture(GL_TEXTURE_2D, 0);
-        glPopMatrix();
-        break;
-      
-      case 'K':
-        glPushMatrix();
-          glRotatef(system_.planeten[i].phase, 0.0, 0.0, 1.0);
-          glTranslatef((i+1)*200/system_.anzahl_planeten, 0, 0);
-          glBindTexture(GL_TEXTURE_2D, tex->tex_planet[system_.planeten[i].textur_ind]->id);
-          glhilf::draw_texture_sphere(system_.planeten[i].radius, 20, 40);
-          glBindTexture(GL_TEXTURE_2D, 0);
-        glPopMatrix();
-        break;
-      
-      case 'M':
-        glPushMatrix();
-          glRotatef(system_.planeten[i].phase, 0.0, 0.0, 1.0);
-          glTranslatef((i+1)*200/system_.anzahl_planeten, 0, 0);
-          glBindTexture(GL_TEXTURE_2D, tex->tex_planet[system_.planeten[i].textur_ind]->id);
-          glColor3f(1.0, 1.0, 1.0);
-          glhilf::draw_texture_sphere(system_.planeten[i].radius, 20, 40);
-          glBindTexture(GL_TEXTURE_2D, 0);
-        glPopMatrix();
-        break;
-      
-    }
+   for(int i=0; i<system_.anzahl_planeten; i++)
+   {
+      switch(system_.planeten[i].klasse)
+      {
+         glColor3f(0.5, 0.5, 0.5);
+         case 'A':
+         glPushMatrix();
+            glRotatef(system_.planeten[i].phase, 0.0, 0.0, 1.0);
+            glTranslatef((i+1)*system_.abstand_umlaufbahn, 0, 0);
+            
+   //           glColor3f(0.6, 0.4, 0.4);
+            glColor3f(1.0, 1.0, 1.0);
+            glRotatef(5, 1.0, 1.0, 0.0);
+            glBindTexture(GL_TEXTURE_2D, tex->tex_planet[system_.planeten[i].textur_ind]->id);
+            
+            for (int j=0; j<system_.planeten[i].spezial; j++)
+            {
+               glhilf::zeichne_ring(system_.planeten[i].radius*(1.2+j*j*0.2), system_.planeten[i].radius*(0.4*j+0.15), 40);
+            }
+            
+            glColor3f(0.8, 0.8, 0.8);
+            glhilf::draw_texture_sphere(system_.planeten[i].radius, 20, 40);
+            glBindTexture(GL_TEXTURE_2D, 0);
+         glPopMatrix();
+         break;
+         
+         case 'K':
+         glPushMatrix();
+            glRotatef(system_.planeten[i].phase, 0.0, 0.0, 1.0);
+            glTranslatef((i+1)*system_.abstand_umlaufbahn, 0, 0);
+            glBindTexture(GL_TEXTURE_2D, tex->tex_planet[system_.planeten[i].textur_ind]->id);
+            glhilf::draw_texture_sphere(system_.planeten[i].radius, 20, 40);
+            glBindTexture(GL_TEXTURE_2D, 0);
+         glPopMatrix();
+         break;
+         
+         case 'M':
+         glPushMatrix();
+            glRotatef(system_.planeten[i].phase, 0.0, 0.0, 1.0);
+            glTranslatef((i+1)*system_.abstand_umlaufbahn, 0, 0);
+            glBindTexture(GL_TEXTURE_2D, tex->tex_planet[system_.planeten[i].textur_ind]->id);
+            glColor3f(1.0, 1.0, 1.0);
+            glhilf::draw_texture_sphere(system_.planeten[i].radius, 20, 40);
+            glBindTexture(GL_TEXTURE_2D, 0);
+         glPopMatrix();
+         break;
+         
+      }
   }
+  
+   glDisable(GL_LIGHTING);
+   glBindTexture(GL_TEXTURE_2D, tex->tex_stars->id);
+   glColor3f(1.0, 1.0, 1.0);
+   glhilf::draw_star_map(system_.abstand_max, 1, 2);
+   glBindTexture(GL_TEXTURE_2D, 0);
+// // // // // // // // // // // // // Sonne
+   glTranslatef(system_.position[0], 0.0, 0.0);
+   glColor3f(1.0, 1.0, 0.7);
+   glhilf::draw_texture_sphere(system_.sonnenradius, 100, 100);
+   
+   glEnable(GL_BLEND);
+   glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+      glBindTexture(GL_TEXTURE_2D, tex->tex_sonne->id);
+      glColor4f(1.0, 1.0, 0.7, 0.4);
+      glBegin(GL_QUADS);
+         glTexCoord2f(0,0); glVertex3f(0.0,-system_.sonnenradius*3,-system_.sonnenradius*3);
+         glTexCoord2f(0,1); glVertex3f(0.0,-system_.sonnenradius*3, system_.sonnenradius*3);
+         glTexCoord2f(1,1); glVertex3f(0.0, system_.sonnenradius*3, system_.sonnenradius*3);
+         glTexCoord2f(1,0); glVertex3f(0.0, system_.sonnenradius*3,-system_.sonnenradius*3);
+      glEnd();
+      glTranslatef(-system_.position[0], 0.0, 0.0);
+      
+   glGetIntegerv(GL_VIEWPORT, viewport2);
+   glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix2);
+   glGetDoublev(GL_PROJECTION_MATRIX, project_matrix2);
+   
+   gluProject(system_.position[0]-system_.sonnenradius*2, 0, 0, model_matrix2, project_matrix2, viewport2, &fenster_x, &fenster_y, &fenster_z);
+      
+   
+   if(flare_theta < 0.5*PI && fenster_x >= 0 && fenster_x <= fenster_breite && fenster_y >= 0 && fenster_y <= fenster_hoehe) // Flare zeichnen
+   {
+      GLfloat z_tmp;
+      glReadPixels(fenster_x, fenster_y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &z_tmp);
+//       std::cout << fenster_x << " , " << fenster_y << " , " << fenster_z << " , " << z_tmp << " , " << std::endl;
+      
+      if (fabs(z_tmp-fenster_z) < 1e-3)
+      {
+         glColor4f(1.0, 1.0, 0.7, 0.4);
+         glDisable(GL_DEPTH_TEST);
+         glRotatef(flare_phi/RAD, 1, 0, 0);
+      
+         glRotatef(flare_theta*10, 0, 0, 1);
+         glTranslatef(system_.position[0], 0.0, 0.0);
+         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[0]->id);
+         glBegin(GL_QUADS);
+            glTexCoord2f(0,0); glVertex3f(0.0,-0.25*system_.position[0],-0.25*system_.position[0]);
+            glTexCoord2f(0,1); glVertex3f(0.0,-0.25*system_.position[0], 0.25*system_.position[0]);
+            glTexCoord2f(1,1); glVertex3f(0.0, 0.25*system_.position[0], 0.25*system_.position[0]);
+            glTexCoord2f(1,0); glVertex3f(0.0, 0.25*system_.position[0],-0.25*system_.position[0]);
+         glEnd();
+         glTranslatef(-system_.position[0], 0.0, 0.0);
+         glRotatef(-flare_theta*20, 0, 0, 1);
+         
+         glRotatef(flare_theta*30, 0, 0, 1);
+         glTranslatef(system_.position[0], 0.0, 0.0);
+         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[1]->id);
+         glBegin(GL_QUADS);
+            glTexCoord2f(0,0); glVertex3f(0.0,-0.25*system_.position[0],-0.25*system_.position[0]);
+            glTexCoord2f(0,1); glVertex3f(0.0,-0.25*system_.position[0], 0.25*system_.position[0]);
+            glTexCoord2f(1,1); glVertex3f(0.0, 0.25*system_.position[0], 0.25*system_.position[0]);
+            glTexCoord2f(1,0); glVertex3f(0.0, 0.25*system_.position[0],-0.25*system_.position[0]);
+         glEnd();
+         glTranslatef(-system_.position[0], 0.0, 0.0);
+         glRotatef(-flare_theta*20, 0, 0, 1);
+         
+         glRotatef(flare_theta*40, 0, 0, 1);
+         glTranslatef(system_.position[0], 0.0, 0.0);
+         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[2]->id);
+         glBegin(GL_QUADS);
+            glTexCoord2f(0,0); glVertex3f(0.0,-0.5*system_.position[0],-0.25*system_.position[0]);
+            glTexCoord2f(0,1); glVertex3f(0.0,-0.5*system_.position[0], 0.25*system_.position[0]);
+            glTexCoord2f(1,1); glVertex3f(0.0, 0.5*system_.position[0], 0.25*system_.position[0]);
+            glTexCoord2f(1,0); glVertex3f(0.0, 0.5*system_.position[0],-0.25*system_.position[0]);
+         glEnd();
+         glTranslatef(-system_.position[0], 0.0, 0.0);
+         glRotatef(-flare_theta*20, 0, 0, 1);
+         
+         glRotatef(flare_theta*50, 0, 0, 1);
+         glTranslatef(system_.position[0], 0.0, 0.0);
+         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[3]->id);
+         glBegin(GL_QUADS);
+            glTexCoord2f(0,0); glVertex3f(0.0,-0.25*system_.position[0],-0.25*system_.position[0]);
+            glTexCoord2f(0,1); glVertex3f(0.0,-0.25*system_.position[0], 0.25*system_.position[0]);
+            glTexCoord2f(1,1); glVertex3f(0.0, 0.25*system_.position[0], 0.25*system_.position[0]);
+            glTexCoord2f(1,0); glVertex3f(0.0, 0.25*system_.position[0],-0.25*system_.position[0]);
+         glEnd();
+         glTranslatef(-system_.position[0], 0.0, 0.0);
+         glRotatef(-flare_theta*20, 0, 0, 1);
+         glRotatef(-phi*2, 0, 0, 1);
+         
+         glRotatef(flare_theta*50, 0, 0, 1);
+         glTranslatef(system_.position[0], 0.0, 0.0);
+         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[4]->id);
+         glBegin(GL_QUADS);
+            glTexCoord2f(0,0); glVertex3f(0.0,-system_.position[0],-system_.position[0]);
+            glTexCoord2f(0,1); glVertex3f(0.0,-system_.position[0], system_.position[0]);
+            glTexCoord2f(1,1); glVertex3f(0.0, system_.position[0], system_.position[0]);
+            glTexCoord2f(1,0); glVertex3f(0.0, system_.position[0],-system_.position[0]);
+         glEnd();
+         glTranslatef(-system_.position[0], 0.0, 0.0);
+         glRotatef(-flare_theta*20, 0, 0, 1);
+         
+         glEnable(GL_DEPTH_TEST);
+      }
+   }
+   
+   glBindTexture(GL_TEXTURE_2D, 0);
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   glDisable(GL_BLEND);
+}
+
+void Openglwidget::toggle_fullscreen()
+{
+         if (fullscreen)
+            set_fullscreen(false);
+         else
+            set_fullscreen(true);
+}
+
+
+void Openglwidget::set_fullscreen(bool wert)
+{
+         if (!wert)
+         {
+            fenster_breite = window_x;
+            fenster_hoehe  = window_y;
+            SDL_SetVideoMode(window_x, window_y, bpp, SDL_OPENGL);
+            initialisiere_gl();
+            fullscreen = false;
+         }
+         else
+         {
+            fenster_breite = fullscreen_x;
+            fenster_hoehe  = fullscreen_y;
+            SDL_SetVideoMode(fullscreen_x, fullscreen_y, bpp, SDL_OPENGL | SDL_FULLSCREEN);
+            initialisiere_gl();
+            fullscreen = true;
+         }
 }
 
 
 void Openglwidget::events()
 {
-   SDL_Event event;
-
    while(SDL_PollEvent(&event)) 
    {
-
       switch( event.type ) 
       {
-         case SDL_KEYDOWN:
-            handle_keydown(&event.key.keysym);
+//          case SDL_MOUSEMOTION:
+//             handle_mousemotion
+//             break;
+//             
+         case SDL_MOUSEBUTTONDOWN:
+            handle_mousebuttondown(event.button);
             break;
+         
+         case SDL_KEYDOWN:
+            handle_keydown(event.key.keysym);
+            break;
+            
          case SDL_QUIT:
             running = false;
             break;
@@ -986,9 +1019,10 @@ void Openglwidget::events()
     }
 }
 
-void Openglwidget::handle_keydown(SDL_keysym* keysym)
+
+void Openglwidget::handle_keydown(SDL_keysym& keysym)
 {
-   switch( keysym->sym )
+   switch( keysym.sym )
    {
       case SDLK_ESCAPE:
          running = false;
@@ -1002,10 +1036,14 @@ void Openglwidget::handle_keydown(SDL_keysym* keysym)
          
       case SDLK_PLUS:
          zoom_soll = zoom_soll*0.98;
+         if (zoom_soll < 0.1) zoom_soll = 0.1;
          break;
+         
+#define ZOOM_CAP 5
          
       case '-' :
          zoom_soll = zoom_soll*1.02;
+         if (zoom_soll > ZOOM_CAP) zoom_soll = ZOOM_CAP;
          break;
          
       case 'a' : // Die Kamera bewegt sich "nach links" (An der Blickrichtung orientiert)
@@ -1031,9 +1069,14 @@ void Openglwidget::handle_keydown(SDL_keysym* keysym)
       case 'e' : // ...nach oben
          z_offset += 0.25;
          break;
+         
+      case 'f' : // fullscreen
+         toggle_fullscreen();
+         break;
 
 
-#define UNIT 0.1
+
+#define UNIT 1.0
          
       case SDLK_UP:
          pos_z_soll += UNIT;
@@ -1044,7 +1087,7 @@ void Openglwidget::handle_keydown(SDL_keysym* keysym)
          break;
 
       case SDLK_LEFT:
-         phi_soll += 3;
+         phi_soll += 5;
          if (phi_soll > 360)
          {
             phi -= 360; 
@@ -1053,7 +1096,7 @@ void Openglwidget::handle_keydown(SDL_keysym* keysym)
          break;
 
       case SDLK_RIGHT:
-         phi_soll -= 3;
+         phi_soll -= 5;
          if (phi_soll < 0)
          {
             phi += 360; 
@@ -1076,6 +1119,7 @@ void Openglwidget::handle_keydown(SDL_keysym* keysym)
             theta_soll = 10; 
          }
          break;
+         
          
 //             case FL_F+1 :
 //                if(!antialiasing)
@@ -1101,6 +1145,35 @@ void Openglwidget::handle_keydown(SDL_keysym* keysym)
          
    }
 }
+
+
+void Openglwidget::handle_mousebuttondown(SDL_MouseButtonEvent& button)
+{
+   switch(button.button)
+   {
+      case SDL_BUTTON_LEFT:
+         selektiere_id();
+         selektiere_pos();
+         std::cout << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")" << std::endl;
+         set_view_to(get_target());
+         break;
+         
+      case SDL_BUTTON_RIGHT:
+         break;
+         
+      case SDL_BUTTON_WHEELUP:
+         zoom_soll -= zoom_soll*0.15;
+         if (zoom_soll < 0.1) zoom_soll = 0.1;
+         break;
+
+      case SDL_BUTTON_WHEELDOWN:
+         zoom_soll += zoom_soll*0.15;
+         if (zoom_soll > ZOOM_CAP) zoom_soll = ZOOM_CAP;
+         break;
+   }
+}
+
+
 
 // int Openglwidget::handle(int event)
 // {

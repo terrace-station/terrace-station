@@ -14,7 +14,7 @@ system.o: system.hh system.cpp glhilf.h
 openglwindow.o: openglwindow.cpp openglwindow.hh openglwidget.o
 	$(CPP) -c openglwindow.cpp $(CPPFLAGS)
 
-openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h textur.o zeit.h
+openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h textur.o zeit.h station.o mausobjekt.o
 	$(CPP) -c openglwidget.cpp $(CPPFLAGS)
 
 textur.o: textur.cpp textur.hh

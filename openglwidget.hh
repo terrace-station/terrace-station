@@ -25,8 +25,21 @@ void idle_redraw(void* arg);
 class Openglwidget
 {
 private:
+   
+   SDL_Event event;
+   
+   float flare_theta;
+   float flare_phi;
+   
 public:
    
+   bool fullscreen;
+   
+   int fullscreen_x, fullscreen_y;
+   int window_x, window_y;
+   int bpp;
+   
+   const SDL_VideoInfo* info;
    bool running;
 
    float view_angle;
@@ -43,7 +56,8 @@ public:
 //    int handle(int);
    
    void events();
-   void handle_keydown(SDL_keysym* keysym);
+   void handle_keydown(SDL_keysym& keysym);
+   void handle_mousebuttondown(SDL_MouseButtonEvent& button);
 
    void zeichne();
    void selektiere_id();
@@ -119,6 +133,9 @@ public:
    GLfloat mat_diff[4];
    GLfloat mat_spec[4];
    GLfloat mat_shin;
+   
+   void set_fullscreen(bool wert);
+   void toggle_fullscreen();
 
    void set_material_ambi(float ambi1, float ambi2, float ambi3, float ambi4);
    void set_material_diff(float diff1, float diff2, float diff3, float diff4);
