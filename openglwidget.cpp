@@ -111,7 +111,7 @@ void Openglwidget::draw()
 
    kamera_x = (1.0-zoom)*pos_radius*cos(phi*RAD)          +x_offset;
    kamera_y = (1.0-zoom)*pos_radius*sin(phi*RAD)          +y_offset;
-   kamera_z = pos_z-pow(zoom,2)*pos_radius/tan(theta*RAD);// +z_offset;
+   kamera_z = pos_z-pow(zoom,1.3)*pos_radius/tan(theta*RAD);// +z_offset;
    
    pos_x = pos_radius*cos(phi*RAD) +x_offset;
    pos_y = pos_radius*sin(phi*RAD) +y_offset;
@@ -138,7 +138,9 @@ void Openglwidget::draw()
    glLightfv(GL_LIGHT0, GL_AMBIENT, licht_ambi);
    glLightfv(GL_LIGHT0, GL_DIFFUSE, licht_diff);
    glLightfv(GL_LIGHT0, GL_SPECULAR, licht_spec);
-   glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.01);
+   glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION,  1.0);
+   glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION,    0.0);
+   glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0);
 
    sonne_pos[0] = 1000.0;  // Sonnenlicht
    sonne_pos[1] = 0.0;
@@ -256,35 +258,35 @@ void Openglwidget::draw()
       
       if (fabs(phi_soll-phi) > 0.1)
       {
-         phi += 0.9*(phi_soll - phi)*zeit_faktor*10;
+         phi += 0.9*(phi_soll - phi)*zeit_faktor*8;
       }
       else
          phi = phi_soll;
       
       if (fabs(pos_z_soll - pos_z) > 0.001)
       {
-         pos_z += 0.9*(pos_z_soll - pos_z)*zeit_faktor*10;
+         pos_z += 0.9*(pos_z_soll - pos_z)*zeit_faktor*8;
       }
       else
          pos_z = pos_z_soll;
       
       if (fabs(theta_soll - theta) > 0.01)
       {
-         theta += 0.9*(theta_soll - theta)*zeit_faktor*10;
+         theta += 0.9*(theta_soll - theta)*zeit_faktor*8;
       }
       else
          theta = theta_soll;
       
       if (fabs(zoom_soll - zoom) > 0.001)
       {
-         zoom += 0.9*(zoom_soll - zoom)*zeit_faktor*10;
+         zoom += 0.9*(zoom_soll - zoom)*zeit_faktor*8;
       }
       else
          zoom = zoom_soll;
       
       if (fabs(pos_radius_soll - pos_radius) > 0.001)
       {
-         pos_radius += 0.9*(pos_radius_soll - pos_radius)*zeit_faktor*10;
+         pos_radius += 0.9*(pos_radius_soll - pos_radius)*zeit_faktor*8;
       }
       else
          pos_radius = pos_radius_soll;
@@ -470,8 +472,8 @@ void Openglwidget::zeichne_district_outside(District& district)
    
    while(p_min != p_max)
    {
-      texcoord_x1 = z_min*0.25;
-      texcoord_x2 = z_max*0.25;
+      texcoord_x1 = z_min*0.01;
+      texcoord_x2 = z_max*0.01;
       
       texcoord_y1 = p_min*2/(PI);
       
@@ -548,7 +550,6 @@ void Openglwidget::set_view_to(Mausobjekt* mo_)
    if (mo_->objekt_typ == "District")
    {
       District* dis = (District*) mo_;
-      
       //~ station->set_aktiv(dis);
       pos_radius_soll = dis->get_radius_min();
       pos_z_soll = (dis->get_z_min()+dis->get_z_max())*0.5;
@@ -994,10 +995,14 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
          
       case SDLK_PLUS:
          zoom_soll = zoom_soll*0.98;
+         if (zoom_soll < 0.1) zoom_soll = 0.1;
          break;
+         
+#define ZOOM_CAP 5
          
       case '-' :
          zoom_soll = zoom_soll*1.02;
+         if (zoom_soll > ZOOM_CAP) zoom_soll = ZOOM_CAP;
          break;
          
       case 'a' : // Die Kamera bewegt sich "nach links" (An der Blickrichtung orientiert)
@@ -1025,7 +1030,7 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
          break;
 
 
-#define UNIT 0.1
+#define UNIT 1.0
          
       case SDLK_UP:
          pos_z_soll += UNIT;
@@ -1036,7 +1041,7 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
          break;
 
       case SDLK_LEFT:
-         phi_soll += 3;
+         phi_soll += 5;
          if (phi_soll > 360)
          {
             phi -= 360; 
@@ -1045,7 +1050,7 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
          break;
 
       case SDLK_RIGHT:
-         phi_soll -= 3;
+         phi_soll -= 5;
          if (phi_soll < 0)
          {
             phi += 360; 
@@ -1103,10 +1108,20 @@ void Openglwidget::handle_mousebuttondown(SDL_MouseButtonEvent& button)
          selektiere_id();
          selektiere_pos();
          std::cout << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")" << std::endl;
-//          set_view_to(get_target());
+         set_view_to(get_target());
          break;
          
       case SDL_BUTTON_RIGHT:
+         break;
+         
+      case SDL_BUTTON_WHEELUP:
+         zoom_soll -= zoom_soll*0.15;
+         if (zoom_soll < 0.1) zoom_soll = 0.1;
+         break;
+
+      case SDL_BUTTON_WHEELDOWN:
+         zoom_soll += zoom_soll*0.15;
+         if (zoom_soll > ZOOM_CAP) zoom_soll = ZOOM_CAP;
          break;
    }
 }

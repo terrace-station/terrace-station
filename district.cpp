@@ -15,6 +15,8 @@ District::District(float radius, int x, int y, int size_x, int size_y, int nr_of
         Deck deck(deck_radius, x, y, size_x, size_y);
         decks.push_back(deck);
     }
+    
+    objekt_typ = "District";
 }
 
 float District::get_radius_min() {

@@ -44,7 +44,7 @@ System::System()
    position[2] = 0;
    
    abstand_max = sqrt(pow(position[0],2) + pow(position[1],2) + pow(position[2],2)) + sonnenradius;
-   abstand_umlaufbahn = 500;
+   abstand_umlaufbahn = 1000;
    
    anzahl_planeten = 3+rand()%6;
    
