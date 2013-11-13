@@ -12,6 +12,7 @@
 #include "textur.hh"
 #include "mausobjekt.hh"
 #include "texturensammlung.hh"
+#include "textures.hh"
 #include "system.hh"
 #include "zeit.h"
 #include "enumerationen.h"
@@ -82,6 +83,7 @@ public:
    float zeit_ende, zeit_frame, zeit_anfang;
    
    Texturensammlung* tex;
+   Textures* tex2;
    
    int fenster_breite;
    int fenster_hoehe;

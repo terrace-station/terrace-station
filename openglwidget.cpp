@@ -481,6 +481,9 @@ void Openglwidget::zeichne_district_outside(District& district)
    glEnd();
    
    glBindTexture(GL_TEXTURE_2D, tex->tex_district->id);
+   //~ glBindTexture(GL_TEXTURE_2D, tex2->get_id("floor-room"));
+   //~ glBindTexture(GL_TEXTURE_2D, tex2->get_id("floor-corridor"));
+   //~ glBindTexture(GL_TEXTURE_2D, tex2->get_id("floor-lab"));
    
    while(p_min != p_max)
    {
@@ -771,6 +774,8 @@ void Openglwidget::selektiere_pos()
 
 void Openglwidget::initialisiere_gl()
 {
+   tex2 = new Textures;
+    
    glLineWidth(2);
    glPolygonOffset(1.0,1.0);
    glEnable(GL_POLYGON_OFFSET_FILL);
