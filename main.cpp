@@ -15,8 +15,8 @@ int main(int argc, char* argv[])
    Openglwidget glwidget(1024,768);
    
    Station station1;
-   station1.text_ausgabe();
-   glwidget.set_station(&station1);
+   std::cout << station1.str();
+//    glwidget.set_station(&station1);
    
    SDL_Init(SDL_INIT_VIDEO);
 

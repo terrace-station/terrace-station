@@ -11,23 +11,21 @@
 
 class Rect;
 
-/**
- * Room
- */
+
 class Room
 {
-public:
     std::string style;
     std::list<Rect> rects;
-
-    /**
-     * Default constructor
-     */
-    Room(std::string style, std::list<Rect> rects);
     
-    int area();
+public:
+    Room(std::string style, Rect rect);
+    
+    int get_area();
     bool intersects(Rect other);
     bool intersects(Room other);
+    std::string get_style();
+    std::list<Rect> get_rects();
+    
     std::string str();
     
 };

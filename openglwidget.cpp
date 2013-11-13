@@ -455,8 +455,10 @@ void Openglwidget::zeichne_station()
    if (station == NULL)
       return;
 
-   for (int i=0; i<station->district_count; i++)
-      zeichne_district(station->district[i]);
+   //~ for (int i=0; i<station->district_count; i++)
+      //~ zeichne_district(station->district[i]);
+   for (int i=0; i<station->get_districts().size(); i++)
+      zeichne_district(station->get_districts()[i]);
    
 }
 
@@ -464,63 +466,63 @@ void Openglwidget::zeichne_station()
 
 void Openglwidget::zeichne_district(District& district)
 {
-   if (!district.aktiv)
+   //~ if (!district.aktiv)
       zeichne_district_outside(district);
-   else
-   {
-   float x1, y1, z1, x2, y2, z2;
-   float delta_p = STEP/district.radius_min;
-   float radius_;
-   
-   for(int r=0; r<=district.deck_count; r++)
-   {
+   //~ else
+   //~ {
+   //~ float x1, y1, z1, x2, y2, z2;
+   //~ float delta_p = STEP/district.radius_min;
+   //~ float radius_;
+   //~ 
+   //~ for(int r=0; r<=district.deck_count; r++)
+   //~ {
 //       if (r%3==0) glColor3f(1,0,0);
 //       if (r%3==1) glColor3f(0,1,0);
 //       if (r%3==2) glColor3f(0,0,1);
-      glColor3f(0.5, 0.5, 0.5+r*0.1);
-      glColor3f(0.5, 0.5, 0.5+r*0.1);
-      glColor3f(0.5, 0.5, 0.5+r*0.1);
-      
-      for(int y=0; y<district.size_y; y=y+1)
-      {
-         for(int x=0; x<district.size_x; x=x+1)
-         {
-            radius_ = district.radius_min + 2*r*STEP;
-            
-               x1 = cos((x  )*delta_p + district.phi_min)*radius_;
-               y1 = sin((x  )*delta_p + district.phi_min)*(radius_);
-               z1 = y*STEP + district.z_min;
-               
-               x2 = cos((x+1)*delta_p + district.phi_min)*radius_;
-               y2 = sin((x+1)*delta_p + district.phi_min)*(radius_);
-               z2 = z1;
-               
-            glBegin(GL_LINES);
-               glVertex3f(x1, y1, z1);
-               glVertex3f(x2, y2, z2);
-               
-               x2 = x1;
-               y2 = y1;
-               z2 = (y+1)*STEP + district.z_min;
-               
-               glVertex3f(x1, y1, z1);
-               glVertex3f(x2, y2, z2);
-               
-               x2 = cos((x)*delta_p + district.phi_min)*(radius_+2*STEP);
-               y2 = sin((x)*delta_p + district.phi_min)*(radius_+2*STEP);
-               z2 = z1;
-               
-               glVertex3f(x1, y1, z1);
-               glVertex3f(x2, y2, z2);
-            glEnd();
-         }
-         
-      }
-   }
+      //~ glColor3f(0.5, 0.5, 0.5+r*0.1);
+      //~ glColor3f(0.5, 0.5, 0.5+r*0.1);
+      //~ glColor3f(0.5, 0.5, 0.5+r*0.1);
+      //~ 
+      //~ for(int y=0; y<district.size_y; y=y+1)
+      //~ {
+         //~ for(int x=0; x<district.size_x; x=x+1)
+         //~ {
+            //~ radius_ = district.radius_min + 2*r*STEP;
+            //~ 
+               //~ x1 = cos((x  )*delta_p + district.phi_min)*radius_;
+               //~ y1 = sin((x  )*delta_p + district.phi_min)*(radius_);
+               //~ z1 = y*STEP + district.z_min;
+               //~ 
+               //~ x2 = cos((x+1)*delta_p + district.phi_min)*radius_;
+               //~ y2 = sin((x+1)*delta_p + district.phi_min)*(radius_);
+               //~ z2 = z1;
+               //~ 
+            //~ glBegin(GL_LINES);
+               //~ glVertex3f(x1, y1, z1);
+               //~ glVertex3f(x2, y2, z2);
+               //~ 
+               //~ x2 = x1;
+               //~ y2 = y1;
+               //~ z2 = (y+1)*STEP + district.z_min;
+               //~ 
+               //~ glVertex3f(x1, y1, z1);
+               //~ glVertex3f(x2, y2, z2);
+               //~ 
+               //~ x2 = cos((x)*delta_p + district.phi_min)*(radius_+2*STEP);
+               //~ y2 = sin((x)*delta_p + district.phi_min)*(radius_+2*STEP);
+               //~ z2 = z1;
+               //~ 
+               //~ glVertex3f(x1, y1, z1);
+               //~ glVertex3f(x2, y2, z2);
+            //~ glEnd();
+         //~ }
+         //~ 
+      //~ }
+   //~ }
 //    
 //    for (int i=0; i<district.deck_count; i++)
 //       zeichne_deck(district.deck[i]);
-   }
+   //~ }
 }
 
 #define DELTA_P 0.1
@@ -542,16 +544,16 @@ void Openglwidget::zeichne_district_outside(District& district)
    float x3, y3, z3;
    float x4, y4, z4;
    
-   float p_min = district.phi_min;
-   float p_max = district.phi_max;
+   float p_min = district.get_phi_min();
+   float p_max = district.get_phi_max();
    
    if (p_max < p_min) p_max += 2*PI;
    
-   float r_min = district.radius_min;
-   float r_max = district.radius_max;
+   float r_min = district.get_radius_min();
+   float r_max = district.get_radius_max();
    
-   float z_min = district.z_min;
-   float z_max = district.z_max;
+   float z_min = district.get_z_min();
+   float z_max = district.get_z_max();
 
    float cosp1 = cos(p_min);
    float sinp1 = sin(p_min);
@@ -657,10 +659,10 @@ void Openglwidget::set_view_to(Mausobjekt* mo_)
    {
       District* dis = (District*) mo_;
       
-      station->set_aktiv(dis);
-      pos_radius_soll = dis->radius_min;
-      pos_z_soll = (dis->z_min+dis->z_max)*0.5;
-      phi_soll = dis->phi_min<dis->phi_max?(dis->phi_min+dis->phi_max)*0.5/RAD:(dis->phi_min+dis->phi_max+2*PI)*0.5/RAD;
+      //~ station->set_aktiv(dis);
+      pos_radius_soll = dis->get_radius_min();
+      pos_z_soll = (dis->get_z_min()+dis->get_z_max())*0.5;
+      phi_soll = dis->get_phi_min()<dis->get_phi_max()?(dis->get_phi_min()+dis->get_phi_max())*0.5/RAD:(dis->get_phi_min()+dis->get_phi_max()+2*PI)*0.5/RAD;
       zoom_soll = 0.4; 
    }
 }
@@ -677,11 +679,18 @@ Mausobjekt* Openglwidget::get_target()
    if (target_id == 0)
       return NULL;
    
-   for(int i=0; i<station->district_count; i++)
+   //~ for(int i=0; i<station->district_count; i++)
+   //~ {
+      //~ if (station->district[i].objekt_id == (int)target_id)
+      //~ {
+         //~ return (Mausobjekt*) &(station->district[i]);
+      //~ }
+   //~ }
+   for(int i=0; i<station->get_districts().size(); i++)
    {
-      if (station->district[i].objekt_id == (int)target_id)
+      if (station->get_districts()[i].objekt_id == (int)target_id)
       {
-         return (Mausobjekt*) &(station->district[i]);
+         return (Mausobjekt*) &(station->get_districts()[i]);
       }
    }
 }

@@ -9,21 +9,14 @@
 #include "room.hh"
 #include "wall.hh"
 
-/**
- * Door
- */
+
 class Door
 {
-public:
     
-
-    /**
-     * Default constructor
-     */
+public:
     Door();
     
     std::string str();
-    
 };
 
 #endif
