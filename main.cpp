@@ -20,6 +20,10 @@ int main(int argc, char* argv[])
    std::cout << station1.str();
    glwidget.set_station(&station1);
    
+   SDL_Init(SDL_INIT_VIDEO);
+
+   const SDL_VideoInfo* info = SDL_GetVideoInfo( );
+   
    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
