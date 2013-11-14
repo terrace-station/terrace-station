@@ -33,7 +33,7 @@ std::list<Room> Deck::get_rooms() {
 std::string Deck::str()
 {
     std::stringstream ss;
-    ss << "    Deck:      (radius = " << radius;
+    ss << "      Deck:      (radius = " << radius;
     ss << ", x = " << x;
     ss << ", y = " << y;
     ss << ", size_x = " << size_x;

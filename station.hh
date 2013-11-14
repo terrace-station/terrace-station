@@ -7,17 +7,17 @@
 #include <cstdlib>
 #include <ctime>
 
-#include "district.hh"
+#include "zone.hh"
 
 
 class Station
 {
-    std::vector<District> districts;
+    std::vector<Zone> zones;
     
 public:
     Station();
     
-    std::vector<District>& get_districts();
+    std::vector<Zone>& get_zones();
 
     std::string str();
 };

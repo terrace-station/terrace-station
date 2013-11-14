@@ -9,38 +9,23 @@ Station::Station()
 {
     int x, y, width, height, cf, nr, nr_of_decks;
     float radius;
-    std::srand(std::time(0));
-    for (int zone = 0; zone < NR_OF_ZONES; ++zone)
+    for (int i = 0; i < NR_OF_ZONES; ++i)
     {
-        cf = CF_MIN + zone * CF_DELTA;
-        radius = cf / (2 * PI);
-        nr = rand() % 3 + 1;
-        if (nr == 1) {
-            width = cf;
-        } else {
-            width = cf / (2 * nr) + rand() % (cf / (3 * nr));
-        }
-        nr_of_decks = rand() % 3 + 2;
-        y = - (rand() % 100 + 1);
-        height = 100 + rand() % 100 + 1;
-        for (int i = 0; i < nr; ++i)
-        {
-            x = i * cf / nr;
-            District district(radius, x, y, width, height, nr_of_decks);
-            districts.push_back(district);
-        }
+        cf = CF_MIN + i * CF_DELTA;
+        Zone zone(cf);
+        zones.push_back(zone);
     }
 }
 
-std::vector<District>& Station::get_districts() {
-    return districts;
+std::vector<Zone>& Station::get_zones() {
+    return zones;
 }
     
 std::string Station::str()
 {
     std::stringstream ss;
     ss << "Station:" << std::endl;
-    for (std::vector<District>::iterator it = districts.begin(); it != districts.end(); it++)
+    for (std::vector<Zone>::iterator it = zones.begin(); it != zones.end(); it++)
     {
         ss << it->str();
     }

@@ -157,6 +157,7 @@ public:
    void zeichne_system(System& system_);
    
    void zeichne_station();
+   void zeichne_zone(Zone& zone);
    void zeichne_district(District& district);
    void zeichne_district_outside(District& district);
    void zeichne_deck(Deck& deck);

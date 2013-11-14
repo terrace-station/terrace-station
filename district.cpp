@@ -11,7 +11,7 @@ District::District(float radius, int x, int y, int size_x, int size_y, int nr_of
     this->size_y = size_y;
     for (int i = 0; i < nr_of_decks; ++i)
     {
-        float deck_radius = radius + i * DECK_HEIGHT- 2.5;
+        float deck_radius = radius + i * DECK_HEIGHT - 2.5;
         Deck deck(deck_radius, x, y, size_x, size_y);
         decks.push_back(deck);
     }
@@ -51,7 +51,7 @@ std::vector<Deck>& District::get_decks() {
 std::string District::str()
 {
     std::stringstream ss;
-    ss << "  District:  (radius = " << radius;
+    ss << "    District:  (radius = " << radius;
     ss << ", x = " << x;
     ss << ", y = " << y;
     ss << ", size_x = " << size_x;
