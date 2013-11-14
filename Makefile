@@ -1,6 +1,6 @@
 OBJEKTE  = openglwidget.o mausobjekt.o textur.o system.o texturensammlung.o textures.o station.o district.o deck.o room.o wall.o door.o rect.o
 CPP      = g++
-CPPFLAGS = -g
+CPPFLAGS = -std=c++11 -g
 
 main: main.cpp $(OBJEKTE)
 	$(CPP) $(CPPFLAGS) -o main main.cpp $(OBJEKTE) -lGL -lGLU -lSDL -lSDL_image

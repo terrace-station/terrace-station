@@ -4,7 +4,7 @@
 #include <sstream>
 #include <iostream>
 #include <string>
-#include <map>
+#include <unordered_map>
 #include <dirent.h>
 
 #include <GL/glu.h>
@@ -14,7 +14,7 @@
 
 class Textures
 {
-    std::map<std::string, GLuint> texture_ids;
+    std::unordered_map<std::string, GLuint> texture_ids;
     
     void load();
 public:
