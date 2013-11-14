@@ -27,7 +27,7 @@ public:
     float get_phi_max();
     float get_z_min();
     float get_z_max();
-    std::vector<Deck> get_decks();
+    std::vector<Deck>& get_decks();
     
     std::string str();
 };

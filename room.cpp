@@ -43,7 +43,7 @@ std::string Room::get_style() {
     return style;
 }
 
-std::list<Rect> Room::get_rects() {
+std::list<Rect>& Room::get_rects() {
     return rects;
 }
 

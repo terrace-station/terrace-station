@@ -44,7 +44,7 @@ float District::get_z_min() {
 float District::get_z_max() {
     return y + size_y;
 }
-std::vector<Deck> District::get_decks() {
+std::vector<Deck>& District::get_decks() {
     return decks;
 }
 

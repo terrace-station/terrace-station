@@ -24,7 +24,7 @@ public:
     bool intersects(Rect other);
     bool intersects(Room other);
     std::string get_style();
-    std::list<Rect> get_rects();
+    std::list<Rect>& get_rects();
     
     std::string str();
     
