@@ -1,18 +1,20 @@
+#include "rect.hh"
+#include "room.hh"
+#include "deck.hh"
+#include "district.hh"
+#include "zone.hh"
 #include "station.hh"
 
-#define PI          3.14159265358979323846
 #define CF_MIN      600     // Minimum circumference
 #define CF_DELTA    100     // Difference in circumference
 #define NR_OF_ZONES 4
 
 Station::Station()
 {
-    int x, y, width, height, cf, nr, nr_of_decks;
-    float radius;
     for (int i = 0; i < NR_OF_ZONES; ++i)
     {
-        cf = CF_MIN + i * CF_DELTA;
-        Zone zone(cf);
+        int cf = CF_MIN + i * CF_DELTA;
+        Zone zone(cf, *this);
         zones.push_back(zone);
     }
 }

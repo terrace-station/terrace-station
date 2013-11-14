@@ -17,9 +17,10 @@
 #include "zeit.h"
 #include "enumerationen.h"
 
-#include "station.hh"
-#include "district.hh"
-#include "deck.hh"
+class Station;
+class Zone;
+class District;
+class Deck;
 
 void idle_redraw(void* arg);
 

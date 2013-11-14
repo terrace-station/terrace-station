@@ -4,6 +4,10 @@
 #include "openglwidget_material.h"
 #include "openglwidget_events.h"
 
+#include "station.hh"
+#include "zone.hh"
+#include "district.hh"
+#include "deck.hh"
 
 // // // //  Modelle/Texturen definieren
 // #include "modelle.hh"

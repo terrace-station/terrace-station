@@ -12,46 +12,46 @@ system.o: system.hh system.cpp glhilf.h
 	$(CPP) $(CPPFLAGS) -c system.cpp
 
 openglwindow.o: openglwindow.cpp openglwindow.hh openglwidget.o
-	$(CPP) -c openglwindow.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c openglwindow.cpp
 
 openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h textur.o zeit.h station.o mausobjekt.o openglwidget_material.h openglwidget_events.h
-	$(CPP) -c openglwidget.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c openglwidget.cpp
 
 textur.o: textur.cpp textur.hh
-	$(CPP) -c textur.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c textur.cpp
 
 texturensammlung.o: texturensammlung.cpp texturensammlung.hh textur.o
-	$(CPP) -c texturensammlung.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c texturensammlung.cpp
 
 textures.o: textures.cpp textures.hh
-	$(CPP) -c textures.cpp $(CPPFLAGS) 
+	$(CPP) $(CPPFLAGS) -c textures.cpp
 
 mausobjekt.o: mausobjekt.cpp mausobjekt.hh
-	$(CPP) -c mausobjekt.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c mausobjekt.cpp
 
 station.o: station.cpp station.hh zone.o
-	$(CPP) -c station.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c station.cpp
 
 zone.o: zone.cpp zone.hh district.o
-	$(CPP) -c zone.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c zone.cpp
 
 district.o: district.cpp district.hh deck.o mausobjekt.o
-	$(CPP) -c district.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c district.cpp
 
 deck.o: deck.cpp deck.hh
-	$(CPP) -c deck.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c deck.cpp
 
 room.o: room.cpp room.hh wall.o door.o rect.o
-	$(CPP) -c room.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c room.cpp
 
 wall.o: wall.cpp wall.hh door.o rect.o
-	$(CPP) -c wall.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c wall.cpp
 
 door.o: door.cpp door.hh rect.o
-	$(CPP) -c door.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c door.cpp
 
 rect.o: rect.cpp rect.hh
-	$(CPP) -c rect.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c rect.cpp
 
 clear:
 	rm *.o & rm *.gch & rm main

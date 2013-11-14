@@ -1,41 +1,42 @@
+#include "rect.hh"
+#include "room.hh"
+#include "deck.hh"
 #include "district.hh"
+#include "zone.hh"
+#include "station.hh"
 
 #define DECK_HEIGHT 3
 
-District::District(float radius, int x, int y, int size_x, int size_y, int nr_of_decks)
+District::District(int x, int y, int size_x, int size_y,
+                   int nr_of_decks, Zone& zone) :
+    x(x), y(y), size_x(size_x), size_y(size_y), zone(zone)
 {
-    this->radius = radius;
-    this->x = x;
-    this->y = y;
-    this->size_x = size_x;
-    this->size_y = size_y;
     for (int i = 0; i < nr_of_decks; ++i)
     {
-        float deck_radius = radius + i * DECK_HEIGHT - 2.5;
-        Deck deck(deck_radius, x, y, size_x, size_y);
+        float deck_radius = get_radius() + i * DECK_HEIGHT - 2.5;
+        Deck deck(deck_radius, x, y, size_x, size_y, *this);
         decks.push_back(deck);
     }
     
     objekt_typ = "District";
 }
 
-District::District()
-{
-    objekt_typ = "District";
+float District::get_radius() {
+    return zone.get_radius();
 }
 
 float District::get_radius_min() {
-    return this->radius - decks.size() * DECK_HEIGHT / 2.0;
+    return get_radius() - decks.size() * DECK_HEIGHT / 2.0;
 }
 float District::get_radius_max() {
-    return this->radius + decks.size() * DECK_HEIGHT / 2.0;
+    return get_radius() + decks.size() * DECK_HEIGHT / 2.0;
 }
 
 float District::get_phi_min() {
-    return x / radius;
+    return x / get_radius();
 }
 float District::get_phi_max() {
-    return (size_x + x) / radius;
+    return (size_x + x) / get_radius();
 }
 
 float District::get_z_min() {
@@ -51,7 +52,7 @@ std::vector<Deck>& District::get_decks() {
 std::string District::str()
 {
     std::stringstream ss;
-    ss << "    District:  (radius = " << radius;
+    ss << "    District:  (radius = " << get_radius();
     ss << ", x = " << x;
     ss << ", y = " << y;
     ss << ", size_x = " << size_x;

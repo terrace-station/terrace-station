@@ -1,12 +1,13 @@
+#include "rect.hh"
+#include "room.hh"
 #include "deck.hh"
+#include "district.hh"
+#include "zone.hh"
+#include "station.hh"
 
-Deck::Deck(float radius, int x, int y, int size_x, int size_y)
+Deck::Deck(float radius, int x, int y, int size_x, int size_y, District& district) :
+    radius(radius), x(x), y(y), size_x(size_x), size_y(size_y), district(district)
 {
-    this->radius = radius;
-    this->x = x;
-    this->y = y;
-    this->size_x = size_x;
-    this->size_y = size_y;
     Deck::init();
 }
 
@@ -16,10 +17,10 @@ void Deck::init()
     Rect rect2(x + size_x / 2, y, x + size_x, y + size_y / 2);
     Rect rect3(x, y + size_y / 2, x + size_x / 2, y + size_y);
     Rect rect4(x + size_x / 2, y + size_y / 2, x + size_x, y + size_y);
-    Room room1("room", rect1);
-    Room room2("corridor", rect2);
-    Room room3("corridor", rect3);
-    Room room4("room", rect4);
+    Room room1("room", rect1, *this);
+    Room room2("corridor", rect2, *this);
+    Room room3("corridor", rect3, *this);
+    Room room4("room", rect4, *this);
     rooms.push_back(room1);
     rooms.push_back(room2);
     rooms.push_back(room3);

@@ -9,7 +9,6 @@
 
 class Room;
 
-
 class Rect
 {
     int left, top, right, bottom;

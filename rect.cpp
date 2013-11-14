@@ -1,12 +1,14 @@
 #include "rect.hh"
 #include "room.hh"
+#include "deck.hh"
+#include "district.hh"
+#include "zone.hh"
+#include "station.hh"
 
-Rect::Rect(int left, int top, int right, int bottom)
+Rect::Rect(int left, int top, int right, int bottom):
+    left(left), top(top), right(right), bottom(bottom)
 {
-    this->left = left;
-    this->top = top;
-    this->right = right;
-    this->bottom = bottom;
+    
 }
 
 int Rect::get_left()
@@ -69,7 +71,7 @@ bool Rect::intersects(Room other) {
 std::string Rect::str()
 {
     std::stringstream ss;
-    ss << "        Rect:      (left = " << left << ", top = " << top;
+    ss << "          Rect:      (left = " << left << ", top = " << top;
     ss << ", right = " << right << ", bottom = " << bottom;
     ss << ", aspect = " << get_aspect() << ")" << std::endl;
     return ss.str();

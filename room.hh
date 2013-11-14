@@ -1,24 +1,24 @@
 #ifndef ROOM_HH
 #define ROOM_HH
 
+#include <sstream>
 #include <stdlib.h>
 #include <string>
 #include <list>
 #include <vector>
 
-#include "wall.hh"
-#include "door.hh"
-
+class Deck;
 class Rect;
 
 
 class Room
 {
     std::string style;
+    Deck& deck;
     std::list<Rect> rects;
     
 public:
-    Room(std::string style, Rect rect);
+    Room(std::string style, Rect rect, Deck& deck);
     
     int get_area();
     bool intersects(Rect other);

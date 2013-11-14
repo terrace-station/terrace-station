@@ -1,14 +1,14 @@
 #ifndef STATION_HH
 #define STATION_HH
 
+#include <sstream>
 #include <stdlib.h>
 #include <string>
 #include <vector>
 #include <cstdlib>
 #include <ctime>
 
-#include "zone.hh"
-
+class Zone;
 
 class Station
 {
