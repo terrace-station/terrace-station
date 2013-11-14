@@ -17,7 +17,7 @@ class Station
 public:
     Station();
     
-    std::vector<District> get_districts();
+    std::vector<District>& get_districts();
 
     std::string str();
 };

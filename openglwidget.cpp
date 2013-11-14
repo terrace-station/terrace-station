@@ -485,9 +485,9 @@ void Openglwidget::zeichne_district_outside(District& district)
    glEnd();
    
    glBindTexture(GL_TEXTURE_2D, tex->tex_district->id);
-   //~ glBindTexture(GL_TEXTURE_2D, tex2->get_id("floor-room"));
-   //~ glBindTexture(GL_TEXTURE_2D, tex2->get_id("floor-corridor"));
-   //~ glBindTexture(GL_TEXTURE_2D, tex2->get_id("floor-lab"));
+//    glBindTexture(GL_TEXTURE_2D, tex2->get_id("floor-room"));
+//    glBindTexture(GL_TEXTURE_2D, tex2->get_id("floor-corridor"));
+//    glBindTexture(GL_TEXTURE_2D, tex2->get_id("floor-lab"));
    
    while(p_min != p_max)
    {
