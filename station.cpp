@@ -12,11 +12,11 @@
 
 Station::Station()
 {
+    zones.reserve(NR_OF_ZONES);
     for (int i = 0; i < NR_OF_ZONES; ++i)
     {
         int cf = CF_MIN + i * CF_DELTA;
-        Zone zone(cf, *this);
-        zones.push_back(zone);
+        zones.emplace_back(cf, this);
     }
 }
 

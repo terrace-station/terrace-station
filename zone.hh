@@ -13,11 +13,11 @@ class District;
 class Zone
 {
     int circumference;
-    Station& station;
+    Station* station;
     std::vector<District> districts;
     
 public:
-    Zone(int circumference, Station& station);
+    Zone(int circumference, Station* station);
     
     float get_radius();
     std::vector<District>& get_districts();

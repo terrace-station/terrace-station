@@ -7,7 +7,7 @@
 
 #define PI  3.14159265358979323846
 
-Zone::Zone(int circumference, Station& station) :
+Zone::Zone(int circumference, Station* station) :
     circumference(circumference), station(station)
 {
     int nr_of_districts = rand() % 3 + 1;
@@ -21,19 +21,16 @@ Zone::Zone(int circumference, Station& station) :
     int y = - (rand() % 100 + 1);
     int height = 100 + rand() % 100 + 1;
     int x;
+    districts.reserve(nr_of_districts);
     for (int i = 0; i < nr_of_districts; ++i)
     {
         x = i * circumference / nr_of_districts;
-        District district(x, y, width, height, nr_of_decks, *this);
-        districts.push_back(district);
+        districts.emplace_back(x, y, width, height, nr_of_decks, this);
     }
-    std::cout << this->circumference << std::endl;
 }
 
 float Zone::get_radius() {
-    //~ std::cout << circumference << std::endl;
-    //~ return circumference / (2 * PI);
-    return 100.0;
+    return circumference / (2 * PI);
 }
 
 std::vector<District>& Zone::get_districts() {

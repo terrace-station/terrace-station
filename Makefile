@@ -15,7 +15,7 @@ openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h textur.o zeit.h statio
 	$(CPP) $(CPPFLAGS) -c openglwidget.cpp
 
 openglbutton.o: openglbutton.cpp openglbutton.hh
-	$(CPP) -c openglbutton.cpp
+	$(CPP) $(CPPFLAGS) -c openglbutton.cpp
 
 textur.o: textur.cpp textur.hh
 	$(CPP) $(CPPFLAGS) -c textur.cpp

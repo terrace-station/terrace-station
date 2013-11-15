@@ -17,12 +17,12 @@ class District: public Mausobjekt
     int y;
     int size_x;
     int size_y;
-    Zone& zone;
+    Zone* zone;
     std::vector<Deck> decks;
     
 public:
     District(int x, int y, int size_x, int size_y,
-             int nr_of_decks, Zone& zone);
+             int nr_of_decks, Zone* zone);
     
     float get_radius();
     float get_radius_min();

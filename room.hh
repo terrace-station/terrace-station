@@ -14,11 +14,11 @@ class Rect;
 class Room
 {
     std::string style;
-    Deck& deck;
+    Deck* deck;
     std::list<Rect> rects;
     
 public:
-    Room(std::string style, Rect rect, Deck& deck);
+    Room(std::string style, Rect rect, Deck* deck);
     
     int get_area();
     bool intersects(Rect other);

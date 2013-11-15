@@ -8,21 +8,21 @@
 #define DECK_HEIGHT 3
 
 District::District(int x, int y, int size_x, int size_y,
-                   int nr_of_decks, Zone& zone) :
+                   int nr_of_decks, Zone* zone) :
     x(x), y(y), size_x(size_x), size_y(size_y), zone(zone)
 {
+    decks.reserve(nr_of_decks);
     for (int i = 0; i < nr_of_decks; ++i)
     {
         float deck_radius = get_radius() + i * DECK_HEIGHT - 2.5;
-        Deck deck(deck_radius, x, y, size_x, size_y, *this);
-        decks.push_back(deck);
+        decks.emplace_back(deck_radius, x, y, size_x, size_y, this);
     }
     
     objekt_typ = "District";
 }
 
 float District::get_radius() {
-    return zone.get_radius();
+    return zone->get_radius();
 }
 
 float District::get_radius_min() {

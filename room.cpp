@@ -5,7 +5,7 @@
 #include "zone.hh"
 #include "station.hh"
 
-Room::Room(std::string style, Rect rect, Deck& deck):
+Room::Room(std::string style, Rect rect, Deck* deck):
     style(style), deck(deck)
 {
     this->rects.push_back(rect);

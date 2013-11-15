@@ -16,12 +16,12 @@ class Deck
     int y;
     int size_x;
     int size_y;
-    District& district;
+    District* district;
     std::list<Room> rooms;
     void init();
     
 public:
-    Deck(float radius, int x, int y, int size_x, int size_y, District& district);
+    Deck(float radius, int x, int y, int size_x, int size_y, District* district);
     
     std::list<Room> get_rooms();
     
