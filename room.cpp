@@ -1,9 +1,13 @@
-#include "room.hh"
 #include "rect.hh"
+#include "room.hh"
+#include "deck.hh"
+#include "district.hh"
+#include "zone.hh"
+#include "station.hh"
 
-Room::Room(std::string style, Rect rect)
+Room::Room(std::string style, Rect rect, Deck& deck):
+    style(style), deck(deck)
 {
-    this->style = style;
     this->rects.push_back(rect);
 }
 
@@ -43,14 +47,14 @@ std::string Room::get_style() {
     return style;
 }
 
-std::list<Rect> Room::get_rects() {
+std::list<Rect>& Room::get_rects() {
     return rects;
 }
 
 std::string Room::str()
 {
     std::stringstream ss;
-    ss << "      Room:      (style = " << style << ", area = " << get_area();
+    ss << "        Room:      (style = " << style << ", area = " << get_area();
     ss << ", nr of rects = " << rects.size() << ")" << std::endl;
     for (std::list<Rect>::iterator it = rects.begin(); it != rects.end(); it++)
     {

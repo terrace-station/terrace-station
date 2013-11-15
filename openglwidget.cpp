@@ -4,6 +4,10 @@
 #include "openglwidget_material.h"
 #include "openglwidget_events.h"
 
+#include "station.hh"
+#include "zone.hh"
+#include "district.hh"
+#include "deck.hh"
 
 // // // //  Modelle/Texturen definieren
 // #include "modelle.hh"
@@ -385,11 +389,18 @@ void Openglwidget::zeichne_station()
    if (station == NULL)
       return;
 
-   //~ for (int i=0; i<station->district_count; i++)
-      //~ zeichne_district(station->district[i]);
-   for (int i=0; i<station->get_districts().size(); i++)
-      zeichne_district(station->get_districts()[i]);
-   
+    for (std::vector<Zone>::iterator it = station->get_zones().begin(); it != station->get_zones().end(); it++)
+    {
+        zeichne_zone(*it);
+    }
+}
+
+void Openglwidget::zeichne_zone(Zone& zone)
+{
+    for (std::vector<District>::iterator it = zone.get_districts().begin(); it != zone.get_districts().end(); it++)
+    {
+        zeichne_district(*it);
+    }
 }
 
 #define STEP 0.05
@@ -616,20 +627,13 @@ Mausobjekt& Openglwidget::get_target()
    if (target_id == 0)
       return nichts;
    
-   //~ for(int i=0; i<station->district_count; i++)
-   //~ {
-      //~ if (station->district[i].objekt_id == (int)target_id)
-      //~ {
-         //~ return (Mausobjekt*) &(station->district[i]);
-      //~ }
-   //~ }
-   for(int i=0; i<station->get_districts().size(); i++)
-   {
-      if (station->get_districts()[i].objekt_id == (int)target_id)
-      {
-         return (Mausobjekt&) (station->get_districts()[i]);
-      }
-   }
+    for (std::vector<Zone>::iterator zone_it = station->get_zones().begin(); zone_it != station->get_zones().end(); zone_it++)
+    {
+        for (std::vector<District>::iterator district_it = zone_it->get_districts().begin(); district_it != zone_it->get_districts().end(); district_it++)
+        {
+            return (Mausobjekt&) (*district_it);
+        }
+    }
 }
 
 

@@ -1,54 +1,61 @@
+<<<<<<< HEAD
 OBJEKTE  = openglwidget.o openglbutton.o mausobjekt.o textur.o system.o texturensammlung.o textures.o station.o district.o deck.o room.o wall.o door.o rect.o
+=======
+OBJEKTE  = openglwidget.o mausobjekt.o textur.o system.o texturensammlung.o textures.o station.o zone.o district.o deck.o room.o wall.o door.o rect.o
+>>>>>>> b95f1d88fe6af3998137e85571173fd5a0a81784
 CPP      = g++
-CPPFLAGS = -g
+CPPFLAGS = -std=c++11 -g
 
 main: main.cpp $(OBJEKTE)
 	$(CPP) $(CPPFLAGS) -o main main.cpp $(OBJEKTE) -lGL -lGLU -lSDL -lSDL_image
 
 dis: dis.cpp station.o
-	$(CPP) $(CPPFLAGS) -o dis dis.cpp station.o district.o deck.o room.o wall.o door.o rect.o
+	$(CPP) $(CPPFLAGS) -o dis dis.cpp station.o zone.o district.o deck.o room.o wall.o door.o rect.o
 
 system.o: system.hh system.cpp glhilf.h
 	$(CPP) $(CPPFLAGS) -c system.cpp
 
 openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h textur.o zeit.h station.o mausobjekt.o openglwidget_material.h openglwidget_events.h openglbutton.o
-	$(CPP) -c openglwidget.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c openglwidget.cpp
 
 openglbutton.o: openglbutton.cpp openglbutton.hh
 	$(CPP) -c openglbutton.cpp $(CPPFLAGS)
 
 textur.o: textur.cpp textur.hh
-	$(CPP) -c textur.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c textur.cpp
 
 texturensammlung.o: texturensammlung.cpp texturensammlung.hh textur.o
-	$(CPP) -c texturensammlung.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c texturensammlung.cpp
 
 textures.o: textures.cpp textures.hh
-	$(CPP) -c textures.cpp $(CPPFLAGS) 
+	$(CPP) $(CPPFLAGS) -c textures.cpp
 
 mausobjekt.o: mausobjekt.cpp mausobjekt.hh
-	$(CPP) -c mausobjekt.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c mausobjekt.cpp
 
-station.o: station.cpp station.hh district.o
-	$(CPP) -c station.cpp $(CPPFLAGS)
+station.o: station.cpp station.hh zone.o
+	$(CPP) $(CPPFLAGS) -c station.cpp
+
+zone.o: zone.cpp zone.hh district.o
+	$(CPP) $(CPPFLAGS) -c zone.cpp
 
 district.o: district.cpp district.hh deck.o mausobjekt.o
-	$(CPP) -c district.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c district.cpp
 
 deck.o: deck.cpp deck.hh
-	$(CPP) -c deck.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c deck.cpp
 
 room.o: room.cpp room.hh wall.o door.o rect.o
-	$(CPP) -c room.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c room.cpp
 
 wall.o: wall.cpp wall.hh door.o rect.o
-	$(CPP) -c wall.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c wall.cpp
 
 door.o: door.cpp door.hh rect.o
-	$(CPP) -c door.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c door.cpp
 
 rect.o: rect.cpp rect.hh
-	$(CPP) -c rect.cpp $(CPPFLAGS)
+	$(CPP) $(CPPFLAGS) -c rect.cpp
 
 clear:
 	rm *.o & rm *.gch & rm main

@@ -7,6 +7,13 @@
 #include <stdlib.h>
 
 #include "openglwidget.hh"
+#include "rect.hh"
+#include "room.hh"
+#include "deck.hh"
+#include "district.hh"
+#include "zone.hh"
+#include "station.hh"
+
 
 
 int main(int argc, char* argv[])

@@ -16,11 +16,12 @@
 #include "system.hh"
 #include "zeit.h"
 #include "enumerationen.h"
-
-#include "station.hh"
-#include "district.hh"
-#include "deck.hh"
 #include "openglbutton.hh"
+
+class Station;
+class Zone;
+class District;
+class Deck;
 
 void idle_redraw(void* arg);
 
@@ -169,6 +170,7 @@ public:
    void zeichne_system(System& system_);
    
    void zeichne_station();
+   void zeichne_zone(Zone& zone);
    void zeichne_district(District& district);
    void zeichne_district_outside(District& district);
    void zeichne_deck(Deck& deck);

@@ -1,23 +1,23 @@
 #ifndef STATION_HH
 #define STATION_HH
 
+#include <sstream>
 #include <stdlib.h>
 #include <string>
 #include <vector>
 #include <cstdlib>
 #include <ctime>
 
-#include "district.hh"
-
+class Zone;
 
 class Station
 {
-    std::vector<District> districts;
+    std::vector<Zone> zones;
     
 public:
     Station();
     
-    std::vector<District>& get_districts();
+    std::vector<Zone>& get_zones();
 
     std::string str();
 };
