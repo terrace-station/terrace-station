@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-OBJEKTE  = openglwidget.o openglbutton.o mausobjekt.o textur.o system.o texturensammlung.o textures.o station.o district.o deck.o room.o wall.o door.o rect.o
-=======
-OBJEKTE  = openglwidget.o mausobjekt.o textur.o system.o texturensammlung.o textures.o station.o zone.o district.o deck.o room.o wall.o door.o rect.o
->>>>>>> b95f1d88fe6af3998137e85571173fd5a0a81784
+OBJEKTE  = openglwidget.o openglbutton.o mausobjekt.o textur.o system.o texturensammlung.o textures.o station.o zone.o district.o deck.o room.o wall.o door.o rect.o
 CPP      = g++
 CPPFLAGS = -std=c++11 -g
 
