@@ -517,7 +517,7 @@ void Openglwidget::zeichne_district_outside(District& district)
       glVertex3f(x2, y2, z_min);
    glEnd();
    
-   glBindTexture(GL_TEXTURE_2D, tex->tex_district->id);
+    glBindTexture(GL_TEXTURE_2D, tex->tex_district->id);
 //    glBindTexture(GL_TEXTURE_2D, tex2->get_id("floor-room"));
 //    glBindTexture(GL_TEXTURE_2D, tex2->get_id("floor-corridor"));
 //    glBindTexture(GL_TEXTURE_2D, tex2->get_id("floor-lab"));
