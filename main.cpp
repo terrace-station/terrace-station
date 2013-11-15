@@ -22,9 +22,9 @@ int main(int argc, char* argv[])
    
    SDL_Init(SDL_INIT_VIDEO);
 
-   const SDL_VideoInfo* info = SDL_GetVideoInfo( );
+   const SDL_VideoInfo* info = SDL_GetVideoInfo();
    
-   SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
    

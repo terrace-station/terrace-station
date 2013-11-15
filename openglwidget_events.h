@@ -9,11 +9,17 @@ void Openglwidget::events()
 //             break;
 //             
          case SDL_MOUSEBUTTONDOWN:
-            handle_mousebuttondown(event.button);
+            if (!gamemenu)
+               handle_mousebuttondown(event.button);
+            else
+               handle_mousebuttondown_menu(event.button);
             break;
          
          case SDL_KEYDOWN:
-            handle_keydown(event.key.keysym);
+            if (!gamemenu)
+               handle_keydown(event.key.keysym);
+            else
+               handle_keydown_menu(event.key.keysym);
             break;
             
          case SDL_QUIT:
@@ -29,7 +35,18 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
    switch( keysym.sym )
    {
       case SDLK_ESCAPE:
-         running = false;
+         if(!gamemenu)
+         {
+            gamemenu = true;
+            SDL_EnableKeyRepeat(0, 20);
+         }
+         else
+         {
+            gamemenu = false;
+            SDL_EnableKeyRepeat(20, 20);
+         }
+         
+//          running = false;
          break;
          
       case SDLK_SPACE:
@@ -80,14 +97,14 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
 
 
 
-#define UNIT 1.0
+#define Z_UNIT 1.5
          
       case SDLK_UP:
-         pos_z_soll += UNIT;
+         pos_z_soll += Z_UNIT;
          break;
 
       case SDLK_DOWN: // ...nach unten...
-         pos_z_soll -= UNIT;
+         pos_z_soll -= Z_UNIT;
          break;
 
       case SDLK_LEFT:
@@ -125,30 +142,55 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
          break;
          
          
-//             case FL_F+1 :
-//                if(!antialiasing)
-//                {
-//                   mode(FL_RGB | FL_DEPTH | FL_MULTISAMPLE | FL_DOUBLE);
-//                   glEnable(GL_MULTISAMPLE);
-//                   antialiasing = true;
-//                }
-//                else
-//                {
-//                   mode(FL_RGB | FL_DEPTH | FL_DOUBLE);
-//                   glDisable(GL_MULTISAMPLE);
-//                   antialiasing = false;
-//                }
-//                
-//                redraw();
-//                return 1;
-//     //
-//     //         case FL_F+2 : // Nur die y-Komponente des E-Feldes wird angezeigt.
-//     //           monitor->feld_num=1;
-//     //           redraw();
-//     //           return 1;
-         
+      case SDLK_F1 :
+         toggle_antialiasing();
+         break;
    }
 }
+
+
+void Openglwidget::handle_keydown_menu(SDL_keysym& keysym)
+{
+   switch( keysym.sym )
+   {
+      case SDLK_ESCAPE:
+         if(!gamemenu)
+         {
+            gamemenu = true;
+            SDL_EnableKeyRepeat(0, 20);
+         }
+         else
+         {
+            gamemenu = false;
+            SDL_EnableKeyRepeat(20, 20);
+         }
+         break;
+         
+      case SDLK_SPACE:
+         break;
+         
+      case 'f' : // fullscreen
+         toggle_fullscreen();
+         break;
+
+      case 'q' : // quit
+         running = false;
+         break;
+         
+      case SDLK_UP:
+         break;
+
+      case SDLK_DOWN: // ...nach unten...
+         break;
+
+      case SDLK_LEFT:
+         break;
+
+      case SDLK_RIGHT:
+         break;
+   }
+}
+
 
 
 void Openglwidget::handle_mousebuttondown(SDL_MouseButtonEvent& button)
@@ -173,6 +215,23 @@ void Openglwidget::handle_mousebuttondown(SDL_MouseButtonEvent& button)
       case SDL_BUTTON_WHEELDOWN:
          zoom_soll += zoom_soll*0.15;
          if (zoom_soll > ZOOM_CAP) zoom_soll = ZOOM_CAP;
+         break;
+   }
+}
+
+
+void Openglwidget::handle_mousebuttondown_menu(SDL_MouseButtonEvent& button)
+{
+   switch(button.button)
+   {
+      case SDL_BUTTON_LEFT:
+         selektiere_id();
+         selektiere_pos();
+         std::cout << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")" << std::endl;
+         set_view_to(get_target());
+         break;
+         
+      case SDL_BUTTON_RIGHT:
          break;
    }
 }

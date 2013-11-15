@@ -20,6 +20,7 @@
 #include "station.hh"
 #include "district.hh"
 #include "deck.hh"
+#include "openglbutton.hh"
 
 void idle_redraw(void* arg);
 
@@ -34,20 +35,30 @@ private:
    
 public:
    
+   Opengltogglebutton* button;
+   
+   bool gamemenu;
    bool fullscreen;
+   bool idle_redraw;
+   bool antialiasing;
    
    int fullscreen_x, fullscreen_y;
    int window_x, window_y;
    int bpp;
+   int fenster_modus;
    
    const SDL_VideoInfo* info;
    bool running;
 
    float view_angle;
    
-   GLint viewport[4], viewport2[4];
-   GLdouble model_matrix[16], model_matrix2[16];
-   GLdouble project_matrix[16], project_matrix2[16];
+   GLint viewport[4];
+   GLdouble model_matrix[16];
+   GLdouble project_matrix[16];
+
+   GLint viewport_menu[4];
+   GLdouble model_matrix_menu[16];
+   GLdouble project_matrix_menu[16];
 
    GLdouble fenster_x, fenster_y, fenster_z;
    GLint aktuelle_id;
@@ -58,7 +69,9 @@ public:
    
    void events();
    void handle_keydown(SDL_keysym& keysym);
+   void handle_keydown_menu(SDL_keysym& keysym);
    void handle_mousebuttondown(SDL_MouseButtonEvent& button);
+   void handle_mousebuttondown_menu(SDL_MouseButtonEvent& button);
 
    void zeichne();
    void selektiere_id();
@@ -76,8 +89,6 @@ public:
    
    Station* station;
    
-   bool idle_redraw;
-   bool antialiasing;
    
    timeval zeit;
    float zeit_ende, zeit_frame, zeit_anfang;
@@ -138,7 +149,8 @@ public:
    
    void set_fullscreen(bool wert);
    void toggle_fullscreen();
-
+   void toggle_antialiasing();
+   
    void set_material_ambi(float ambi1, float ambi2, float ambi3, float ambi4);
    void set_material_diff(float diff1, float diff2, float diff3, float diff4);
    void set_material_spec(float spec1, float spec2, float spec3, float spec4);

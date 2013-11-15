@@ -8,6 +8,10 @@
 // // // //  Modelle/Texturen definieren
 // #include "modelle.hh"
 
+void toggle_antialiasing_callback(Openglwidget& w)
+{
+   w.toggle_antialiasing();
+}
 
 Openglwidget::Openglwidget(int breite_, int hoehe_)
 {
@@ -16,11 +20,13 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    
 //    idle_redraw = false;
    running = true;
-   antialiasing = false;
+   antialiasing = true;
    fullscreen = false;
+   gamemenu = false;
    
    info = SDL_GetVideoInfo();
    
+   fenster_modus = SDL_OPENGL;
    bpp = info->vfmt->BitsPerPixel;
    
    fullscreen_x = info->current_w;
@@ -36,7 +42,6 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    
    
    licht_pos[0]  = 0  ; licht_pos[1]  = 0  ; licht_pos[2]  = 0  ; licht_pos[3]  = 0  ;
-   
    licht_ambi[0] = 0.0; licht_ambi[1] = 0.0; licht_ambi[2] = 0.0; licht_ambi[3] = 1.0;
    licht_diff[0] = 1.0; licht_diff[1] = 1.0; licht_diff[2] = 1.0; licht_diff[3] = 1.0;
    licht_spec[0] = 1.0; licht_spec[1] = 1.0; licht_spec[2] = 1.0; licht_spec[3] = 1.0;
@@ -92,6 +97,11 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    station = NULL;
    
 //    mode(FL_RGB | FL_DEPTH | FL_DOUBLE);// | FL_STEREO);
+   
+   button = new Opengltogglebutton(antialiasing);
+   button->set_callback(toggle_antialiasing_callback);
+//    button->set_booltotoggle(antialiasing);
+   
 }
 
 void Openglwidget::set_station(Station* station_)
@@ -157,7 +167,7 @@ void Openglwidget::draw()
    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION,    0.0);
    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0);
 
-   sonne_pos[0] = 1000.0;  // Sonnenlicht
+   sonne_pos[0] = sys.position[0];  // Sonnenlicht
    sonne_pos[1] = 0.0;
    sonne_pos[2] = 0.0;
    sonne_pos[3] = 0.0;
@@ -165,7 +175,9 @@ void Openglwidget::draw()
    glLightfv(GL_LIGHT1, GL_AMBIENT, sonne_ambi);
    glLightfv(GL_LIGHT1, GL_DIFFUSE, sonne_diff);
    glLightfv(GL_LIGHT1, GL_SPECULAR, sonne_spec);
-   glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION, 1.0);
+   glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION,  1.0);
+   glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION,    0.5);
+   glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.01);
    
 // // // // // // // // //    Testlicht
    
@@ -210,30 +222,37 @@ void Openglwidget::draw()
    zeichne_system(sys);
 //    glRotatef(-90, 1.0, 0.0, 0.0);
    
-   
+   if (gamemenu)
+   {
 // // // // // // // // // // // // // // // // // // // // // // // // //    UI Elemente zeichnen
 //     
 // #define LEISTE_U_HOEHE 100
+      glDisable(GL_LIGHTING);
+      glDisable(GL_DEPTH_TEST);
+      
+//       glPushMatrix(); //    Nur falls Matrizen noch benötigt werden!
+      glMatrixMode(GL_PROJECTION);
+//       glPushMatrix(); //    Nur falls Matrizen noch benötigt werden!
+      glLoadIdentity();
+      
+      glViewport(0, 0, fenster_breite, fenster_hoehe);
+//       glOrtho(-10.0, 10.0, -10.0, 10.0, -10, 10);
+      gluPerspective(45,breite_zu_hoehe,NEAR_CLIP,FAR_CLIP);
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
+      gluLookAt(0, 0,-10,   0, 0, 0,   0, 1, 0);
+      
+      glColor4f(0.3, 0.3, 0.5, 0.5);
+      glBegin(GL_QUADS);
+         glVertex3f(-100.0, -100.0, -1.0);
+         glVertex3f( 100.0, -100.0, -1.0);
+         glVertex3f( 100.0,  100.0, -1.0);
+         glVertex3f(-100.0,  100.0, -1.0);
+      glEnd();
+         
+      
+      button->zeichne();
 // 
-//     glPushMatrix();
-//     glMatrixMode(GL_PROJECTION);
-//     glPushMatrix();
-//     
-//     glDisable(GL_LIGHTING);
-//     glDisable(GL_DEPTH_TEST);
-//     
-//     glViewport(0, 0, fenster_breite, LEISTE_U_HOEHE);
-//     glLoadIdentity();
-//     glOrtho(0.0, 1.0, 0.0, 1.0, -10, 10);
-// //     gluPerspective(45,breite_zu_hoehe,NEAR_CLIP,FAR_CLIP);
-//     glMatrixMode(GL_MODELVIEW);
-//     glLoadIdentity();
-//     
-//     gluLookAt(0, 0, 0, 
-//               0, 0,-1,
-//               0, 1, 0);
-// 
-//     glColor3f(1.0, 1.0, 1.0);
 //     std::stringstream text;
 // //     text.precision(4);
 //     
@@ -248,17 +267,20 @@ void Openglwidget::draw()
 //     text << gebiet->rohstoffe[R_STROH];
 //     glRasterPos3f(0.3,0.5,0); gl_font(1, 12); gl_draw(text.str().c_str());
 //     text.str(""); text.clear();
-// 
-//     text << gebiet->produktion[R_BAU];
-//     glRasterPos3f(0.4,0.5,0); gl_font(1, 12); gl_draw(text.str().c_str());
-//     text.str(""); text.clear();
-// 
-//     glEnable(GL_LIGHTING);
-//     glEnable(GL_DEPTH_TEST);
-//     
-//     glPopMatrix();
-//     glMatrixMode(GL_PROJECTION);
-//     glPopMatrix();
+      
+   glGetIntegerv(GL_VIEWPORT, viewport);
+   glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix);
+   glGetDoublev(GL_PROJECTION_MATRIX, project_matrix);
+      
+      glEnable(GL_LIGHTING);
+      glEnable(GL_DEPTH_TEST);
+      
+// // // // // // //    Nur falls Matrizen noch benötigt werden!
+//       glPopMatrix();
+//       glMatrixMode(GL_PROJECTION);
+//       glPopMatrix();
+// // // // // // // // // // // // // // //       
+   }
    
    zeit_frame = zeit_diff(zeit);
 //    std::cout << zeit_frame << std::endl;
@@ -572,6 +594,14 @@ void Openglwidget::set_view_to(Mausobjekt& mo_)
       phi_soll = dis.get_phi_min()<dis.get_phi_max()?(dis.get_phi_min()+dis.get_phi_max())*0.5/RAD:(dis.get_phi_min()+dis.get_phi_max()+2*PI)*0.5/RAD;
       zoom_soll = 0.4; 
    }
+   else if (mo_.objekt_typ == "Openglbutton")
+   {
+   }
+   else if (mo_.objekt_typ == "Opengltogglebutton")
+   {
+      Opengltogglebutton& but = (Opengltogglebutton&) mo_;
+      but.callback_fkt(*this);
+   }
 }
 
 
@@ -773,7 +803,7 @@ void Openglwidget::zeichne_system(System& system_)
    glColor3f(1.0, 1.0, 0.7);
    glhilf::draw_texture_sphere(system_.sonnenradius, 100, 100);
    
-   glEnable(GL_BLEND);
+//    glEnable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE);
       glBindTexture(GL_TEXTURE_2D, tex->tex_sonne->id);
       glColor4f(1.0, 1.0, 0.7, 0.4);
@@ -785,11 +815,11 @@ void Openglwidget::zeichne_system(System& system_)
       glEnd();
       glTranslatef(-system_.position[0], 0.0, 0.0);
       
-   glGetIntegerv(GL_VIEWPORT, viewport2);
-   glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix2);
-   glGetDoublev(GL_PROJECTION_MATRIX, project_matrix2);
+//    glGetIntegerv(GL_VIEWPORT, viewport2);
+//    glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix2);
+//    glGetDoublev(GL_PROJECTION_MATRIX, project_matrix2);
    
-   gluProject(system_.position[0]-system_.sonnenradius*2, 0, 0, model_matrix2, project_matrix2, viewport2, &fenster_x, &fenster_y, &fenster_z);
+   gluProject(system_.position[0]-system_.sonnenradius*2, 0, 0, model_matrix, project_matrix, viewport, &fenster_x, &fenster_y, &fenster_z);
       
    
    if(flare_theta < 0.5*PI && fenster_x >= 0 && fenster_x <= fenster_breite && fenster_y >= 0 && fenster_y <= fenster_hoehe) // Flare zeichnen
@@ -871,7 +901,7 @@ void Openglwidget::zeichne_system(System& system_)
    
    glBindTexture(GL_TEXTURE_2D, 0);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   glDisable(GL_BLEND);
+//    glDisable(GL_BLEND);
 }
 
 
@@ -884,13 +914,31 @@ void Openglwidget::toggle_fullscreen()
 }
 
 
+void Openglwidget::toggle_antialiasing()
+{
+         if(!antialiasing)
+         {
+            std::cout << "Aktiviere AA" << std::endl;
+            glEnable(GL_MULTISAMPLE);
+            antialiasing = true;
+         }
+         else
+         {
+            std::cout << "Deaktiviere AA" << std::endl;
+            glDisable(GL_MULTISAMPLE);
+            antialiasing = false;
+         }
+}
+
+
 void Openglwidget::set_fullscreen(bool wert)
 {
          if (!wert)
          {
             fenster_breite = window_x;
             fenster_hoehe  = window_y;
-            SDL_SetVideoMode(window_x, window_y, bpp, SDL_OPENGL);
+            fenster_modus = SDL_OPENGL;
+            SDL_SetVideoMode(window_x, window_y, bpp, fenster_modus);
             initialisiere_gl();
             fullscreen = false;
          }
@@ -898,7 +946,8 @@ void Openglwidget::set_fullscreen(bool wert)
          {
             fenster_breite = fullscreen_x;
             fenster_hoehe  = fullscreen_y;
-            SDL_SetVideoMode(fullscreen_x, fullscreen_y, bpp, SDL_OPENGL | SDL_FULLSCREEN);
+            fenster_modus = SDL_OPENGL | SDL_FULLSCREEN;
+            SDL_SetVideoMode(fullscreen_x, fullscreen_y, bpp, fenster_modus);
             initialisiere_gl();
             fullscreen = true;
          }

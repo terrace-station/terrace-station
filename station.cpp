@@ -1,6 +1,6 @@
 #include "station.hh"
 
-#define PI          3.14125
+#define PI    3.14159265358979323846
 #define CF_MIN      600     // Minimum circumference
 #define CF_DELTA    100     // Difference in circumference
 #define NR_OF_ZONES 4
@@ -9,7 +9,7 @@ Station::Station()
 {
     int x, y, width, height, cf, nr, nr_of_decks;
     float radius;
-    std::srand(std::time(0));
+//     std::srand(std::time(0));
     for (int zone = 0; zone < NR_OF_ZONES; ++zone)
     {
         cf = CF_MIN + zone * CF_DELTA;
