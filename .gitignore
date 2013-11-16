@@ -1,6 +1,5 @@
 *~
 *.o
 *.gch
-*.xcf
 main
 dis
