@@ -5,8 +5,8 @@
 #include <GL/glu.h>
 
 #include "mausobjekt.hh"
+#include "modell.hh"
 class Openglwidget;
-class Modell; // ACHTUNG; Noch zu implementieren
 
 class Openglbutton: public Mausobjekt
 {

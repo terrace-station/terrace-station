@@ -18,6 +18,7 @@
 #include "zeit.h"
 #include "enumerationen.h"
 #include "openglbutton.hh"
+#include "openglmenu.hh"
 
 class Station;
 class Zone;
@@ -30,9 +31,6 @@ class Openglwidget
 {
 private:
    
-   Modell* M_dummy;
-   Modell* M_dummy2;
-   
    SDL_Event event;
    
    float flare_theta;
@@ -40,7 +38,7 @@ private:
    
 public:
    
-   Opengltogglebutton* button;
+   Openglmenu menu;
    
    bool gamemenu;
    bool fullscreen;
@@ -72,7 +70,7 @@ public:
    GLint aktuelle_id;
    void draw();
    void initialisiere_gl();
-   
+   void parameter_regelung();
 //    int handle(int);
    
    void events();

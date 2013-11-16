@@ -23,6 +23,24 @@ void Openglbutton::set_modell(Modell* modell_)
    bool_modell = true;
 }
 
+void Openglbutton::zeichne()
+{
+   glLoadName(objekt_id);
+   if (bool_modell)
+      modell->zeichne();
+   else
+   {
+      glColor3f(0.5, 0.5, 0.5);
+      glBegin(GL_QUADS);
+         glVertex3f(-0.5,-0.5, 0.0);
+         glVertex3f( 0.5,-0.5, 0.0);
+         glVertex3f( 0.5, 0.5, 0.0);
+         glVertex3f(-0.5, 0.5, 0.0);
+      glEnd();
+   }
+}
+
+
 // // // // // // // // // // // // // // // // // // Opengltogglebutton
 
 Opengltogglebutton::Opengltogglebutton(bool* bool_wert_): bool_wert(bool_wert_)
