@@ -1,4 +1,4 @@
-OBJEKTE  = openglwidget.o openglbutton.o mausobjekt.o textur.o system.o texturensammlung.o textures.o station.o zone.o district.o deck.o room.o wall.o door.o rect.o
+OBJEKTE  = openglwidget.o openglbutton.o mausobjekt.o textur.o system.o texturensammlung.o textures.o station.o zone.o district.o deck.o room.o wall.o door.o rect.o modell.o
 CPP      = g++-4.7
 CPPFLAGS = -std=c++11 -g
 
@@ -11,7 +11,7 @@ dis: dis.cpp station.o
 system.o: system.hh system.cpp glhilf.h
 	$(CPP) $(CPPFLAGS) -c system.cpp
 
-openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h textur.o zeit.h station.o mausobjekt.o openglwidget_material.h openglwidget_events.h openglbutton.o
+openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h textur.o zeit.h station.o mausobjekt.o openglwidget_material.h openglwidget_events.h openglbutton.o modell.o
 	$(CPP) $(CPPFLAGS) -c openglwidget.cpp
 
 openglbutton.o: openglbutton.cpp openglbutton.hh
@@ -19,6 +19,9 @@ openglbutton.o: openglbutton.cpp openglbutton.hh
 
 textur.o: textur.cpp textur.hh
 	$(CPP) $(CPPFLAGS) -c textur.cpp
+
+modell.o: modell.cpp modell.hh textur.o
+	$(CPP) $(CPPFLAGS) -c modell.cpp
 
 texturensammlung.o: texturensammlung.cpp texturensammlung.hh textur.o
 	$(CPP) $(CPPFLAGS) -c texturensammlung.cpp

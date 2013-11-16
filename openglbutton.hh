@@ -30,14 +30,16 @@ class Opengltogglebutton: public Openglbutton
 {
 public:
    
-   bool& bool_wert;
+   bool* bool_wert;
+   Modell* modell_false;
    
    void zeichne();
    void zeichne_true();
    void zeichne_false();
-   void set_booltotoggle(bool& wert_);
+   void set_booltotoggle(bool* wert_);
+   void set_modell(Modell* modell_, Modell* modell_false_);
    
-   Opengltogglebutton(bool& wert_);
+   Opengltogglebutton(bool* wert_);
 };
 
 

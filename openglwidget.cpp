@@ -17,6 +17,11 @@ void toggle_antialiasing_callback(Openglwidget& w)
    w.toggle_antialiasing();
 }
 
+void toggle_fullscreen_callback(Openglwidget& w)
+{
+   w.toggle_fullscreen();
+}
+
 Openglwidget::Openglwidget(int breite_, int hoehe_)
 {
    gettimeofday(&zeit, 0);
@@ -97,15 +102,23 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    target_x = 0;
    target_y = 0;
    target_z = 0;
+   
+   menu_bg = 0;
+   menu_bg_soll = 0;
 
    station = NULL;
    
 //    mode(FL_RGB | FL_DEPTH | FL_DOUBLE);// | FL_STEREO);
    
-   button = new Opengltogglebutton(antialiasing);
-   button->set_callback(toggle_antialiasing_callback);
-//    button->set_booltotoggle(antialiasing);
+//    button = new Opengltogglebutton(antialiasing);
+//    button->set_callback(toggle_antialiasing_callback);
    
+   M_dummy        = lade_modell("models/button_gruen", true);
+   M_dummy2       = lade_modell("models/button_rot", true);
+   
+   button = new Opengltogglebutton(&fullscreen);
+   button->set_callback(toggle_fullscreen_callback);
+   button->set_modell(M_dummy, M_dummy2);
 }
 
 void Openglwidget::set_station(Station* station_)
@@ -210,86 +223,12 @@ void Openglwidget::draw()
    glDisable(GL_LIGHT1);
    glEnable(GL_LIGHT0);
    
-   zeichne();
-   
-   glGetIntegerv(GL_VIEWPORT, viewport);
-   glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix);
-   glGetDoublev(GL_PROJECTION_MATRIX, project_matrix);
-   
-// // // // // // // // // // // // // // // Umgebung // // // // // //
-   
-   set_material_std();
-   glDisable(GL_LIGHT0);
-   glEnable(GL_LIGHT1);
-
-//    glRotatef( 90, 1.0, 0.0, 0.0);
-   zeichne_system(sys);
-//    glRotatef(-90, 1.0, 0.0, 0.0);
-   
-   if (gamemenu)
-   {
-// // // // // // // // // // // // // // // // // // // // // // // // //    UI Elemente zeichnen
-//     
-// #define LEISTE_U_HOEHE 100
-      glDisable(GL_LIGHTING);
-      glDisable(GL_DEPTH_TEST);
-      
-//       glPushMatrix(); //    Nur falls Matrizen noch benötigt werden!
-      glMatrixMode(GL_PROJECTION);
-//       glPushMatrix(); //    Nur falls Matrizen noch benötigt werden!
-      glLoadIdentity();
-      
-      glViewport(0, 0, fenster_breite, fenster_hoehe);
-//       glOrtho(-10.0, 10.0, -10.0, 10.0, -10, 10);
-      gluPerspective(45,breite_zu_hoehe,NEAR_CLIP,FAR_CLIP);
-      glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
-      gluLookAt(0, 0,-10,   0, 0, 0,   0, 1, 0);
-      
-      glColor4f(0.3, 0.3, 0.5, 0.5);
-      glBegin(GL_QUADS);
-         glVertex3f(-100.0, -100.0, -1.0);
-         glVertex3f( 100.0, -100.0, -1.0);
-         glVertex3f( 100.0,  100.0, -1.0);
-         glVertex3f(-100.0,  100.0, -1.0);
-      glEnd();
-         
-      
-      button->zeichne();
-// 
-//     std::stringstream text;
-// //     text.precision(4);
-//     
-//     text << gebiet->rohstoffe[R_HOLZ];
-//     glRasterPos3f(0.1,0.5,0); gl_font(1, 12); gl_draw(text.str().c_str());
-//     text.str(""); text.clear();
-//     
-//     text << gebiet->rohstoffe[R_LEHM];
-//     glRasterPos3f(0.2,0.5,0); gl_font(1, 12); gl_draw(text.str().c_str());
-//     text.str(""); text.clear();
-// 
-//     text << gebiet->rohstoffe[R_STROH];
-//     glRasterPos3f(0.3,0.5,0); gl_font(1, 12); gl_draw(text.str().c_str());
-//     text.str(""); text.clear();
-      
-   glGetIntegerv(GL_VIEWPORT, viewport);
-   glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix);
-   glGetDoublev(GL_PROJECTION_MATRIX, project_matrix);
-      
-      glEnable(GL_LIGHTING);
-      glEnable(GL_DEPTH_TEST);
-      
-// // // // // // //    Nur falls Matrizen noch benötigt werden!
-//       glPopMatrix();
-//       glMatrixMode(GL_PROJECTION);
-//       glPopMatrix();
-// // // // // // // // // // // // // // //       
-   }
+   zeichne_szene();
    
    zeit_frame = zeit_diff(zeit);
 //    std::cout << zeit_frame << std::endl;
    
-   if (phi != phi_soll || pos_z != pos_z_soll || theta != theta_soll || zoom != zoom_soll || pos_radius != pos_radius_soll)
+   if (phi != phi_soll || pos_z != pos_z_soll || theta != theta_soll || zoom != zoom_soll || pos_radius != pos_radius_soll || menu_bg != menu_bg_soll)
    {
       float zeit_faktor;
       if (zeit_frame > 0.1)
@@ -332,6 +271,13 @@ void Openglwidget::draw()
       else
          pos_radius = pos_radius_soll;
       
+      if (fabs(menu_bg_soll - menu_bg) > 0.001)
+      {
+         menu_bg += 0.9*(menu_bg_soll - menu_bg)*zeit_faktor*1;
+      }
+      else
+         menu_bg = menu_bg_soll;
+      
 //       if (!idle_redraw)
 //       {
 //          idle_redraw = true;
@@ -360,7 +306,7 @@ void Openglwidget::draw()
 
 
 
-void Openglwidget::zeichne()
+void Openglwidget::zeichne_szene()
 {
 // // // // // // // // // // // // // // // // // // // // // // // //    clear buffer(s)
    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -369,18 +315,69 @@ void Openglwidget::zeichne()
    glInitNames();
    glPushName(0);
    zeichne_station();
-
-//    glLoadName(aktuelle_id++); //
-
-//    glhilf::draw_tube_mesh(0, 0, 0, 0, 0, 1, 1, 20);
-//    glTranslatef(0,0,1);
-//    glhilf::draw_tube_mesh(0, 0, 0, 0, 0, 1, 1, 20);
-//    glTranslatef(0,0,1);
-//    glhilf::draw_tube_mesh(0, 0, 0, 0, 0, 1, 1, 20);
-//    glTranslatef(0,0,1);
-//    glhilf::draw_tube_mesh(0, 0, 0, 0, 0, 1, 1, 20);
-//    glTranslatef(0,0,-3);
    
+   glGetIntegerv(GL_VIEWPORT, viewport);
+   glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix);
+   glGetDoublev(GL_PROJECTION_MATRIX, project_matrix);
+   
+// // // // // // // // // // // // // // // Umgebung // // // // // //
+   
+   set_material_std();
+   glDisable(GL_LIGHT0);
+   glEnable(GL_LIGHT1);
+
+   glLoadName(0);
+//    glRotatef( 90, 1.0, 0.0, 0.0);
+   zeichne_system(sys);
+//    glRotatef(-90, 1.0, 0.0, 0.0);
+   
+   if (gamemenu)
+   {
+// // // // // // // // // // // // // // // // // // // // // // // // //    UI Elemente zeichnen
+      glLoadIdentity();
+      gluLookAt(0, 0, 10,   0, 0, 0,   0, 1, 0);
+      zeichne_gamemenu();
+   }
+}
+
+
+void Openglwidget::zeichne_gamemenu()
+{
+//       glMatrixMode(GL_MODELVIEW);
+      glClear(GL_DEPTH_BUFFER_BIT);
+      
+      glDisable(GL_LIGHTING);
+      glDisable(GL_DEPTH_TEST);
+      
+      glColor4f(0.3, 0.3, 0.5, menu_bg);
+      glBegin(GL_QUADS);
+         glVertex3f(-100.0, -100.0, -1.0);
+         glVertex3f( 100.0, -100.0, -1.0);
+         glVertex3f( 100.0,  100.0, -1.0);
+         glVertex3f(-100.0,  100.0, -1.0);
+      glEnd();
+      
+      glEnable(GL_LIGHTING);
+      glDisable(GL_LIGHT1);
+      glEnable(GL_LIGHT0);
+      licht_pos[0] = 10.0;  // Kameralicht
+      licht_pos[1] =  8.0;
+      licht_pos[2] = 10.0;
+      licht_pos[3] = 1.0;
+      glLightfv(GL_LIGHT0, GL_POSITION, licht_pos);
+   
+      button->zeichne();
+      
+      glGetIntegerv(GL_VIEWPORT, viewport);
+      glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix);
+      glGetDoublev(GL_PROJECTION_MATRIX, project_matrix);
+      
+      glEnable(GL_DEPTH_TEST);
+// // // // // // //    Nur falls Matrizen noch benötigt werden!
+//       glPopMatrix();
+//       glMatrixMode(GL_PROJECTION);
+//       glPopMatrix();
+// // // // // // // // // // // // // // //       
 }
 
 
@@ -607,9 +604,11 @@ void Openglwidget::set_view_to(Mausobjekt& mo_)
    }
    else if (mo_.objekt_typ == "Openglbutton")
    {
+      std::cout << "Openglbutton gedrückt" << std::endl;
    }
    else if (mo_.objekt_typ == "Opengltogglebutton")
    {
+      std::cout << "Opengltogglebutton gedrückt" << std::endl;
       Opengltogglebutton& but = (Opengltogglebutton&) mo_;
       but.callback_fkt(*this);
    }
@@ -627,64 +626,70 @@ Mausobjekt& Openglwidget::get_target()
    if (target_id == 0)
       return nichts;
    
-    for (std::vector<Zone>::iterator zone_it = station->get_zones().begin(); zone_it != station->get_zones().end(); zone_it++)
-    {
-        for (std::vector<District>::iterator district_it = zone_it->get_districts().begin(); district_it != zone_it->get_districts().end(); district_it++)
-        {
+   for (std::vector<Zone>::iterator zone_it = station->get_zones().begin(); zone_it != station->get_zones().end(); zone_it++)
+   {
+      for (std::vector<District>::iterator district_it = zone_it->get_districts().begin(); district_it != zone_it->get_districts().end(); district_it++)
+      {
+         if ((*district_it).objekt_id == target_id)
             return (Mausobjekt&) (*district_it);
-        }
-    }
+      }
+   }
+   
+   if(target_id == button->objekt_id)
+      return (Mausobjekt&) *button;
+   
+   return nichts;
 }
 
 
 void Openglwidget::selektiere_id()
 {
-    float maus_x = event.button.x;
-    float maus_y = fenster_hoehe-event.button.y;
-    
-    std::cout << "x: " << event.button.x << ", y:" << event.button.y << std::endl;
-    
-    GLuint sel_buffer[256];
-    glSelectBuffer (256, sel_buffer);
-    GLint hits = 0;
+   float maus_x = event.button.x;
+   float maus_y = fenster_hoehe-event.button.y;
+   
+   std::cout << "x: " << event.button.x << ", y:" << event.button.y << std::endl;
+   
+   GLuint sel_buffer[256];
+   glSelectBuffer (256, sel_buffer);
+   GLint hits = 0;
 
-    glViewport(0, 0, fenster_breite, fenster_hoehe);
+   glViewport(0, 0, fenster_breite, fenster_hoehe);
 
-    glMatrixMode(GL_PROJECTION);
-    glRenderMode(GL_SELECT);
-    glLoadIdentity();
-    gluPickMatrix(maus_x, maus_y, 1, 1, viewport); // nur an der Mausposition gucken
-    gluPerspective(view_angle,breite_zu_hoehe,NEAR_CLIP,FAR_CLIP);
+   glMatrixMode(GL_PROJECTION);
+   glRenderMode(GL_SELECT);
+   glLoadIdentity();
+   gluPickMatrix(maus_x, maus_y, 1, 1, viewport); // nur an der Mausposition gucken
+   gluPerspective(view_angle,breite_zu_hoehe,NEAR_CLIP,FAR_CLIP);
 // // // // // // // // // render
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity;
-    zeichne();
+   glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity;
+   zeichne_szene();
 // // // // // // // // //
-    hits = glRenderMode(GL_RENDER);
-    std::cout << hits << " Objekte getroffen" << std::endl;
+   hits = glRenderMode(GL_RENDER);
+   std::cout << hits << " Objekte getroffen" << std::endl;
 
-    if (hits) // wenn was angeklickt wurde, soll das "vorderste" gewählt werden
-    {
-    //  Organisation des Buffers:
-    //     Anzahl der Namen auf dem Stack
-    //     Kleinster Abstand
-    //     Größter Abstand
-    //     Objektname
+   if (hits) // wenn was angeklickt wurde, soll das "vorderste" gewählt werden
+   {
+   //  Organisation des Buffers:
+   //     Anzahl der Namen auf dem Stack
+   //     Kleinster Abstand
+   //     Größter Abstand
+   //     Objektname
 
-        target_id = sel_buffer[3];
-        int abstand = sel_buffer[1];
-
-        for (int i = 1; i <hits; i++)
-        {
-            if (sel_buffer[(i*4)+1] < abstand)
-            {
-                target_id = sel_buffer[(i*4)+3];
-                abstand   = sel_buffer[(i*4)+1];
-            }
-        }
-    }
-    else
-        target_id = 0; // nichts gefunden :(
+      target_id = sel_buffer[3];
+      int abstand = sel_buffer[1];
+      
+      for (int i = 1; i <hits; i++)
+      {
+         if (sel_buffer[(i*4)+1] < abstand)
+         {
+            target_id = sel_buffer[(i*4)+3];
+            abstand   = sel_buffer[(i*4)+1];
+         }
+      }
+   }
+   else
+      target_id = 0; // nichts gefunden :(
 
 }
 

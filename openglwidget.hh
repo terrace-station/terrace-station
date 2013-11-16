@@ -13,6 +13,7 @@
 #include "mausobjekt.hh"
 #include "texturensammlung.hh"
 #include "textures.hh"
+#include "modell.hh"
 #include "system.hh"
 #include "zeit.h"
 #include "enumerationen.h"
@@ -29,6 +30,9 @@ class Openglwidget
 {
 private:
    
+   Modell* M_dummy;
+   Modell* M_dummy2;
+   
    SDL_Event event;
    
    float flare_theta;
@@ -42,6 +46,9 @@ public:
    bool fullscreen;
    bool idle_redraw;
    bool antialiasing;
+   
+   float menu_bg;
+   float menu_bg_soll;
    
    int fullscreen_x, fullscreen_y;
    int window_x, window_y;
@@ -74,7 +81,7 @@ public:
    void handle_mousebuttondown(SDL_MouseButtonEvent& button);
    void handle_mousebuttondown_menu(SDL_MouseButtonEvent& button);
 
-   void zeichne();
+   void zeichne_szene();
    void selektiere_id();
    void selektiere_pos();
 
@@ -168,6 +175,7 @@ public:
 
    void set_station(Station* station_);
    void zeichne_system(System& system_);
+   void zeichne_gamemenu();
    
    void zeichne_station();
    void zeichne_zone(Zone& zone);

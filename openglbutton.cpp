@@ -25,7 +25,7 @@ void Openglbutton::set_modell(Modell* modell_)
 
 // // // // // // // // // // // // // // // // // // Opengltogglebutton
 
-Opengltogglebutton::Opengltogglebutton(bool& bool_wert_): bool_wert(bool_wert_)
+Opengltogglebutton::Opengltogglebutton(bool* bool_wert_): bool_wert(bool_wert_)
 {
    objekt_typ = "Opengltogglebutton";
 }
@@ -33,17 +33,32 @@ Opengltogglebutton::Opengltogglebutton(bool& bool_wert_): bool_wert(bool_wert_)
 
 void Opengltogglebutton::zeichne()
 {
-   if (bool_wert)
+   glLoadName(objekt_id);
+   if (*bool_wert)
       zeichne_true();
    else
       zeichne_false();
 }
 
 
+void Opengltogglebutton::set_booltotoggle(bool* bool_wert_)
+{
+   bool_wert = bool_wert_;
+}
+
+
+void Opengltogglebutton::set_modell(Modell* modell_, Modell* modell_false_)
+{
+   modell       = modell_;
+   modell_false = modell_false_;
+   bool_modell = true;
+}
+
+
 void Opengltogglebutton::zeichne_true()
 {
    if (bool_modell)
-      ;
+      modell->zeichne();
    else
    {
       glColor3f(0.0, 1.0, 0.0);
@@ -60,7 +75,7 @@ void Opengltogglebutton::zeichne_true()
 void Opengltogglebutton::zeichne_false()
 {
    if (bool_modell)
-      ;
+      modell_false->zeichne();
    else
    {
       glColor3f(1.0, 0.0, 0.0);

@@ -38,11 +38,14 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
          if(!gamemenu)
          {
             gamemenu = true;
+            menu_bg_soll = 0.5;
             SDL_EnableKeyRepeat(0, 20);
          }
          else
          {
             gamemenu = false;
+            menu_bg_soll = 0.0;
+            menu_bg      = 0.0;
             SDL_EnableKeyRepeat(20, 20);
          }
          
@@ -157,11 +160,14 @@ void Openglwidget::handle_keydown_menu(SDL_keysym& keysym)
          if(!gamemenu)
          {
             gamemenu = true;
+            menu_bg_soll = 0.5;
             SDL_EnableKeyRepeat(0, 20);
          }
          else
          {
             gamemenu = false;
+            menu_bg_soll = 0.0;
+            menu_bg      = 0.0;
             SDL_EnableKeyRepeat(20, 20);
          }
          break;
