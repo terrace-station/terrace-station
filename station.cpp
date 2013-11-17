@@ -23,6 +23,13 @@ Station::Station()
             zones.emplace_back(cf, "segments", this);
         }
     }
+    
+    active_district = NULL;
+}
+
+void Station::set_active_district(District* dis)
+{
+   active_district = dis;
 }
 
 std::vector<Zone>& Station::get_zones() {

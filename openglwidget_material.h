@@ -1,6 +1,6 @@
 void Openglwidget::set_material_std()
 {
-   set_material_ambi(0.0, 0.0, 0.0, 1.0);
+   set_material_ambi(0.1, 0.1, 0.1, 1.0);
    set_material_diff(0.8, 0.8, 0.8, 1.0);
    set_material_spec(0.0, 0.0, 0.0, 1.0);
    set_material_shin(0);

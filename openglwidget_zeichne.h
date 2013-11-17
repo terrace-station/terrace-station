@@ -25,7 +25,9 @@ void Openglwidget::draw()
    
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
+   
    gluLookAt(kamera_x, kamera_y, kamera_z, pos_x, pos_y, pos_z, oben_x, oben_y, oben_z);
+   if (station->active_district != NULL) glRotatef(-station->active_district->get_angle(), 0.0, 0.0, 1.0);
    
    flare_theta = atan2(sqrt(pow(pos_y-kamera_y,2) + pow(pos_z-kamera_z,2)),pos_x-kamera_x);
    flare_phi = atan2(pos_z-kamera_z,pos_y-kamera_y);
@@ -41,20 +43,20 @@ void Openglwidget::draw()
    glLightfv(GL_LIGHT0, GL_DIFFUSE, licht_diff);
    glLightfv(GL_LIGHT0, GL_SPECULAR, licht_spec);
    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION,  1.0);
-   glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION,    0.0);
+   glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION,    0.005);
    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0);
 
    sonne_pos[0] = sys.position[0];  // Sonnenlicht
    sonne_pos[1] = 0.0;
    sonne_pos[2] = 0.0;
-   sonne_pos[3] = 0.0;
+   sonne_pos[3] = 1.0;
    glLightfv(GL_LIGHT1, GL_POSITION, sonne_pos);
    glLightfv(GL_LIGHT1, GL_AMBIENT, sonne_ambi);
    glLightfv(GL_LIGHT1, GL_DIFFUSE, sonne_diff);
    glLightfv(GL_LIGHT1, GL_SPECULAR, sonne_spec);
    glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION,  1.0);
-   glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION,    0.5);
-   glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.01);
+   glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION,    0.0);
+   glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.0);
    
 // // // // // // // // //    Testlicht
    
@@ -88,6 +90,8 @@ void Openglwidget::draw()
    zeit_frame = zeit_diff(zeit);
 //    std::cout << zeit_frame << std::endl;
    parameter_regelung();
+   if (!gamemenu) 
+      laufzeit += zeit_frame;
    
    fps_counter++;
    fps_sum += 1.0/zeit_frame;
@@ -161,11 +165,14 @@ void Openglwidget::zeichne_gamemenu()
    licht_pos[2] = 10.0;
    licht_pos[3] = 1.0;
    glLightfv(GL_LIGHT0, GL_POSITION, licht_pos);
+   glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION,  1.5);
+   glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION,    0.0);
+   glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0);
    
    set_material_ambi(0.00, 0.00, 0.00, 1.0);
    set_material_diff(0.30, 0.30, 0.50, 1.0);
    set_material_spec(1.00, 1.00, 1.00, 1.0);
-   set_material_shin(128.0);
+   set_material_shin(100.0);
 
    glTranslatef(0.0, 0.0, (1.0-menu_bg)*10);
    
@@ -199,10 +206,17 @@ void Openglwidget::zeichne_station()
    if (station == NULL)
       return;
 
-    for (std::vector<Zone>::iterator it = station->get_zones().begin(); it != station->get_zones().end(); it++)
-    {
-        zeichne_zone(*it);
-    }
+   for (int i=station->get_zones().size()-1; i >= 0; i--)
+   {
+      float winkel = laufzeit*station->get_zones()[i].get_omega()/RAD;
+      if(i%2==0) winkel*=-1;
+      station->get_zones()[i].set_angle(winkel);
+      
+      glPushMatrix();
+      glRotatef(winkel, 0.0, 0.0, 1.0);
+         zeichne_zone(station->get_zones()[i]);
+      glPopMatrix();
+   }
 }
 
 

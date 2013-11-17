@@ -32,6 +32,7 @@ public:
     float get_phi_max();
     float get_z_min();
     float get_z_max();
+    float get_angle();
     std::vector<Deck>& get_decks();
     
     std::string str();

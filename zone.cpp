@@ -50,11 +50,26 @@ Zone::Zone(int circumference, std::string style, Station* station) :
             districts.emplace_back(x, y, width, height, nr_of_decks, false, this);
         }
     }
+    
+    omega = sqrt(9.81/(this->get_radius()));
 }
 
 float Zone::get_radius() {
     return circumference / (2 * PI);
 }
+
+float Zone::get_omega() {
+    return omega;
+}
+
+float Zone::get_angle() {
+   return angle;
+}
+
+void Zone::set_angle(float angle_) {
+   angle = angle_;
+}
+
 
 std::vector<District>& Zone::get_districts() {
     return districts;

@@ -96,7 +96,7 @@ public:
    
    
    timeval zeit;
-   float zeit_ende, zeit_frame, zeit_anfang;
+   float zeit_ende, zeit_frame, zeit_anfang, laufzeit;
    
    Textures* textures;
    
@@ -167,7 +167,7 @@ public:
    float fps_sum;
 
    Mausobjekt& get_target();
-   void set_view_to(Mausobjekt& mo_);
+   void interact_with(Mausobjekt& mo_);
 
    void set_station(Station* station_);
    void zeichne_system(System& system_);

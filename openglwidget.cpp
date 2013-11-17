@@ -18,6 +18,7 @@
 Openglwidget::Openglwidget(int breite_, int hoehe_)
 {
    gettimeofday(&zeit, 0);
+   laufzeit = 0;
    //~ tex = new Texturensammlung;
    
 //    idle_redraw = false;
@@ -44,9 +45,9 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    
    
    licht_pos[0]  = 0  ; licht_pos[1]  = 0  ; licht_pos[2]  = 0  ; licht_pos[3]  = 0  ;
-   licht_ambi[0] = 0.0; licht_ambi[1] = 0.0; licht_ambi[2] = 0.0; licht_ambi[3] = 1.0;
-   licht_diff[0] = 1.0; licht_diff[1] = 1.0; licht_diff[2] = 1.0; licht_diff[3] = 0.0;
-   licht_spec[0] = 1.0; licht_spec[1] = 1.0; licht_spec[2] = 1.0; licht_spec[3] = 0.0;
+   licht_ambi[0] = 0.5; licht_ambi[1] = 0.5; licht_ambi[2] = 0.5; licht_ambi[3] = 1.0;
+   licht_diff[0] = 1.0; licht_diff[1] = 1.0; licht_diff[2] = 1.0; licht_diff[3] = 1.0;
+   licht_spec[0] = 1.0; licht_spec[1] = 1.0; licht_spec[2] = 1.0; licht_spec[3] = 1.0;
 
    sonne_ambi[0] = 0.0; sonne_ambi[1] = 0.0; sonne_ambi[2] = 0.0; sonne_ambi[3] = 1.0;
    sonne_diff[0] = 1.0; sonne_diff[1] = 1.0; sonne_diff[2] = 1.0; sonne_diff[3] = 1.0;
@@ -113,7 +114,7 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    
    Opengltogglebutton button_aa(&antialiasing);
    button_aa.set_callback(toggle_antialiasing_callback);
-   button_aa.set_modell(lade_modell("models/button_gruen", false), lade_modell("models/button1_rot", false));
+   button_aa.set_modell(lade_modell("models/button_gruen", false), lade_modell("models/button_rot", false));
    menu.add_togglebutton(&button_aa, 0, 0, 1, 1);
    
 }
@@ -180,12 +181,12 @@ void Openglwidget::parameter_regelung()
 }
 
 
-void Openglwidget::set_view_to(Mausobjekt& mo_)
+void Openglwidget::interact_with(Mausobjekt& mo_)
 {
    if (mo_.objekt_typ == "District")
    {
       District& dis = (District&) mo_;
-      //~ station->set_aktiv(dis);
+      station->set_active_district(&dis);
       pos_radius_soll = dis.get_radius_min();
       pos_z_soll = (dis.get_z_min()+dis.get_z_max())*0.5;
       phi_soll = dis.get_phi_min()<dis.get_phi_max()?(dis.get_phi_min()+dis.get_phi_max())*0.5/RAD:(dis.get_phi_min()+dis.get_phi_max()+2*PI)*0.5/RAD;
@@ -350,6 +351,8 @@ void Openglwidget::initialisiere_gl()
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //     glBlendFunc(GL_SRC_ALPHA,GL_ONE);
 //     glBlendFunc(GL_ONE, GL_ONE);
+   
+   set_material_std();
    
    breite_zu_hoehe = float(fenster_breite) / float(fenster_hoehe);
 }

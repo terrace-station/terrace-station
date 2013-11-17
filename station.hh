@@ -9,6 +9,7 @@
 #include <ctime>
 
 class Zone;
+class District;
 
 class Station
 {
@@ -16,6 +17,9 @@ class Station
     
 public:
     Station();
+    District* active_district;
+    
+    void set_active_district(District* dis);
     
     std::vector<Zone>& get_zones();
 
