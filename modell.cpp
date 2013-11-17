@@ -35,10 +35,10 @@ Modell::Modell(bool flat_shading_)
       
         for(int j=0; j<objekte[i].anzahl_dreiecke; j++)
         {
-            if (objekte[i].dreiecke[j].ecke[3] < 0)
-               glBegin(GL_TRIANGLES);
-            else
+            if (objekte[i].dreiecke[j].viereck)
                glBegin(GL_QUADS);
+            else
+               glBegin(GL_TRIANGLES);
             glEdgeFlag(false);
 //       std::cout << objekte[i].dreiecke[j].ecke[0] << "\t" << objekte[i].dreiecke[j].ecke[1] << "\t" << objekte[i].dreiecke[j].ecke[2] << "\n";
    
@@ -62,7 +62,7 @@ Modell::Modell(bool flat_shading_)
               glNormal3f(knoten[objekte[i].dreiecke[j].ecke[2]].n_x, knoten[objekte[i].dreiecke[j].ecke[2]].n_y, knoten[objekte[i].dreiecke[j].ecke[2]].n_z);
                 glTexCoord2f(texkoords[objekte[i].dreiecke[j].texecke[2]].tx, texkoords[objekte[i].dreiecke[j].texecke[2]].ty);
             glVertex3f(knoten[objekte[i].dreiecke[j].ecke[2]].x, knoten[objekte[i].dreiecke[j].ecke[2]].y, knoten[objekte[i].dreiecke[j].ecke[2]].z);
-            if (objekte[i].dreiecke[j].ecke[3] >= 0)
+            if (objekte[i].dreiecke[j].viereck)
             {
                if(!flat_shading)
                glNormal3f(knoten[objekte[i].dreiecke[j].ecke[3]].n_x, knoten[objekte[i].dreiecke[j].ecke[3]].n_y, knoten[objekte[i].dreiecke[j].ecke[3]].n_z);
@@ -73,6 +73,8 @@ Modell::Modell(bool flat_shading_)
           }
           else
           {
+//             std::cout << knoten[objekte[i].dreiecke[j].ecke[0]].n_x << ", " << knoten[objekte[i].dreiecke[j].ecke[0]].n_y << ", " << knoten[objekte[i].dreiecke[j].ecke[0]].n_z << std::endl;
+//             std::cout << knoten[objekte[i].dreiecke[j].ecke[0]].x << ", " << knoten[objekte[i].dreiecke[j].ecke[0]].y << ", " << knoten[objekte[i].dreiecke[j].ecke[0]].z << std::endl;
             if(!flat_shading)
               glNormal3f(knoten[objekte[i].dreiecke[j].ecke[0]].n_x, knoten[objekte[i].dreiecke[j].ecke[0]].n_y, knoten[objekte[i].dreiecke[j].ecke[0]].n_z); // kein flat shading
             glVertex3f(knoten[objekte[i].dreiecke[j].ecke[0]].x, knoten[objekte[i].dreiecke[j].ecke[0]].y, knoten[objekte[i].dreiecke[j].ecke[0]].z);
@@ -82,10 +84,14 @@ Modell::Modell(bool flat_shading_)
             if(!flat_shading)
               glNormal3f(knoten[objekte[i].dreiecke[j].ecke[2]].n_x, knoten[objekte[i].dreiecke[j].ecke[2]].n_y, knoten[objekte[i].dreiecke[j].ecke[2]].n_z);
             glVertex3f(knoten[objekte[i].dreiecke[j].ecke[2]].x, knoten[objekte[i].dreiecke[j].ecke[2]].y, knoten[objekte[i].dreiecke[j].ecke[2]].z);
-            if (objekte[i].dreiecke[j].ecke[3] >= 0)
+            if (objekte[i].dreiecke[j].viereck)
             {
                if(!flat_shading)
-               glNormal3f(knoten[objekte[i].dreiecke[j].ecke[3]].n_x, knoten[objekte[i].dreiecke[j].ecke[3]].n_y, knoten[objekte[i].dreiecke[j].ecke[3]].n_z);
+               {
+//                   std::cout << knoten[objekte[i].dreiecke[j].ecke[3]].n_x << ", " << knoten[objekte[i].dreiecke[j].ecke[3]].n_y << ", " << knoten[objekte[i].dreiecke[j].ecke[3]].n_z << std::endl;
+                  glNormal3f(knoten[objekte[i].dreiecke[j].ecke[3]].n_x, knoten[objekte[i].dreiecke[j].ecke[3]].n_y, knoten[objekte[i].dreiecke[j].ecke[3]].n_z);
+               }
+//                std::cout << knoten[objekte[i].dreiecke[j].ecke[3]].x << ", " << knoten[objekte[i].dreiecke[j].ecke[3]].y << ", " << knoten[objekte[i].dreiecke[j].ecke[3]].z << std::endl;
                glVertex3f(knoten[objekte[i].dreiecke[j].ecke[3]].x, knoten[objekte[i].dreiecke[j].ecke[3]].y, knoten[objekte[i].dreiecke[j].ecke[3]].z);
             }
           }
@@ -437,11 +443,12 @@ Modell* lade_modell(std::string dateiname, bool flat_shading_)
          if (eingang.get() == '\n')
          {
             eingang.unget();
-            modell->objekte[i].dreiecke[f_zaehler].ecke[3] == -1;
+            modell->objekte[i].dreiecke[f_zaehler].viereck = false;
          }
          else
          {
             eingang.unget();
+            modell->objekte[i].dreiecke[f_zaehler].viereck = true;
             eingang >> modell->objekte[i].dreiecke[f_zaehler].ecke[3];
             modell->objekte[i].dreiecke[f_zaehler].ecke[3]--;
             std::cout << "\t" << modell->objekte[i].dreiecke[f_zaehler].ecke[3];

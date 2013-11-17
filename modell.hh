@@ -5,8 +5,8 @@
 #include <fstream>
 #include <string>
 #include <math.h>
-#include <FL/glu.h>
-#include <FL/gl.h>
+#include <GL/glu.h>
+#include <GL/gl.h>
 
 #include "textur.hh"
 #include "hilfsfunktionen.h"
@@ -26,8 +26,9 @@ struct TexKoord
 struct Dreieck
 {
   int ecke[4];
-  
   int texecke[4];
+  
+  bool viereck = false;
   
   float normal_x;
   float normal_y;
