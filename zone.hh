@@ -17,7 +17,7 @@ class Zone
     std::vector<District> districts;
     
 public:
-    Zone(int circumference, Station* station);
+    Zone(int circumference, std::string style, Station* station);
     
     float get_radius();
     std::vector<District>& get_districts();

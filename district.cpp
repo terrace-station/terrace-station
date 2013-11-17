@@ -5,16 +5,17 @@
 #include "zone.hh"
 #include "station.hh"
 
-#define DECK_HEIGHT 3
+#define DECK_HEIGHT 2
+#define DECK_DISTANCE 3
 
 District::District(int x, int y, int size_x, int size_y,
-                   int nr_of_decks, Zone* zone) :
-    x(x), y(y), size_x(size_x), size_y(size_y), zone(zone)
+                   int nr_of_decks, bool circular, Zone* zone) :
+    x(x), y(y), size_x(size_x), size_y(size_y), circular(circular), zone(zone)
 {
     decks.reserve(nr_of_decks);
     for (int i = 0; i < nr_of_decks; ++i)
     {
-        float deck_radius = get_radius() + i * DECK_HEIGHT - 2.5;
+        float deck_radius = get_radius() + i * DECK_DISTANCE - 2.5;
         decks.emplace_back(deck_radius, x, y, size_x, size_y, this);
     }
     

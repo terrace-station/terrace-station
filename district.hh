@@ -17,12 +17,13 @@ class District: public Mausobjekt
     int y;
     int size_x;
     int size_y;
+    bool circular;
     Zone* zone;
     std::vector<Deck> decks;
     
 public:
     District(int x, int y, int size_x, int size_y,
-             int nr_of_decks, Zone* zone);
+             int nr_of_decks, bool circular, Zone* zone);
     
     float get_radius();
     float get_radius_min();

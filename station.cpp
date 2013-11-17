@@ -6,17 +6,22 @@
 #include "station.hh"
 
 #define PI    3.14159265358979323846
-#define CF_MIN      600     // Minimum circumference
-#define CF_DELTA    100     // Difference in circumference
+#define CF_MIN      400     // Minimum circumference
+#define CF_DELTA    110     // Difference in circumference
 #define NR_OF_ZONES 4
 
 Station::Station()
 {
     zones.reserve(NR_OF_ZONES);
+    int ring_zone = rand() % NR_OF_ZONES;
     for (int i = 0; i < NR_OF_ZONES; ++i)
     {
         int cf = CF_MIN + i * CF_DELTA;
-        zones.emplace_back(cf, this);
+        if (i == ring_zone) {
+            zones.emplace_back(cf, "rings", this);
+        } else {
+            zones.emplace_back(cf, "segments", this);
+        }
     }
 }
 
