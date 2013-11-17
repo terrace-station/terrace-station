@@ -38,7 +38,6 @@ int main(int argc, char* argv[])
    SDL_SetVideoMode(glwidget.fenster_breite, glwidget.fenster_hoehe, glwidget.bpp, SDL_OPENGL);
    
    SDL_EnableKeyRepeat(20, 20);
-   glwidget.tex->texturen_laden();
    glwidget.initialisiere_gl();
 
    while(glwidget.running)

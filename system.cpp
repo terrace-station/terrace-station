@@ -1,5 +1,17 @@
 #include "system.hh"
 
+std::vector<std::string> Planet::rock_texture_labels = {"planet-rock1",
+                                                        "planet-rock2",
+                                                        "planet-rock3",
+                                                        "planet-rock4",
+                                                        "planet-rock5",
+                                                        "planet-rock6"};
+
+std::vector<std::string> Planet::gas_texture_labels = {"planet-gas1",
+                                                       "planet-gas2",
+                                                       "planet-gas3",
+                                                       "planet-gas4"};
+
 void Planet::erstelle_zufall()
   {
     phase = float(rand()%360);
@@ -10,21 +22,21 @@ void Planet::erstelle_zufall()
         klasse = 'A';
         spezial = rand()%4;
         radius = 80.0 + float(rand()%5000)/500.0;
-        textur_ind = rand()%4+6;
+        texture_label = gas_texture_labels[rand() % 4];
         break;
         
       case 1:
         klasse = 'J';
         spezial = rand()%3;
         radius = 10.0 + float(rand()%4000)/400.0; 
-        textur_ind = rand()%4;
+        texture_label = rock_texture_labels[rand() % 4];
         break;
         
       case 2:
         klasse = 'K';
         spezial = rand()%3+3;
         radius = 10.0 + float(rand()%4000)/400.0; 
-        textur_ind = rand()%6;
+        texture_label = rock_texture_labels[rand() % 6];
         break;
       
     }

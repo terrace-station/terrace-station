@@ -1,6 +1,8 @@
 #ifndef SYSTEM_HH
 #define SYSTEM_HH
 
+#include <string>
+#include <vector>
 #include <FL/glu.h>
 #include <FL/gl.h>
 #include <stdlib.h>
@@ -35,13 +37,15 @@ public:
 
 class Planet
 {
+    static std::vector<std::string> rock_texture_labels;
+    static std::vector<std::string> gas_texture_labels;
 public:
    float temperatur;
    float radius;
    char klasse;
    int spezial;
    float phase;
-   int textur_ind;
+   std::string texture_label;
    
    void erstelle_zufall();
 };

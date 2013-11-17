@@ -99,8 +99,7 @@ public:
    timeval zeit;
    float zeit_ende, zeit_frame, zeit_anfang;
    
-   Texturensammlung* tex;
-   Textures* tex2;
+   Textures* textures;
    
    int fenster_breite;
    int fenster_hoehe;

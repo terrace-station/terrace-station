@@ -23,7 +23,7 @@ GLuint Textures::get_id(std::string label)
 
 void Textures::load()
 {
-    std::cout << std::endl << "Loading Textures" << std::endl << "================" << std::endl;
+    //~ std::cout << std::endl << "Loading Textures ..." << std::endl;
     std::string label, filepath, ext;
     int delim;
     DIR *dir;

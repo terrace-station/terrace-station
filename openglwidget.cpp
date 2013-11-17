@@ -18,7 +18,7 @@
 Openglwidget::Openglwidget(int breite_, int hoehe_)
 {
    gettimeofday(&zeit, 0);
-   tex = new Texturensammlung;
+   //~ tex = new Texturensammlung;
    
 //    idle_redraw = false;
    running = true;
@@ -323,7 +323,7 @@ void Openglwidget::selektiere_pos()
 
 void Openglwidget::initialisiere_gl()
 {
-   tex2 = new Textures;
+   textures = new Textures;
     
    glLineWidth(2);
    glPolygonOffset(1.0,1.0);
@@ -370,7 +370,7 @@ void Openglwidget::zeichne_system(System& system_)
    //           glColor3f(0.6, 0.4, 0.4);
             glColor3f(1.0, 1.0, 1.0);
             glRotatef(5, 1.0, 1.0, 0.0);
-            glBindTexture(GL_TEXTURE_2D, tex->tex_planet[system_.planeten[i].textur_ind]->id);
+            glBindTexture(GL_TEXTURE_2D, textures->get_id(system_.planeten[i].texture_label));
             
             for (int j=0; j<system_.planeten[i].spezial; j++)
             {
@@ -387,7 +387,7 @@ void Openglwidget::zeichne_system(System& system_)
          glPushMatrix();
             glRotatef(system_.planeten[i].phase, 0.0, 0.0, 1.0);
             glTranslatef((i+1)*system_.abstand_umlaufbahn, 0, 0);
-            glBindTexture(GL_TEXTURE_2D, tex->tex_planet[system_.planeten[i].textur_ind]->id);
+            glBindTexture(GL_TEXTURE_2D, textures->get_id(system_.planeten[i].texture_label));
             glhilf::draw_texture_sphere(system_.planeten[i].radius, 20, 40);
             glBindTexture(GL_TEXTURE_2D, 0);
          glPopMatrix();
@@ -397,7 +397,7 @@ void Openglwidget::zeichne_system(System& system_)
          glPushMatrix();
             glRotatef(system_.planeten[i].phase, 0.0, 0.0, 1.0);
             glTranslatef((i+1)*system_.abstand_umlaufbahn, 0, 0);
-            glBindTexture(GL_TEXTURE_2D, tex->tex_planet[system_.planeten[i].textur_ind]->id);
+            glBindTexture(GL_TEXTURE_2D, textures->get_id(system_.planeten[i].texture_label));
             glColor3f(1.0, 1.0, 1.0);
             glhilf::draw_texture_sphere(system_.planeten[i].radius, 20, 40);
             glBindTexture(GL_TEXTURE_2D, 0);
@@ -408,7 +408,7 @@ void Openglwidget::zeichne_system(System& system_)
   }
   
    glDisable(GL_LIGHTING);
-   glBindTexture(GL_TEXTURE_2D, tex->tex_stars->id);
+   glBindTexture(GL_TEXTURE_2D, textures->get_id("space-stars"));
    glColor3f(1.0, 1.0, 1.0);
    glhilf::draw_star_map(system_.abstand_max, 1, 2);
    glBindTexture(GL_TEXTURE_2D, 0);
@@ -419,7 +419,7 @@ void Openglwidget::zeichne_system(System& system_)
    
 //    glEnable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-      glBindTexture(GL_TEXTURE_2D, tex->tex_sonne->id);
+      glBindTexture(GL_TEXTURE_2D, textures->get_id("space-sun"));
       glColor4f(1.0, 1.0, 0.7, 0.4);
       glBegin(GL_QUADS);
          glTexCoord2f(0,0); glVertex3f(0.0,-system_.sonnenradius*3,-system_.sonnenradius*3);
@@ -450,7 +450,7 @@ void Openglwidget::zeichne_system(System& system_)
       
          glRotatef(flare_theta*10, 0, 0, 1);
          glTranslatef(system_.position[0], 0.0, 0.0);
-         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[0]->id);
+         glBindTexture(GL_TEXTURE_2D, textures->get_id("space-flare1"));
          glBegin(GL_QUADS);
             glTexCoord2f(0,0); glVertex3f(0.0,-0.25*system_.position[0],-0.25*system_.position[0]);
             glTexCoord2f(0,1); glVertex3f(0.0,-0.25*system_.position[0], 0.25*system_.position[0]);
@@ -462,7 +462,7 @@ void Openglwidget::zeichne_system(System& system_)
          
          glRotatef(flare_theta*30, 0, 0, 1);
          glTranslatef(system_.position[0], 0.0, 0.0);
-         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[1]->id);
+         glBindTexture(GL_TEXTURE_2D, textures->get_id("space-flare2"));
          glBegin(GL_QUADS);
             glTexCoord2f(0,0); glVertex3f(0.0,-0.25*system_.position[0],-0.25*system_.position[0]);
             glTexCoord2f(0,1); glVertex3f(0.0,-0.25*system_.position[0], 0.25*system_.position[0]);
@@ -474,7 +474,7 @@ void Openglwidget::zeichne_system(System& system_)
          
          glRotatef(flare_theta*40, 0, 0, 1);
          glTranslatef(system_.position[0], 0.0, 0.0);
-         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[2]->id);
+         glBindTexture(GL_TEXTURE_2D, textures->get_id("space-flare3"));
          glBegin(GL_QUADS);
             glTexCoord2f(0,0); glVertex3f(0.0,-0.5*system_.position[0],-0.25*system_.position[0]);
             glTexCoord2f(0,1); glVertex3f(0.0,-0.5*system_.position[0], 0.25*system_.position[0]);
@@ -486,7 +486,7 @@ void Openglwidget::zeichne_system(System& system_)
          
          glRotatef(flare_theta*50, 0, 0, 1);
          glTranslatef(system_.position[0], 0.0, 0.0);
-         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[3]->id);
+         glBindTexture(GL_TEXTURE_2D, textures->get_id("space-flare4"));
          glBegin(GL_QUADS);
             glTexCoord2f(0,0); glVertex3f(0.0,-0.25*system_.position[0],-0.25*system_.position[0]);
             glTexCoord2f(0,1); glVertex3f(0.0,-0.25*system_.position[0], 0.25*system_.position[0]);
@@ -499,7 +499,7 @@ void Openglwidget::zeichne_system(System& system_)
          
          glRotatef(flare_theta*50, 0, 0, 1);
          glTranslatef(system_.position[0], 0.0, 0.0);
-         glBindTexture(GL_TEXTURE_2D, tex->tex_flare[4]->id);
+         glBindTexture(GL_TEXTURE_2D, textures->get_id("space-flare5"));
          glBegin(GL_QUADS);
             glTexCoord2f(0,0); glVertex3f(0.0,-system_.position[0],-system_.position[0]);
             glTexCoord2f(0,1); glVertex3f(0.0,-system_.position[0], system_.position[0]);
