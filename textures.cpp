@@ -1,6 +1,7 @@
 #include "textures.hh"
 
 #define TEXTURES_DIR "textures"
+#define DEFAULT_TEXTURE_LABEL "error"
 
 std::set<std::string> Textures::valid_extensions = {"png", "jpg", "jpeg",
                                                     "PNG", "JPG", "JPEG"};
@@ -15,7 +16,8 @@ GLuint Textures::get_id(std::string label)
     if (texture_ids.count(label)) {
         return texture_ids[label];
     } else {
-        return texture_ids["error"];
+        std::cout << "Texture '" << label << "' not found. Using texture '" << DEFAULT_TEXTURE_LABEL << "' instead." << std::endl;
+        return texture_ids[DEFAULT_TEXTURE_LABEL];
     }
 }
 
