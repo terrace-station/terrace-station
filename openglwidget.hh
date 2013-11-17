@@ -9,9 +9,8 @@
 #include <GL/glu.h>
 
 #include "glhilf.h"
-#include "textur.hh"
 #include "mausobjekt.hh"
-#include "texturensammlung.hh"
+#include "textur.hh"
 #include "textures.hh"
 #include "modell.hh"
 #include "system.hh"
