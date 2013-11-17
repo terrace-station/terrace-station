@@ -152,6 +152,7 @@ void Openglwidget::zeichne_gamemenu()
       glVertex3f(-100.0,  100.0, -10.0);
    glEnd();
    
+   glEnable(GL_DEPTH_TEST);
    glEnable(GL_LIGHTING);
    glDisable(GL_LIGHT1);
    glEnable(GL_LIGHT0);
@@ -160,6 +161,11 @@ void Openglwidget::zeichne_gamemenu()
    licht_pos[2] = 10.0;
    licht_pos[3] = 1.0;
    glLightfv(GL_LIGHT0, GL_POSITION, licht_pos);
+   
+   set_material_ambi(0.00, 0.00, 0.00, 1.0);
+   set_material_diff(0.30, 0.30, 0.50, 1.0);
+   set_material_spec(1.00, 1.00, 1.00, 1.0);
+   set_material_shin(128.0);
 
    glTranslatef(0.0, 0.0, (1.0-menu_bg)*10);
    
@@ -185,7 +191,6 @@ void Openglwidget::zeichne_gamemenu()
    glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix);
    glGetDoublev(GL_PROJECTION_MATRIX, project_matrix);
    
-   glEnable(GL_DEPTH_TEST);
 }
 
 

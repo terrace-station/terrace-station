@@ -45,8 +45,8 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    
    licht_pos[0]  = 0  ; licht_pos[1]  = 0  ; licht_pos[2]  = 0  ; licht_pos[3]  = 0  ;
    licht_ambi[0] = 0.0; licht_ambi[1] = 0.0; licht_ambi[2] = 0.0; licht_ambi[3] = 1.0;
-   licht_diff[0] = 1.0; licht_diff[1] = 1.0; licht_diff[2] = 1.0; licht_diff[3] = 1.0;
-   licht_spec[0] = 1.0; licht_spec[1] = 1.0; licht_spec[2] = 1.0; licht_spec[3] = 1.0;
+   licht_diff[0] = 1.0; licht_diff[1] = 1.0; licht_diff[2] = 1.0; licht_diff[3] = 0.0;
+   licht_spec[0] = 1.0; licht_spec[1] = 1.0; licht_spec[2] = 1.0; licht_spec[3] = 0.0;
 
    sonne_ambi[0] = 0.0; sonne_ambi[1] = 0.0; sonne_ambi[2] = 0.0; sonne_ambi[3] = 1.0;
    sonne_diff[0] = 1.0; sonne_diff[1] = 1.0; sonne_diff[2] = 1.0; sonne_diff[3] = 1.0;
@@ -113,7 +113,7 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    
    Opengltogglebutton button_aa(&antialiasing);
    button_aa.set_callback(toggle_antialiasing_callback);
-   button_aa.set_modell(lade_modell("models/button_gruen", false), lade_modell("models/button_rot", false));
+   button_aa.set_modell(lade_modell("models/button_gruen", false), lade_modell("models/button1_rot", false));
    menu.add_togglebutton(&button_aa, 0, 0, 1, 1);
    
 }
