@@ -207,7 +207,7 @@ void Openglwidget::handle_mousebuttondown(SDL_MouseButtonEvent& button)
          selektiere_id();
          selektiere_pos();
          std::cout << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")" << std::endl;
-         set_view_to(get_target());
+         interact_with(get_target());
          break;
          
       case SDL_BUTTON_RIGHT:
@@ -221,6 +221,12 @@ void Openglwidget::handle_mousebuttondown(SDL_MouseButtonEvent& button)
       case SDL_BUTTON_WHEELDOWN:
          zoom_soll += zoom_soll*0.15;
          if (zoom_soll > ZOOM_CAP) zoom_soll = ZOOM_CAP;
+         if (station->active_district != NULL && zoom_soll > 0.8*ZOOM_CAP)
+         {
+            phi_soll += station->active_district->get_angle();
+            phi = phi_soll;
+            station->set_active_district(NULL);
+         }
          break;
    }
 }
@@ -234,7 +240,7 @@ void Openglwidget::handle_mousebuttondown_menu(SDL_MouseButtonEvent& button)
          selektiere_id();
          selektiere_pos();
          std::cout << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")" << std::endl;
-         set_view_to(get_target());
+         interact_with(get_target());
          break;
          
       case SDL_BUTTON_RIGHT:
