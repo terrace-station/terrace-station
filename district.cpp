@@ -54,6 +54,8 @@ float District::get_angle() { return zone->get_angle(); }
 
 std::vector<Deck>& District::get_decks() { return decks; }
 
+Zone* District::get_zone() { return zone; }
+
 std::string District::str()
 {
     std::stringstream ss;

@@ -28,10 +28,8 @@ Station::Station()
     active_district = NULL;
 }
 
-void Station::set_active_district(District* dis)
-{
-   active_district = dis;
-}
+void Station::set_active_district(District* dis) { active_district = dis; }
+District* Station::get_active_district() { return active_district; }
 
 std::vector<Zone>& Station::get_zones() {
     return zones;

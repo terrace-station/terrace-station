@@ -39,6 +39,7 @@ public:
     float get_z_max();
     float get_angle();
     std::vector<Deck>& get_decks();
+    Zone* get_zone();
     
     std::string str();
 };

@@ -216,6 +216,15 @@ void Openglwidget::zeichne_station()
       glRotatef(winkel, 0.0, 0.0, 1.0);
          zeichne_zone(station->get_zones()[i]);
       glPopMatrix();
+      
+      // do not draw inner zones, if a district is activated:
+      if (station->get_active_district() != NULL) {
+         Zone& current_zone = station->get_zones()[i];
+         Zone& active_zone = *station->get_active_district()->get_zone();
+         if (&current_zone == &active_zone) {
+            break;
+         }
+      }
    }
 }
 

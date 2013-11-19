@@ -20,6 +20,7 @@ public:
     District* active_district;
     
     void set_active_district(District* dis);
+    District* get_active_district();
     
     std::vector<Zone>& get_zones();
 
