@@ -77,15 +77,35 @@ void Room::update_tiles() {
         Rect& rect = *it;
         for (int x = rect.get_left(); x < rect.get_right(); ++x) {
             // add northern wall-tiles:
-            wall_tiles.push_back(Tile(x, rect.get_top(), deck->get_radius(), 1));
+            wall_tiles.push_back(Tile(x, rect.get_top(), deck->get_radius(), 1, false));
             // add southern wall-tiles:
-            wall_tiles.push_back(Tile(x, rect.get_bottom(), deck->get_radius(), 3));
+            wall_tiles.push_back(Tile(x, rect.get_bottom(), deck->get_radius(), 3, false));
         }
         for (int y = rect.get_top(); y < rect.get_bottom(); ++y) {
             // add western wall tiles:
-            wall_tiles.push_back(Tile(rect.get_left(), y, deck->get_radius(), 0));
+            wall_tiles.push_back(Tile(rect.get_left(), y, deck->get_radius(), 0, false));
             // add eastern wall tiles:
-            wall_tiles.push_back(Tile(rect.get_right(), y, deck->get_radius(), 2));
+            wall_tiles.push_back(Tile(rect.get_right(), y, deck->get_radius(), 2, false));
+        }
+    }
+    // update wall-top tiles:
+    // (only a workaround: won't work correctly for rooms with more than one rect)
+    wall_top_tiles.clear();
+    wall_top_tiles.reserve(get_wall_length());
+    for (std::list<Rect>::iterator it = rects.begin(); it!=rects.end(); it++)
+    {
+        Rect& rect = *it;
+        for (int x = rect.get_left(); x < rect.get_right(); ++x) {
+            // add northern wall-tiles:
+            wall_top_tiles.push_back(Tile(x, rect.get_top(), deck->get_radius(), 1, true));
+            // add southern wall-tiles:
+            wall_top_tiles.push_back(Tile(x, rect.get_bottom(), deck->get_radius(), 3, true));
+        }
+        for (int y = rect.get_top(); y < rect.get_bottom(); ++y) {
+            // add western wall tiles:
+            wall_top_tiles.push_back(Tile(rect.get_left(), y, deck->get_radius(), 0, true));
+            // add eastern wall tiles:
+            wall_top_tiles.push_back(Tile(rect.get_right(), y, deck->get_radius(), 2, true));
         }
     }
     //~ std::cout << " done." << std::endl;
@@ -96,6 +116,7 @@ std::string Room::get_wall_texture_label() { return "wall-" + style; }
 
 std::vector<Tile>& Room::get_floor_tiles() { return floor_tiles; }
 std::vector<Tile>& Room::get_wall_tiles() { return wall_tiles; }
+std::vector<Tile>& Room::get_wall_top_tiles() { return wall_top_tiles; }
 
 int Room::get_area()
 {

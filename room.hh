@@ -23,6 +23,7 @@ class Room
     
     std::vector<Tile> floor_tiles;
     std::vector<Tile> wall_tiles;
+    std::vector<Tile> wall_top_tiles;
     
 public:
     Room(std::string style, Rect rect, Deck* deck);
@@ -34,6 +35,7 @@ public:
     
     std::vector<Tile>& get_floor_tiles();
     std::vector<Tile>& get_wall_tiles();
+    std::vector<Tile>& get_wall_top_tiles();
     
     int get_area();
     int get_wall_length();

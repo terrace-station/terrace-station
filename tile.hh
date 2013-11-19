@@ -16,7 +16,7 @@ class Tile
     
 public:
     Tile(int x, int y, float radius);
-    Tile(int x, int y, float radius, int orientation);
+    Tile(int x, int y, float radius, int orientation, bool top);
     
     std::vector<float>& get_vertex1();
     std::vector<float>& get_vertex2();
