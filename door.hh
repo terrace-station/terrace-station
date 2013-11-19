@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "room.hh"
-#include "wall.hh"
 
 
 class Door

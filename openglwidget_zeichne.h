@@ -256,94 +256,32 @@ void Openglwidget::zeichne_deck(Deck& deck)
     {
         Room& room = *room_it;
         float radius = room.get_deck()->get_radius();
-        //~ glColor3f(0.5, 0.5, 0.5);
         glBindTexture(GL_TEXTURE_2D, textures->get_id(room.get_floor_texture_label()));
-        //~ glBindTexture(GL_TEXTURE_2D, textures->get_id("floor-corridor-gold-clean"));
         
         int counter = 0;
         for (std::vector<Tile>::iterator tile_it = room.get_floor_tiles().begin(); tile_it != room.get_floor_tiles().end(); tile_it++)
         {
             Tile& tile = *tile_it;
-            float b = tile.get_x();
-            float z = tile.get_y();
             
-            float phi1 = b / radius;
-            float phi2 = (b + 1) / radius;
-            
-            float x1 = radius * cos(phi1);
-            float x2 = radius * cos(phi2);
-            float y1 = radius * sin(phi1);
-            float y2 = radius * sin(phi2);
+            std::vector<float>& vertex1 = tile.get_vertex1();
+            std::vector<float>& vertex2 = tile.get_vertex2();
+            std::vector<float>& vertex3 = tile.get_vertex3();
+            std::vector<float>& vertex4 = tile.get_vertex4();
+            std::vector<float>& normal = tile.get_normal();
             
             glBegin(GL_QUADS);
-                glNormal3f(cos(phi), sin(phi), 0.0);
+                glNormal3f(normal[0], normal[1], normal[2]);
                 glTexCoord2f(0, 1);
-                glVertex3f(x1, y1, z);
+                glVertex3f(vertex1[0], vertex1[1], vertex1[2]);
                 glTexCoord2f(1, 1);
-                glVertex3f(x1, y1, z + 1);
+                glVertex3f(vertex2[0], vertex2[1], vertex2[2]);
                 glTexCoord2f(1, 0);
-                glVertex3f(x2, y2, z + 1);
+                glVertex3f(vertex3[0], vertex3[1], vertex3[2]);
                 glTexCoord2f(0, 0);
-                glVertex3f(x2, y2, z);
+                glVertex3f(vertex4[0], vertex4[1], vertex4[2]);
             glEnd();
-            
-            counter ++;
-            //~ if (counter > 100) { break; }
         }
     }
-    
-   //~ float x1, y1, z1, x2, y2, z2;
-   //~ float delta_p = STEP/district.radius_min;
-   //~ float radius_;
-   //~ 
-   //~ for(int r=0; r<=district.deck_count; r++)
-   //~ {
-//       if (r%3==0) glColor3f(1,0,0);
-//       if (r%3==1) glColor3f(0,1,0);
-//       if (r%3==2) glColor3f(0,0,1);
-      //~ glColor3f(0.5, 0.5, 0.5+r*0.1);
-      //~ glColor3f(0.5, 0.5, 0.5+r*0.1);
-      //~ glColor3f(0.5, 0.5, 0.5+r*0.1);
-      //~ 
-      //~ for(int y=0; y<district.size_y; y=y+1)
-      //~ {
-         //~ for(int x=0; x<district.size_x; x=x+1)
-         //~ {
-            //~ radius_ = district.radius_min + 2*r*STEP;
-            //~ 
-               //~ x1 = cos((x  )*delta_p + district.phi_min)*radius_;
-               //~ y1 = sin((x  )*delta_p + district.phi_min)*(radius_);
-               //~ z1 = y*STEP + district.z_min;
-               //~ 
-               //~ x2 = cos((x+1)*delta_p + district.phi_min)*radius_;
-               //~ y2 = sin((x+1)*delta_p + district.phi_min)*(radius_);
-               //~ z2 = z1;
-               //~ 
-            //~ glBegin(GL_LINES);
-               //~ glVertex3f(x1, y1, z1);
-               //~ glVertex3f(x2, y2, z2);
-               //~ 
-               //~ x2 = x1;
-               //~ y2 = y1;
-               //~ z2 = (y+1)*STEP + district.z_min;
-               //~ 
-               //~ glVertex3f(x1, y1, z1);
-               //~ glVertex3f(x2, y2, z2);
-               //~ 
-               //~ x2 = cos((x)*delta_p + district.phi_min)*(radius_+2*STEP);
-               //~ y2 = sin((x)*delta_p + district.phi_min)*(radius_+2*STEP);
-               //~ z2 = z1;
-               //~ 
-               //~ glVertex3f(x1, y1, z1);
-               //~ glVertex3f(x2, y2, z2);
-            //~ glEnd();
-         //~ }
-         //~ 
-      //~ }
-   //~ }
-//    
-//    for (int i=0; i<district.deck_count; i++)
-//       zeichne_deck(district.deck[i]);
 }
 
 #define DELTA_P 0.1
