@@ -13,7 +13,7 @@
 #define CORRIDOR_MAX_WIDTH 4
 #define CORRIDOR_MIN_DISTANCE 4
 #define CORRIDOR_CONNECT_DISTANCE 8
-#define CORRIDOR_FORK_CHANCE 0.5
+#define CORRIDOR_FORK_CHANCE_PERCENT 50
 #define CORRIDOR_SPAWN_POINTS 4
 #define CORRIDOR_SPAWN_POINT_MARGIN 20
 #define CORRIDOR_MIN_LENGTH 0
@@ -29,7 +29,9 @@
 Deck::Deck(float radius_offset, District* district) :
     radius_offset(radius_offset), district(district)
 {
+    //tic
     Deck::init();
+    //toc
 }
 
 void Deck::init()
@@ -38,14 +40,8 @@ void Deck::init()
     int y = district->get_y();
     int size_x = district->get_size_x();
     int size_y = district->get_size_y();
-    //~ Rect rect1(x, y, x + size_x / 2, y + size_y / 2);
-    //~ Rect rect2(x + size_x / 2, y, x + size_x, y + size_y / 2);
-    //~ Rect rect3(x, y + size_y / 2, x + size_x / 2, y + size_y);
-    //~ Rect rect4(x + size_x / 2, y + size_y / 2, x + size_x, y + size_y);
-    //~ rooms.emplace_back("room", rect1, this);
-    //~ rooms.emplace_back("corridor", rect2, this);
-    //~ rooms.emplace_back("corridor", rect3, this);
-    //~ rooms.emplace_back("room", rect4, this);
+    
+    std::vector<std::vector<bool> > tile_occupied(size_x, std::vector<bool>(size_y, false));
     
     std::list<CorridorBuilder> cbs;
     for (int i=0; i < CORRIDOR_SPAWN_POINTS; ++i) {
@@ -89,46 +85,63 @@ void Deck::init()
                     // too close to space:
                     cb.active = false;
                     continue;
-                //~ } else if (###) {
-                    //~ // overlapping:
-                    //~ cb.active = false;
-                    //~ continue;
                 } else {
-                    // create the new corridor segment and a door:
-                    rooms.emplace_back("corridor", *rect, this);
-                    //~ self.doors.append(Door("door", cb.x, cb.y, cb.direction, cb.width))
-                    
-                    // spawn additional corridor builders:
-                    int new_width = CORRIDOR_MIN_WIDTH + rand() % (cb.width - CORRIDOR_MIN_WIDTH);
-                    //~ if random.random() <= CORRIDOR_FORK_CHANCE:
-                        //~ if cb.direction % 2 == 0:
-                            //~ # horizontal corridor, upward fork:
-                            //~ new_cb = CorridorBuilder(cb.x - cb.direction / 2 * new_width, cb.y, 1, new_width)
-                            //~ new_cbs.append(new_cb)
-                            //~ self.doors.append(Door("door", new_cb.x, new_cb.y, new_cb.direction, new_cb.width))
-                        //~ else:
-                            //~ # vertical corridor, left fork:
-                            //~ new_cb = CorridorBuilder(cb.x, cb.y - cb.direction / 2 * new_width, 0, new_width)
-                            //~ new_cbs.append(new_cb)
-                            //~ self.doors.append(Door("door", new_cb.x, new_cb.y, new_cb.direction, new_cb.width))
-                    //~ if random.random() <= CORRIDOR_FORK_CHANCE:
-                        //~ if cb.direction % 2 == 0:
-                            //~ # horizontal corridor, downward fork:
-                            //~ new_cb = CorridorBuilder(cb.x - cb.direction / 2 * new_width, cb.y + cb.width, 3, new_width)
-                            //~ new_cbs.append(new_cb)
-                            //~ self.doors.append(Door("door", new_cb.x, new_cb.y, new_cb.direction, new_cb.width))
-                        //~ else:
-                            //~ # vertical corridor, right fork:
-                            //~ new_cb = CorridorBuilder(cb.x + cb.width, cb.y - cb.direction / 2 * new_width, 2, new_width)
-                            //~ new_cbs.append(new_cb)
-                            //~ self.doors.append(Door("door", new_cb.x, new_cb.y, new_cb.direction, new_cb.width))
+                    bool overlapping = false;
+                    for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
+                        if (rect->intersects(*room_it)) {
+                            overlapping = true;
+                        }
+                    }
+                    if (overlapping) {
+                        // overlapping:
+                        cb.active = false;
+                        continue;
+                    }
                 }
                 
+                // create the new corridor segment and a door:
+                rooms.emplace_back("corridor", *rect, this);
+                //~ self.doors.append(Door("door", cb.x, cb.y, cb.direction, cb.width))
                 
+                // spawn additional corridor builders:
+                int new_width;
+                if (cb.width > CORRIDOR_MIN_WIDTH) {
+                    new_width = CORRIDOR_MIN_WIDTH + rand() % (cb.width - CORRIDOR_MIN_WIDTH);
+                } else {
+                   new_width = CORRIDOR_MIN_WIDTH;
+                }
+                if (rand() % 100 < CORRIDOR_FORK_CHANCE_PERCENT) {
+                    if (cb.direction % 2 == 0) {
+                        // horizontal corridor, upward fork:
+                        CorridorBuilder new_cb = {cb.x - cb.direction / 2 * new_width, cb.y, 1, new_width, true};
+                        new_cbs.push_back(new_cb);
+                        //~ self.doors.append(Door("door", new_cb.x, new_cb.y, new_cb.direction, new_cb.width))
+                    } else {
+                        // vertical corridor, left fork:
+                        CorridorBuilder new_cb = {cb.x, cb.y - cb.direction / 2 * new_width, 0, new_width, true};
+                        new_cbs.push_back(new_cb);
+                        //~ self.doors.append(Door("door", new_cb.x, new_cb.y, new_cb.direction, new_cb.width))
+                    }
+                }
+                if (rand() % 100 < CORRIDOR_FORK_CHANCE_PERCENT) {
+                    if (cb.direction % 2 == 0) {
+                        // horizontal corridor, downward fork:
+                        CorridorBuilder new_cb = {cb.x - cb.direction / 2 * new_width, cb.y + cb.width, 3, new_width, true};
+                        new_cbs.push_back(new_cb);
+                        //~ self.doors.append(Door("door", new_cb.x, new_cb.y, new_cb.direction, new_cb.width))
+                    } else {
+                        // vertical corridor, right fork:
+                        CorridorBuilder new_cb = {cb.x + cb.width, cb.y - cb.direction / 2 * new_width, 2, new_width, true};
+                        new_cbs.push_back(new_cb);
+                        //~ self.doors.append(Door("door", new_cb.x, new_cb.y, new_cb.direction, new_cb.width))
+                    }
+                }
             }
         }
         
-        
+        for (std::list<CorridorBuilder>::iterator new_cb_it = new_cbs.begin(); new_cb_it != new_cbs.end(); new_cb_it++) {
+            cbs.push_back(*new_cb_it);
+        }
         
         active_cbs = 0;
         for (std::list<CorridorBuilder>::iterator cb_it = cbs.begin(); cb_it != cbs.end(); cb_it++) {
@@ -137,7 +150,7 @@ void Deck::init()
         
         // Notbremse:
         counter++;
-        if (counter > 100) { break; }
+        if (counter > 3) { break; }
     }
 }
 
