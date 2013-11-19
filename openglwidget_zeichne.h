@@ -170,11 +170,23 @@ void Openglwidget::zeichne_gamemenu()
    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0);
    
    set_material_ambi(0.00, 0.00, 0.00, 1.0);
-   set_material_diff(0.30, 0.30, 0.50, 1.0);
+   set_material_diff(0.10, 0.10, 0.20, 1.0);
    set_material_spec(1.00, 1.00, 1.00, 1.0);
-   set_material_shin(100.0);
+   set_material_shin(128.0);
 
    glTranslatef(0.0, 0.0, (1.0-menu_bg)*10);
+   
+   glColor3f(1.0, 1.0, 1.0);
+   glBindTexture(GL_TEXTURE_2D, fonttextures->get_id("Game Menu", "gamemenu", "jupiter", 200, 200, 0));
+//    glBindTexture(GL_TEXTURE_2D, textures->get_id("Test"));
+   glBegin(GL_QUADS);
+      glNormal3f(0.0, 0.0, 1.0);
+      glTexCoord2f(0.0, 0.0); glVertex3f(-2.5, 3.5, 0.0);
+      glTexCoord2f(1.0, 0.0); glVertex3f( 2.5, 3.5, 0.0);
+      glTexCoord2f(1.0, 1.0); glVertex3f( 2.5, 2.5, 0.0);
+      glTexCoord2f(0.0, 1.0); glVertex3f(-2.5, 2.5, 0.0);
+   glEnd();
+   glBindTexture(GL_TEXTURE_2D, 0);
    
    for (std::list<Togglebutton_and_coords>::iterator it = menu.togglebuttons.begin(); it != menu.togglebuttons.end(); it++)
    {

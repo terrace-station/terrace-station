@@ -1,4 +1,5 @@
 #include <SDL/SDL.h>
+#include <SDL/SDL_ttf.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
@@ -21,6 +22,7 @@ int main(int argc, char* argv[])
 {
    srand (time(NULL));
    SDL_Init(SDL_INIT_VIDEO);
+   TTF_Init();
    
    Openglwidget glwidget(800, 600);
    

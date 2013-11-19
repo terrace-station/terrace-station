@@ -13,6 +13,7 @@
 #include "mausobjekt.hh"
 #include "textur.hh"
 #include "textures.hh"
+#include "fonttextures.hh"
 #include "modell.hh"
 #include "system.hh"
 #include "zeit.h"
@@ -100,6 +101,7 @@ public:
    float zeit_ende, zeit_frame, zeit_anfang, laufzeit;
    
    Textures* textures;
+   Fonttextures* fonttextures;
    
    int fenster_breite;
    int fenster_hoehe;

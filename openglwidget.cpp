@@ -103,8 +103,6 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    menu_bg = 0;
    menu_bg_soll = 0;
 
-   TTF_Font *fntCourier = TTF_OpenFont( "fonts/Overhaul.ttf", 12 );
-   
    station = NULL;
    
    Openglbutton button_close;
@@ -162,7 +160,7 @@ void Openglwidget::parameter_regelung()
       else
          theta = theta_soll;
       
-      if (fabs(zoom_soll - zoom) > 0.001)
+      if (fabs(zoom_soll - zoom) > 0.0001)
       {
          zoom += 0.9*(zoom_soll - zoom)*zeit_faktor*8;
       }
@@ -324,14 +322,16 @@ void Openglwidget::selektiere_pos()
 void Openglwidget::initialisiere_gl()
 {
    textures = new Textures;
-    
+   fonttextures = new Fonttextures;
+   fonttextures->get_id("Test", "test", "jupiter", 255, 255, 0);
+   
    glLineWidth(2);
    glPolygonOffset(1.0,1.0);
    glEnable(GL_POLYGON_OFFSET_FILL);
    glClearColor(0.0, 0.0, 0.0, 1.0);
 
    glEnable(GL_DEPTH_TEST);
-   glDepthFunc(GL_LEQUAL);
+   glDepthFunc(GL_LESS);
 
    glEnable(GL_LIGHT0);
    glEnable(GL_LIGHT1);
