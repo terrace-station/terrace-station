@@ -9,6 +9,14 @@
 class District;
 class Room;
 
+struct CorridorBuilder {
+    int     x;
+    int     y;
+    int     direction;
+    int     width;
+    bool    active;
+};
+
 class Deck
 {
     float radius_offset;

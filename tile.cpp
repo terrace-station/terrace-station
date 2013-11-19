@@ -168,21 +168,21 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientati
             float y3 = radius * sin(phi2);
             float y4 = radius2 * sin(phi2);
         
-            vertex1.push_back(x2);
-            vertex1.push_back(y2);
-            vertex1.push_back(y + HALF_WALL_THICKNESS);
+            vertex4.push_back(x2);
+            vertex4.push_back(y2);
+            vertex4.push_back(y + HALF_WALL_THICKNESS);
             
-            vertex2.push_back(x3);
-            vertex2.push_back(y3);
-            vertex2.push_back(y + HALF_WALL_THICKNESS);
-            
-            vertex3.push_back(x4);
-            vertex3.push_back(y4);
+            vertex3.push_back(x3);
+            vertex3.push_back(y3);
             vertex3.push_back(y + HALF_WALL_THICKNESS);
             
-            vertex4.push_back(x1);
-            vertex4.push_back(y1);
-            vertex4.push_back(y + HALF_WALL_THICKNESS);
+            vertex2.push_back(x4);
+            vertex2.push_back(y4);
+            vertex2.push_back(y + HALF_WALL_THICKNESS);
+            
+            vertex1.push_back(x1);
+            vertex1.push_back(y1);
+            vertex1.push_back(y + HALF_WALL_THICKNESS);
         }
     } else if (orientation == 2) { // west wall:
         float phi = x / district_radius;
@@ -214,8 +214,8 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientati
             vertex4.push_back(y2);
             vertex4.push_back(y + 1);
         } else {
-            normal.push_back(-sin(phi_d));
-            normal.push_back(-cos(phi_d));
+            normal.push_back(sin(phi_d));
+            normal.push_back(cos(phi_d));
             normal.push_back(0.0);
             
             float x1 = radius * cos(phi_d);
