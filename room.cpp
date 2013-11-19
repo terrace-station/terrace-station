@@ -55,6 +55,7 @@ Room::Room(std::string style_group, Rect rect, Deck* deck):
 }
 
 void Room::update_tiles() {
+    //~ std::cout << "Updating tiles ...";
     // update floor tiles:
     floor_tiles.clear();
     floor_tiles.reserve(get_area());
@@ -63,7 +64,7 @@ void Room::update_tiles() {
         Rect& rect = *it;
         for (int x = rect.get_left(); x < rect.get_right(); ++x) {
             for (int y = rect.get_top(); y < rect.get_bottom(); ++y) {
-                floor_tiles.push_back(Tile(x, y));
+                floor_tiles.push_back(Tile(x, y, deck->get_radius()));
             }
         }
     }
@@ -83,6 +84,7 @@ void Room::update_tiles() {
             //~ wall_tiles.push_back(Tile(x, y));
         }
     }
+    //~ std::cout << " done." << std::endl;
 }
 
 std::string Room::get_floor_texture_label() { return "floor-" + style; }
