@@ -58,16 +58,17 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
       default:
          break;
          
+#define ZOOM_CAP_MIN 0.001
+#define ZOOM_CAP_MAX 10
+         
       case SDLK_PLUS:
          zoom_soll = zoom_soll*0.98;
-         if (zoom_soll < 0.1) zoom_soll = 0.1;
+         if (zoom_soll < ZOOM_CAP_MIN) zoom_soll = ZOOM_CAP_MIN;
          break;
-         
-#define ZOOM_CAP 5
          
       case '-' :
          zoom_soll = zoom_soll*1.02;
-         if (zoom_soll > ZOOM_CAP) zoom_soll = ZOOM_CAP;
+         if (zoom_soll > ZOOM_CAP_MAX) zoom_soll = ZOOM_CAP_MAX;
          break;
          
       case 'a' : // Die Kamera bewegt sich "nach links" (An der Blickrichtung orientiert)
@@ -215,13 +216,13 @@ void Openglwidget::handle_mousebuttondown(SDL_MouseButtonEvent& button)
          
       case SDL_BUTTON_WHEELUP:
          zoom_soll -= zoom_soll*0.15;
-         if (zoom_soll < 0.1) zoom_soll = 0.1;
+         if (zoom_soll < ZOOM_CAP_MIN) zoom_soll = ZOOM_CAP_MIN;
          break;
 
       case SDL_BUTTON_WHEELDOWN:
          zoom_soll += zoom_soll*0.15;
-         if (zoom_soll > ZOOM_CAP) zoom_soll = ZOOM_CAP;
-         if (station->active_district != NULL && zoom_soll > 0.8*ZOOM_CAP)
+         if (zoom_soll > ZOOM_CAP_MAX) zoom_soll = ZOOM_CAP_MAX;
+         if (station->active_district != NULL && zoom_soll > 0.5*ZOOM_CAP_MAX)
          {
             phi_soll += station->active_district->get_angle();
             phi = phi_soll;
