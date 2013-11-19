@@ -14,7 +14,7 @@
 #define CORRIDOR_MIN_DISTANCE 4
 #define CORRIDOR_CONNECT_DISTANCE 8
 #define CORRIDOR_FORK_CHANCE_PERCENT 50
-#define CORRIDOR_SPAWN_POINTS 4
+#define CORRIDOR_SPAWN_POINTS 6
 #define CORRIDOR_SPAWN_POINT_MARGIN 20
 #define CORRIDOR_MIN_LENGTH 0
 #define CORRIDOR_MIN_LENGTH_PER_WIDTH 2
@@ -41,7 +41,7 @@ void Deck::init()
     int size_x = district->get_size_x();
     int size_y = district->get_size_y();
     
-    std::vector<std::vector<bool> > tile_occupied(size_x, std::vector<bool>(size_y, false));
+    std::vector<std::vector<bool> > tiles_occupied(size_x, std::vector<bool>(size_y, false));
     
     std::list<CorridorBuilder> cbs;
     for (int i=0; i < CORRIDOR_SPAWN_POINTS; ++i) {
@@ -87,10 +87,19 @@ void Deck::init()
                     continue;
                 } else {
                     bool overlapping = false;
-                    for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
-                        if (rect->intersects(*room_it)) {
-                            overlapping = true;
+                    //~ for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
+                        //~ if (rect->intersects(*room_it)) {
+                            //~ overlapping = true;
+                        //~ }
+                    //~ }
+                    for (int i = 0; i < rect_padding->get_width(); ++i) {
+                        for (int j = 0; j < rect_padding->get_height(); ++j) {
+                            if (tiles_occupied[rect_padding->get_left() - x + i][rect_padding->get_top() - y + j]) {
+                                overlapping = true;
+                                break;
+                            }
                         }
+                        if (overlapping) { break; }
                     }
                     if (overlapping) {
                         // overlapping:
@@ -101,6 +110,11 @@ void Deck::init()
                 
                 // create the new corridor segment and a door:
                 rooms.emplace_back("corridor", *rect, this);
+                for (int i = 0; i < rect->get_width(); ++i) {
+                    for (int j = 0; j < rect->get_height(); ++j) {
+                        tiles_occupied[rect->get_left() - x + i][rect->get_top() - y + j] = true;
+                    }
+                }
                 //~ self.doors.append(Door("door", cb.x, cb.y, cb.direction, cb.width))
                 
                 // spawn additional corridor builders:
@@ -148,9 +162,9 @@ void Deck::init()
             active_cbs += (*cb_it).active;
         }
         
-        // Notbremse:
-        counter++;
-        if (counter > 3) { break; }
+        //~ // Notbremse:
+        //~ counter++;
+        //~ if (counter > 30) { break; }
     }
 }
 
