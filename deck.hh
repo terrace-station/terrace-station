@@ -20,7 +20,8 @@ public:
     Deck(float radius_offset, District* district);
     
     float get_radius();
-    std::list<Room> get_rooms();
+    std::list<Room>& get_rooms();
+    District* get_district();
     
     std::string str();
     

@@ -142,6 +142,10 @@ std::list<Rect>& Room::get_rects() {
     return rects;
 }
 
+Deck* Room::get_deck() {
+    return deck;
+}
+
 std::string Room::str()
 {
     std::stringstream ss;

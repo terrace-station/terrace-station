@@ -5,6 +5,9 @@
 #include "zone.hh"
 #include "district.hh"
 #include "deck.hh"
+#include "room.hh"
+#include "rect.hh"
+#include "tile.hh"
 
 #include "openglwidget_material.h"
 #include "openglwidget_events.h"
@@ -204,12 +207,6 @@ void Openglwidget::interact_with(Mausobjekt& mo_)
       Opengltogglebutton& but = (Opengltogglebutton&) mo_;
       but.callback_fkt(*this);
    }
-}
-
-
-void Openglwidget::zeichne_deck(Deck& deck)
-{
-   
 }
 
 

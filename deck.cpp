@@ -37,11 +37,15 @@ void Deck::init()
 }
 
 float Deck::get_radius() {
-    return district->get_radius() + radius_offset;
+    return district->get_radius() + radius_offset - 0.5;
 }
 
-std::list<Room> Deck::get_rooms() {
+std::list<Room>& Deck::get_rooms() {
     return rooms;
+}
+
+District* Deck::get_district() {
+    return district;
 }
 
 std::string Deck::str()

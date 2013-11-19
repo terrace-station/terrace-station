@@ -241,8 +241,57 @@ void Openglwidget::zeichne_zone(Zone& zone)
 #define STEP 0.05
 void Openglwidget::zeichne_district(District& district)
 {
-   zeichne_district_outside(district);
+    zeichne_district_outside(district);
 
+    District& active_district = *station->get_active_district();
+    if (&district == &active_district) {
+        //only draw the first (outermost) deck for now:
+        zeichne_deck(district.get_decks()[0]);
+    }
+}
+
+void Openglwidget::zeichne_deck(Deck& deck)
+{
+    for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
+    {
+        Room& room = *room_it;
+        float radius = room.get_deck()->get_radius();
+        //~ glColor3f(0.5, 0.5, 0.5);
+        glBindTexture(GL_TEXTURE_2D, textures->get_id(room.get_floor_texture_label()));
+        //~ glBindTexture(GL_TEXTURE_2D, textures->get_id("floor-corridor-gold-clean"));
+        
+        int counter = 0;
+        for (std::vector<Tile>::iterator tile_it = room.get_floor_tiles().begin(); tile_it != room.get_floor_tiles().end(); tile_it++)
+        {
+            Tile& tile = *tile_it;
+            float b = tile.get_x();
+            float z = tile.get_y();
+            
+            float phi1 = b / radius;
+            float phi2 = (b + 1) / radius;
+            
+            float x1 = radius * cos(phi1);
+            float x2 = radius * cos(phi2);
+            float y1 = radius * sin(phi1);
+            float y2 = radius * sin(phi2);
+            
+            glBegin(GL_QUADS);
+                glNormal3f(cos(phi), sin(phi), 0.0);
+                glTexCoord2f(0, 1);
+                glVertex3f(x1, y1, z);
+                glTexCoord2f(1, 1);
+                glVertex3f(x1, y1, z + 1);
+                glTexCoord2f(1, 0);
+                glVertex3f(x2, y2, z + 1);
+                glTexCoord2f(0, 0);
+                glVertex3f(x2, y2, z);
+            glEnd();
+            
+            counter ++;
+            //~ if (counter > 100) { break; }
+        }
+    }
+    
    //~ float x1, y1, z1, x2, y2, z2;
    //~ float delta_p = STEP/district.radius_min;
    //~ float radius_;
@@ -344,6 +393,25 @@ void Openglwidget::zeichne_district_outside(District& district)
    
    District& active_district = *station->get_active_district();
    
+   // phi_min:
+   // do not draw, if district is circular:
+   if (!district.is_circular()) {
+      glBegin(GL_QUADS);
+            glNormal3f(sinp1, -cosp1, 0.0);
+         glVertex3f(x1, y1, z_min);
+         glVertex3f(x1, y1, z_max);
+         glVertex3f(x2, y2, z_max);
+         glVertex3f(x2, y2, z_min);
+      glEnd();
+      
+      //~ glBegin(GL_QUADS);
+            //~ glNormal3f(-sinp1, cosp1, 0.0);
+         //~ glVertex3f(x2, y2, z_min);
+         //~ glVertex3f(x2, y2, z_max);
+         //~ glVertex3f(x1, y1, z_max);
+         //~ glVertex3f(x1, y1, z_min);
+      //~ glEnd();
+   }
    while(p_min != p_max)
    {
       texcoord_x1 = z_min*0.01;
@@ -409,16 +477,16 @@ void Openglwidget::zeichne_district_outside(District& district)
       x2 = x4; y2 = y4;
    }
    
-   // phi_min and phi_max:
+   // phi_max:
    // do not draw, if district is circular:
    if (!district.is_circular()) {
-      glBegin(GL_QUADS);
-            glNormal3f(sinp1, -cosp1, 0.0);
-         glVertex3f(x1, y1, z_min);
-         glVertex3f(x1, y1, z_max);
-         glVertex3f(x2, y2, z_max);
-         glVertex3f(x2, y2, z_min);
-      glEnd();
+      //~ glBegin(GL_QUADS);
+            //~ glNormal3f(sinp1, -cosp1, 0.0);
+         //~ glVertex3f(x1, y1, z_min);
+         //~ glVertex3f(x1, y1, z_max);
+         //~ glVertex3f(x2, y2, z_max);
+         //~ glVertex3f(x2, y2, z_min);
+      //~ glEnd();
       
       glBegin(GL_QUADS);
             glNormal3f(-sinp1, cosp1, 0.0);

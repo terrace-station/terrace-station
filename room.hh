@@ -41,6 +41,7 @@ public:
     bool intersects(Room other);
     std::string get_style();
     std::list<Rect>& get_rects();
+    Deck* get_deck();
     
     std::string str();
     
