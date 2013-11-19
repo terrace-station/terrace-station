@@ -8,26 +8,49 @@
 
 #define DEFAULT_STYLE_GROUP "error"
 
-std::vector<std::string> Room::room_styles = {"industrial-chrome-clean",
-                                            "industrial-chrome-dirty",
-                                            "industrial-gold-clean",
-                                            "industrial-gold-dirty",
-                                            "industrial-copper-clean",
-                                            "industrial-copper-dirty",
-                                            "lab-chrome-clean",
-                                            "lab-chrome-dirty",
-                                            "lab-gold-clean",
-                                            "lab-gold-dirty",
-                                            "lab-copper-clean",
-                                            "lab-copper-dirty",
-                                            "holo"};
+std::vector<std::string> Room::room_styles = {
+                                                //~ "corridor-chrome-clean",
+                                                //~ "corridor-chrome-dirty",
+                                                "corridor-gold-clean",
+                                                "corridor-gold-dirty",
+                                                "corridor-copper-clean",
+                                                "corridor-copper-dirty",
+                                                //~ "industrial-chrome-clean",
+                                                //~ "industrial-chrome-dirty",
+                                                "industrial-gold-clean",
+                                                "industrial-gold-dirty",
+                                                "industrial-copper-clean",
+                                                "industrial-copper-dirty",
+                                                //~ "lab-chrome-clean",
+                                                //~ "lab-chrome-dirty",
+                                                "lab-gold-clean",
+                                                "lab-gold-dirty",
+                                                "lab-copper-clean",
+                                                "lab-copper-dirty",
+                                                "holo"
+                                                };
 
-std::vector<std::string> Room::corridor_styles = {"corridor-chrome-clean",
-                                               "corridor-chrome-dirty",
-                                               "corridor-gold-clean",
-                                               "corridor-gold-dirty",
-                                               "corridor-copper-clean",
-                                               "corridor-copper-dirty"};
+std::vector<std::string> Room::corridor_styles = {
+                                                "corridor-chrome-clean",
+                                                "corridor-chrome-dirty",
+                                                //~ "corridor-gold-clean",
+                                                //~ "corridor-gold-dirty",
+                                                //~ "corridor-copper-clean",
+                                                //~ "corridor-copper-dirty",
+                                                "industrial-chrome-clean",
+                                                "industrial-chrome-dirty",
+                                                //~ "industrial-gold-clean",
+                                                //~ "industrial-gold-dirty",
+                                                //~ "industrial-copper-clean",
+                                                //~ "industrial-copper-dirty",
+                                                "lab-chrome-clean",
+                                                "lab-chrome-dirty",
+                                                //~ "lab-gold-clean",
+                                                //~ "lab-gold-dirty",
+                                                //~ "lab-copper-clean",
+                                                //~ "lab-copper-dirty",
+                                                //~ "holo"
+                                                };
 
 /**
  * Creates a new rectangular room

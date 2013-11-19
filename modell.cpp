@@ -530,7 +530,7 @@ Modell* lade_modell(std::string dateiname, bool flat_shading_)
   float norm_y;
   float norm_z;
   
-  std::cout << "\nNormalen berechnen";
+  std::cout << "\nNormalen berechnen" << std::endl;
   
   for (int j=0; j<modell->anzahl_knoten; j++)
   {

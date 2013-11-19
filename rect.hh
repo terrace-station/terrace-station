@@ -11,9 +11,9 @@ class Room;
 
 class Rect
 {
+public:
     int left, top, right, bottom;
     
-public:
     Rect(int left, int top, int right, int bottom);
     
     int get_left();

@@ -36,13 +36,14 @@ Deck::Deck(float radius_offset, District* district) :
 
 void Deck::init()
 {
+    // preparations:
     int x = district->get_x();
     int y = district->get_y();
     int size_x = district->get_size_x();
     int size_y = district->get_size_y();
-    
     std::vector<std::vector<bool> > tiles_occupied(size_x, std::vector<bool>(size_y, false));
     
+    // drill corridors:
     std::list<CorridorBuilder> cbs;
     for (int i=0; i < CORRIDOR_SPAWN_POINTS; ++i) {
         int cb_x = x + CORRIDOR_SPAWN_POINT_MARGIN + rand() % (size_x - 2 * CORRIDOR_SPAWN_POINT_MARGIN);
@@ -51,8 +52,7 @@ void Deck::init()
         CorridorBuilder cb = {cb_x, cb_y, cb_d, CORRIDOR_MAX_WIDTH, true};
         cbs.push_back(cb);
     }
-    
-    int counter = 0;
+    //~ int counter = 0;
     int active_cbs = 1;
     while (active_cbs > 0) {
         std::list<CorridorBuilder> new_cbs;
@@ -166,6 +166,97 @@ void Deck::init()
         //~ counter++;
         //~ if (counter > 30) { break; }
     }
+    
+    // fill free space with rooms:
+    int nx, ny;
+    for (int i = 0; i < size_x * size_y; ++i) {
+        nx = i % size_x;
+        ny = i / size_x;
+        Rect* rect = new Rect(x + nx, y + ny, x + nx + 1, y + ny + 1);
+        if (!tiles_occupied[rect->get_left() - x][rect->get_top() - y]) {
+            rect->right += 1;
+            rect->bottom += 1;
+            while (rect->right <= x + size_x && rect->bottom <= y + size_y
+                                            && rect->get_aspect() <= ROOM_MAX_ASPECT_RATIO
+                                            && rect->get_aspect() >= 1.0 / ROOM_MAX_ASPECT_RATIO) {
+                bool overlapping = false;
+                for (int k = 0; k < rect->get_width(); ++k) {
+                    for (int l = 0; l < rect->get_height(); ++l) {
+                        if (tiles_occupied[rect->get_left() - x + k][rect->get_top() - y + l]) {
+                            overlapping = true;
+                            break;
+                        }
+                    }
+                    if (overlapping) { break; }
+                }
+                if (overlapping) {
+                    break;
+                } else {
+                    rect->right += 1;
+                    rect->bottom += 1;
+                }
+            }
+            rect->right -= 1;
+            rect->bottom -= 1;
+            while (rect->right <= x + size_x && rect->bottom <= y + size_y
+                                            && rect->get_aspect() <= ROOM_MAX_ASPECT_RATIO
+                                            && rect->get_aspect() >= 1.0 / ROOM_MAX_ASPECT_RATIO) {
+                bool overlapping = false;
+                for (int k = 0; k < rect->get_width(); ++k) {
+                    for (int l = 0; l < rect->get_height(); ++l) {
+                        if (tiles_occupied[rect->get_left() - x + k][rect->get_top() - y + l]) {
+                            overlapping = true;
+                            break;
+                        }
+                    }
+                    if (overlapping) { break; }
+                }
+                if (overlapping) {
+                    break;
+                } else {
+                    rect->right += 1;
+                }
+            }
+            rect->right -= 1;
+            while (rect->right <= x + size_x && rect->bottom <= y + size_y
+                                            && rect->get_aspect() <= ROOM_MAX_ASPECT_RATIO
+                                            && rect->get_aspect() >= 1.0 / ROOM_MAX_ASPECT_RATIO) {
+                bool overlapping = false;
+                for (int k = 0; k < rect->get_width(); ++k) {
+                    for (int l = 0; l < rect->get_height(); ++l) {
+                        if (tiles_occupied[rect->get_left() - x + k][rect->get_top() - y + l]) {
+                            overlapping = true;
+                            break;
+                        }
+                    }
+                    if (overlapping) { break; }
+                }
+                if (overlapping) {
+                    break;
+                } else {
+                    rect->bottom += 1;
+                }
+            }
+            rect->bottom -= 1;
+            if (rect->get_area() > 0) {
+                rooms.emplace_back("room", *rect, this);
+                for (int k = 0; k < rect->get_width(); ++k) {
+                    for (int l = 0; l < rect->get_height(); ++l) {
+                        tiles_occupied[rect->get_left() - x + k][rect->get_top() - y + l] = true;
+                    }
+                }
+            }
+        }
+    }
+    
+    // split large rooms:
+    // ...
+    
+    // turn narrow rooms into corridors:
+    // ...
+    
+    // randomly join some rooms:
+    // ...
 }
 
 float Deck::get_radius() {
@@ -184,9 +275,9 @@ std::string Deck::str()
 {
     std::stringstream ss;
     ss << "      Deck:      (radius_offset = " << radius_offset << ")" << std::endl;
-    for (std::list<Room>::iterator it = rooms.begin(); it != rooms.end(); it++)
-    {
-        ss << it->str();
-    }
+    //~ for (std::list<Room>::iterator it = rooms.begin(); it != rooms.end(); it++)
+    //~ {
+        //~ ss << it->str();
+    //~ }
     return ss.str();
 }
