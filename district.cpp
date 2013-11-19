@@ -52,6 +52,8 @@ float District::get_z_max() { return y + size_y; }
 
 float District::get_angle() { return zone->get_angle(); }
 
+bool District::is_circular() { return circular; }
+
 std::vector<Deck>& District::get_decks() { return decks; }
 
 Zone* District::get_zone() { return zone; }

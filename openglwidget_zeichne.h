@@ -241,10 +241,8 @@ void Openglwidget::zeichne_zone(Zone& zone)
 #define STEP 0.05
 void Openglwidget::zeichne_district(District& district)
 {
-   //~ if (!district.aktiv)
-      zeichne_district_outside(district);
-   //~ else
-   //~ {
+   zeichne_district_outside(district);
+
    //~ float x1, y1, z1, x2, y2, z2;
    //~ float delta_p = STEP/district.radius_min;
    //~ float radius_;
@@ -297,7 +295,6 @@ void Openglwidget::zeichne_district(District& district)
 //    
 //    for (int i=0; i<district.deck_count; i++)
 //       zeichne_deck(district.deck[i]);
-   //~ }
 }
 
 #define DELTA_P 0.1
@@ -343,15 +340,9 @@ void Openglwidget::zeichne_district_outside(District& district)
    x2 = r_max * cosp1;
    y2 = r_max * sinp1;
    
-   glBegin(GL_QUADS);
-         glNormal3f(sinp1, -cosp1, 0.0);
-      glVertex3f(x1, y1, z_min);
-      glVertex3f(x1, y1, z_max);
-      glVertex3f(x2, y2, z_max);
-      glVertex3f(x2, y2, z_min);
-   glEnd();
-   
    glBindTexture(GL_TEXTURE_2D, textures->get_id("district-hull"));
+   
+   District& active_district = *station->get_active_district();
    
    while(p_min != p_max)
    {
@@ -378,12 +369,14 @@ void Openglwidget::zeichne_district_outside(District& district)
       y4 = r_max * sinp1;
       
       glBegin(GL_QUADS);
+         // z_min:
             glNormal3f(0.0, 0.0, -1.0);
          glVertex3f(x3, y3, z_min);
          glVertex3f(x1, y1, z_min);
          glVertex3f(x2, y2, z_min);
          glVertex3f(x4, y4, z_min);
          
+         // district outer hull:
             glNormal3f(cosp1, sinp1, 0.0);
          glTexCoord2f(texcoord_x1, texcoord_y1);   glVertex3f(x4, y4, z_min);
             glNormal3f(cosp2, sinp2, 0.0);
@@ -392,32 +385,49 @@ void Openglwidget::zeichne_district_outside(District& district)
             glNormal3f(cosp1, sinp1, 0.0);
          glTexCoord2f(texcoord_x2, texcoord_y1);   glVertex3f(x4, y4, z_max);
          
+         // z_max:
             glNormal3f(0.0, 0.0, 1.0);
          glVertex3f(x4, y4, z_max);
          glVertex3f(x2, y2, z_max);
          glVertex3f(x1, y1, z_max);
          glVertex3f(x3, y3, z_max);
          
-            glNormal3f(-cosp1, -sinp1, 0.0);
-         glTexCoord2f(texcoord_x1, texcoord_y1);   glVertex3f(x3, y3, z_max);
-            glNormal3f(-cosp2, -sinp2, 0.0);
-         glTexCoord2f(texcoord_x1, texcoord_y2);   glVertex3f(x1, y1, z_max);
-         glTexCoord2f(texcoord_x2, texcoord_y2);   glVertex3f(x1, y1, z_min);
-            glNormal3f(-cosp1, -sinp1, 0.0);
-         glTexCoord2f(texcoord_x2, texcoord_y1);   glVertex3f(x3, y3, z_min);
+         // district inner hull:
+         // do not draw, if district is active:
+         if (station->get_active_district() == NULL || &district != &active_district) {
+                glNormal3f(-cosp1, -sinp1, 0.0);
+             glTexCoord2f(texcoord_x1, texcoord_y1);   glVertex3f(x3, y3, z_max);
+                glNormal3f(-cosp2, -sinp2, 0.0);
+             glTexCoord2f(texcoord_x1, texcoord_y2);   glVertex3f(x1, y1, z_max);
+             glTexCoord2f(texcoord_x2, texcoord_y2);   glVertex3f(x1, y1, z_min);
+                glNormal3f(-cosp1, -sinp1, 0.0);
+             glTexCoord2f(texcoord_x2, texcoord_y1);   glVertex3f(x3, y3, z_min);
+         }
       glEnd();
       
       x1 = x3; y1 = y3;
       x2 = x4; y2 = y4;
    }
    
-   glBegin(GL_QUADS);
-         glNormal3f(-sinp1, cosp1, 0.0);
-      glVertex3f(x2, y2, z_min);
-      glVertex3f(x2, y2, z_max);
-      glVertex3f(x1, y1, z_max);
-      glVertex3f(x1, y1, z_min);
-   glEnd();
+   // phi_min and phi_max:
+   // do not draw, if district is circular:
+   if (!district.is_circular()) {
+      glBegin(GL_QUADS);
+            glNormal3f(sinp1, -cosp1, 0.0);
+         glVertex3f(x1, y1, z_min);
+         glVertex3f(x1, y1, z_max);
+         glVertex3f(x2, y2, z_max);
+         glVertex3f(x2, y2, z_min);
+      glEnd();
+      
+      glBegin(GL_QUADS);
+            glNormal3f(-sinp1, cosp1, 0.0);
+         glVertex3f(x2, y2, z_min);
+         glVertex3f(x2, y2, z_max);
+         glVertex3f(x1, y1, z_max);
+         glVertex3f(x1, y1, z_min);
+      glEnd();
+   }
    
    glBindTexture(GL_TEXTURE_2D, 0);
    set_material_std();

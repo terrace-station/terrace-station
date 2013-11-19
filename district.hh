@@ -38,6 +38,7 @@ public:
     float get_z_min();
     float get_z_max();
     float get_angle();
+    bool is_circular();
     std::vector<Deck>& get_decks();
     Zone* get_zone();
     
