@@ -1,3 +1,4 @@
+#include "tile.hh"
 #include "rect.hh"
 #include "room.hh"
 #include "deck.hh"

@@ -9,6 +9,7 @@
 
 class Deck;
 class Rect;
+class Tile;
 
 
 class Room
@@ -20,12 +21,22 @@ class Room
     Deck* deck;
     std::list<Rect> rects;
     
+    std::vector<Tile> floor_tiles;
+    std::vector<Tile> wall_tiles;
+    
 public:
     Room(std::string style, Rect rect, Deck* deck);
     
+    void update_tiles();
+    
     std::string get_floor_texture_label();
     std::string get_wall_texture_label();
+    
+    std::vector<Tile>& get_floor_tiles();
+    std::vector<Tile>& get_wall_tiles();
+    
     int get_area();
+    int get_wall_length();
     bool intersects(Rect other);
     bool intersects(Room other);
     std::string get_style();

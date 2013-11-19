@@ -1,3 +1,4 @@
+#include "tile.hh"
 #include "rect.hh"
 #include "room.hh"
 #include "deck.hh"
@@ -5,9 +6,19 @@
 #include "zone.hh"
 #include "station.hh"
 
-#define DECK_HEIGHT 2
 #define DECK_DISTANCE 3
 
+/**
+ * Creates a new district
+ * 
+ * \param   x           the x-position of this district
+ * \param   y           the y-position of this district
+ * \param   size_x      the width of this district
+ * \param   size_y      the height of this district
+ * \param   nr_of_decks the number of decks in this district
+ * \param   circular    if true, this district is ring-shaped
+ * \param   zone        the zone this district belongs to
+ */
 District::District(int x, int y, int size_x, int size_y,
                    int nr_of_decks, bool circular, Zone* zone) :
     x(x), y(y), size_x(size_x), size_y(size_y), circular(circular), zone(zone)
@@ -15,43 +26,33 @@ District::District(int x, int y, int size_x, int size_y,
     decks.reserve(nr_of_decks);
     for (int i = 0; i < nr_of_decks; ++i)
     {
-        float deck_radius = get_radius() + i * DECK_DISTANCE - 2.5;
-        decks.emplace_back(deck_radius, x, y, size_x, size_y, this);
+        float radius_offset = - i * DECK_DISTANCE;
+        decks.emplace_back(radius_offset, this);
     }
     
     objekt_typ = "District";
 }
 
-float District::get_radius() {
-    return zone->get_radius();
-}
+int District::get_x() { return x; }
+int District::get_y() { return y; }
 
-float District::get_radius_min() {
-    return get_radius() - decks.size() * DECK_HEIGHT / 2.0;
-}
-float District::get_radius_max() {
-    return get_radius() + decks.size() * DECK_HEIGHT / 2.0;
-}
+int District::get_size_x() { return size_x; }
+int District::get_size_y() { return size_y; }
 
-float District::get_phi_min() {
-    return x / get_radius();
-}
-float District::get_phi_max() {
-    return (size_x + x) / get_radius();
-}
+float District::get_radius() { return zone->get_radius(); }
 
-float District::get_z_min() {
-    return y;
-}
-float District::get_z_max() {
-    return y + size_y;
-}
-float District::get_angle() {
-    return zone->get_angle();
-}
-std::vector<Deck>& District::get_decks() {
-    return decks;
-}
+float District::get_radius_min() { return get_radius() - decks.size() * DECK_DISTANCE; }
+float District::get_radius_max() { return get_radius(); }
+
+float District::get_phi_min() { return x / get_radius(); }
+float District::get_phi_max() { return (size_x + x) / get_radius(); }
+
+float District::get_z_min() { return y; }
+float District::get_z_max() { return y + size_y; }
+
+float District::get_angle() { return zone->get_angle(); }
+
+std::vector<Deck>& District::get_decks() { return decks; }
 
 std::string District::str()
 {

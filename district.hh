@@ -24,7 +24,12 @@ class District: public Mausobjekt
 public:
     District(int x, int y, int size_x, int size_y,
              int nr_of_decks, bool circular, Zone* zone);
-    
+             
+    int get_x();
+    int get_y();
+    int get_size_x();
+    int get_size_y();
+
     float get_radius();
     float get_radius_min();
     float get_radius_max();

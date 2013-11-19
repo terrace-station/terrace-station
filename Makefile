@@ -1,4 +1,4 @@
-OBJEKTE  = openglwidget.o openglbutton.o openglmenu.o mausobjekt.o textur.o system.o textures.o station.o zone.o district.o deck.o room.o wall.o door.o rect.o modell.o
+OBJEKTE  = openglwidget.o openglbutton.o openglmenu.o mausobjekt.o textur.o system.o textures.o station.o zone.o district.o deck.o room.o wall.o door.o rect.o tile.o modell.o
 CPP      = g++-4.7
 CPPFLAGS = -std=c++11 -g
 
@@ -55,6 +55,9 @@ door.o: door.cpp door.hh rect.o
 
 rect.o: rect.cpp rect.hh
 	$(CPP) $(CPPFLAGS) -c rect.cpp
+
+tile.o: tile.cpp tile.hh
+	$(CPP) $(CPPFLAGS) -c tile.cpp
 
 clear:
 	rm *.o & rm *.gch & rm main

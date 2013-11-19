@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include "openglwidget.hh"
+#include "tile.hh"
 #include "rect.hh"
 #include "room.hh"
 #include "deck.hh"

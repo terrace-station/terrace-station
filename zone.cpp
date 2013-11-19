@@ -1,3 +1,4 @@
+#include "tile.hh"
 #include "rect.hh"
 #include "room.hh"
 #include "deck.hh"
@@ -24,7 +25,7 @@ Zone::Zone(int circumference, std::string style, Station* station) :
     int nr_of_districts, x, y, width, height;
     int z_offset = MIN_RANDOM_Z_OFFSET + rand() % (MAX_RANDOM_Z_OFFSET - MIN_RANDOM_Z_OFFSET + 1);
     if (style == "rings") {
-        // create 2 narrow fully circular districts:
+        // create two narrow fully circular districts:
         nr_of_districts = 2;
         x = 0;
         width = circumference;
@@ -51,7 +52,7 @@ Zone::Zone(int circumference, std::string style, Station* station) :
         }
     }
     
-    omega = sqrt(9.81/(this->get_radius()));
+    omega = sqrt(9.81/(this->get_radius())) / 10.0;
 }
 
 float Zone::get_radius() {
