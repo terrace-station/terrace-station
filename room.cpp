@@ -64,7 +64,7 @@ void Room::update_tiles() {
         Rect& rect = *it;
         for (int x = rect.get_left(); x < rect.get_right(); ++x) {
             for (int y = rect.get_top(); y < rect.get_bottom(); ++y) {
-                floor_tiles.push_back(Tile(x, y, deck->get_radius()));
+                floor_tiles.push_back(Tile(x, y, deck->get_district()->get_radius(), deck->get_radius()));
             }
         }
     }
@@ -77,15 +77,15 @@ void Room::update_tiles() {
         Rect& rect = *it;
         for (int x = rect.get_left(); x < rect.get_right(); ++x) {
             // add northern wall-tiles:
-            wall_tiles.push_back(Tile(x, rect.get_top(), deck->get_radius(), 1, false));
+            wall_tiles.push_back(Tile(x, rect.get_top(), deck->get_district()->get_radius(), deck->get_radius(), 1, false));
             // add southern wall-tiles:
-            wall_tiles.push_back(Tile(x, rect.get_bottom(), deck->get_radius(), 3, false));
+            wall_tiles.push_back(Tile(x, rect.get_bottom(), deck->get_district()->get_radius(), deck->get_radius(), 3, false));
         }
         for (int y = rect.get_top(); y < rect.get_bottom(); ++y) {
             // add western wall tiles:
-            wall_tiles.push_back(Tile(rect.get_left(), y, deck->get_radius(), 0, false));
+            wall_tiles.push_back(Tile(rect.get_left(), y, deck->get_district()->get_radius(), deck->get_radius(), 0, false));
             // add eastern wall tiles:
-            wall_tiles.push_back(Tile(rect.get_right(), y, deck->get_radius(), 2, false));
+            wall_tiles.push_back(Tile(rect.get_right(), y, deck->get_district()->get_radius(), deck->get_radius(), 2, false));
         }
     }
     // update wall-top tiles:
@@ -97,15 +97,15 @@ void Room::update_tiles() {
         Rect& rect = *it;
         for (int x = rect.get_left(); x < rect.get_right(); ++x) {
             // add northern wall-tiles:
-            wall_top_tiles.push_back(Tile(x, rect.get_top(), deck->get_radius(), 1, true));
+            wall_top_tiles.push_back(Tile(x, rect.get_top(), deck->get_district()->get_radius(), deck->get_radius(), 1, true));
             // add southern wall-tiles:
-            wall_top_tiles.push_back(Tile(x, rect.get_bottom(), deck->get_radius(), 3, true));
+            wall_top_tiles.push_back(Tile(x, rect.get_bottom(), deck->get_district()->get_radius(), deck->get_radius(), 3, true));
         }
         for (int y = rect.get_top(); y < rect.get_bottom(); ++y) {
             // add western wall tiles:
-            wall_top_tiles.push_back(Tile(rect.get_left(), y, deck->get_radius(), 0, true));
+            wall_top_tiles.push_back(Tile(rect.get_left(), y, deck->get_district()->get_radius(), deck->get_radius(), 0, true));
             // add eastern wall tiles:
-            wall_top_tiles.push_back(Tile(rect.get_right(), y, deck->get_radius(), 2, true));
+            wall_top_tiles.push_back(Tile(rect.get_right(), y, deck->get_district()->get_radius(), deck->get_radius(), 2, true));
         }
     }
     //~ std::cout << " done." << std::endl;

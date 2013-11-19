@@ -252,6 +252,7 @@ void Openglwidget::zeichne_district(District& district)
 
 void Openglwidget::zeichne_deck(Deck& deck)
 {
+    glDisable(GL_LIGHT1);
     for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
     {
         Room& room = *room_it;
@@ -332,12 +333,15 @@ void Openglwidget::zeichne_deck(Deck& deck)
         }
         set_material_std();
     }
+    glEnable(GL_LIGHT1);
 }
 
 #define DELTA_P 0.1
 
 void Openglwidget::zeichne_district_outside(District& district)
 {
+   District& active_district = *station->get_active_district();
+   
    glLoadName(district.objekt_id);
    glEnable(GL_LIGHT1);
    
@@ -361,6 +365,12 @@ void Openglwidget::zeichne_district_outside(District& district)
    float r_min = district.get_radius_min();
    float r_max = district.get_radius_max();
    
+   // cut of the active districts hull right above the first deck:
+   // (this only works for the first deck in the district)
+   if (station->get_active_district() != NULL && &district == &active_district) {
+      r_min = district.get_decks()[0].get_radius() - 2;
+   }
+   
    float z_min = district.get_z_min();
    float z_max = district.get_z_max();
 
@@ -378,8 +388,6 @@ void Openglwidget::zeichne_district_outside(District& district)
    y2 = r_max * sinp1;
    
    glBindTexture(GL_TEXTURE_2D, textures->get_id("district-hull"));
-   
-   District& active_district = *station->get_active_district();
    
    // phi_min:
    // do not draw, if district is circular:
@@ -464,6 +472,9 @@ void Openglwidget::zeichne_district_outside(District& district)
       x1 = x3; y1 = y3;
       x2 = x4; y2 = y4;
    }
+   
+   cosp1 = cos(p_max);
+   sinp1 = sin(p_max);
    
    // phi_max:
    // do not draw, if district is circular:

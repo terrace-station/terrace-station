@@ -6,11 +6,12 @@
 /**
  * Creates a new floor tile
  * 
- * \param   x       x-position in local deck-coordinates
- * \param   y       y-position in local deck-coordinates
- * \param   radius  deck radius
+ * \param   x               x-position in local deck-coordinates
+ * \param   y               y-position in local deck-coordinates
+ * \param   district_radius district radius
+ * \param   deck_radius     deck radius
  */
-Tile::Tile(int x, int y, float radius)
+Tile::Tile(int x, int y, float district_radius, float deck_radius)
 {
     vertex1.reserve(3);
     vertex2.reserve(3);
@@ -18,9 +19,10 @@ Tile::Tile(int x, int y, float radius)
     vertex4.reserve(3);
     normal.reserve(3);
     
-    float phi1 = x / radius;
-    float phi2 = (x + 1) / radius;
-    float phi = (x + 0.5) / radius;
+    float radius = deck_radius;
+    float phi1 = x / district_radius;
+    float phi2 = (x + 1) / district_radius;
+    float phi = (x + 0.5) / district_radius;
     
     float x1 = radius * cos(phi1);
     float x2 = radius * cos(phi2);
@@ -51,13 +53,14 @@ Tile::Tile(int x, int y, float radius)
 /**
  * Creates a new wall tile or a wall-top tile
  * 
- * \param   x           x-position in local deck-coordinates
- * \param   y           y-position in local deck-coordinates
- * \param   radius      deck radius
- * \param   orientation wall-orientation (west: 0, north:1, east: 2, south:3)
- * \param   top         if true, create a wall-top tile
+ * \param   x               x-position in local deck-coordinates
+ * \param   y               y-position in local deck-coordinates
+ * \param   district_radius district radius
+ * \param   deck_radius     deck radius
+ * \param   orientation     wall-orientation (west: 0, north:1, east: 2, south:3)
+ * \param   top             if true, create a wall-top tile
  */
-Tile::Tile(int x, int y, float radius, int orientation, bool top)
+Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientation, bool top)
 {
     vertex1.reserve(3);
     vertex2.reserve(3);
@@ -65,13 +68,14 @@ Tile::Tile(int x, int y, float radius, int orientation, bool top)
     vertex4.reserve(3);
     normal.reserve(3);
     
-    float phi1 = x / radius;
-    float phi2 = (x + 1) / radius;
+    float radius = deck_radius;
+    float phi1 = x / district_radius;
+    float phi2 = (x + 1) / district_radius;
     float radius2 = radius - DECK_HEIGHT;
     
     if (orientation == 0) { // east wall:
-        float phi = x / radius;
-        float phi_d = (x + HALF_WALL_THICKNESS) / radius;
+        float phi = x / district_radius;
+        float phi_d = (x + HALF_WALL_THICKNESS) / district_radius;
         
         if (top) {
             normal.push_back(cos(phi));
@@ -181,8 +185,8 @@ Tile::Tile(int x, int y, float radius, int orientation, bool top)
             vertex4.push_back(y + HALF_WALL_THICKNESS);
         }
     } else if (orientation == 2) { // west wall:
-        float phi = x / radius;
-        float phi_d = (x - HALF_WALL_THICKNESS) / radius;
+        float phi = x / district_radius;
+        float phi_d = (x - HALF_WALL_THICKNESS) / district_radius;
         
         if (top) {
             normal.push_back(cos(phi));
