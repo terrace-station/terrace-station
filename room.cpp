@@ -76,12 +76,16 @@ void Room::update_tiles() {
     {
         Rect& rect = *it;
         for (int x = rect.get_left(); x < rect.get_right(); ++x) {
-            // add top and bottom wall tiles:
-            //~ wall_tiles.push_back(Tile(x, y));
+            // add northern wall-tiles:
+            wall_tiles.push_back(Tile(x, rect.get_top(), deck->get_radius(), 1));
+            // add southern wall-tiles:
+            wall_tiles.push_back(Tile(x, rect.get_bottom(), deck->get_radius(), 3));
         }
         for (int y = rect.get_top(); y < rect.get_bottom(); ++y) {
-            // add left and right wall tiles:
-            //~ wall_tiles.push_back(Tile(x, y));
+            // add western wall tiles:
+            wall_tiles.push_back(Tile(rect.get_left(), y, deck->get_radius(), 0));
+            // add eastern wall tiles:
+            wall_tiles.push_back(Tile(rect.get_right(), y, deck->get_radius(), 2));
         }
     }
     //~ std::cout << " done." << std::endl;

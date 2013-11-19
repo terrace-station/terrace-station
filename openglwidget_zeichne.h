@@ -255,11 +255,35 @@ void Openglwidget::zeichne_deck(Deck& deck)
     for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
     {
         Room& room = *room_it;
-        float radius = room.get_deck()->get_radius();
-        glBindTexture(GL_TEXTURE_2D, textures->get_id(room.get_floor_texture_label()));
         
-        int counter = 0;
+        // draw floor:
+        glBindTexture(GL_TEXTURE_2D, textures->get_id(room.get_floor_texture_label()));
         for (std::vector<Tile>::iterator tile_it = room.get_floor_tiles().begin(); tile_it != room.get_floor_tiles().end(); tile_it++)
+        {
+            Tile& tile = *tile_it;
+            
+            std::vector<float>& vertex1 = tile.get_vertex1();
+            std::vector<float>& vertex2 = tile.get_vertex2();
+            std::vector<float>& vertex3 = tile.get_vertex3();
+            std::vector<float>& vertex4 = tile.get_vertex4();
+            std::vector<float>& normal = tile.get_normal();
+            
+            glBegin(GL_QUADS);
+                glNormal3f(normal[0], normal[1], normal[2]);
+                glTexCoord2f(0, 1);
+                glVertex3f(vertex1[0], vertex1[1], vertex1[2]);
+                glTexCoord2f(1, 1);
+                glVertex3f(vertex2[0], vertex2[1], vertex2[2]);
+                glTexCoord2f(1, 0);
+                glVertex3f(vertex3[0], vertex3[1], vertex3[2]);
+                glTexCoord2f(0, 0);
+                glVertex3f(vertex4[0], vertex4[1], vertex4[2]);
+            glEnd();
+        }
+        
+        // draw walls:
+        glBindTexture(GL_TEXTURE_2D, textures->get_id(room.get_wall_texture_label()));
+        for (std::vector<Tile>::iterator tile_it = room.get_wall_tiles().begin(); tile_it != room.get_wall_tiles().end(); tile_it++)
         {
             Tile& tile = *tile_it;
             
