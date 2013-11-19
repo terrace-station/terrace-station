@@ -103,6 +103,8 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    menu_bg = 0;
    menu_bg_soll = 0;
 
+   TTF_Font *fntCourier = TTF_OpenFont( "fonts/Overhaul.ttf", 12 );
+   
    station = NULL;
    
    Openglbutton button_close;
@@ -335,7 +337,7 @@ void Openglwidget::initialisiere_gl()
    glEnable(GL_LIGHT1);
    glEnable(GL_LIGHT2);
    glEnable(GL_COLOR_MATERIAL);
-   glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+   glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
    glFrontFace(GL_CW);
 

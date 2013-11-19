@@ -3,7 +3,7 @@ CPP      = g++-4.7
 CPPFLAGS = -std=c++11 -g
 
 main: main.cpp $(OBJEKTE)
-	$(CPP) $(CPPFLAGS) -o main main.cpp $(OBJEKTE) -lGL -lGLU -lSDL -lSDL_image
+	$(CPP) $(CPPFLAGS) -o main main.cpp $(OBJEKTE) -lGL -lGLU -lSDL -lSDL_image -lSDL_ttf
 
 dis: dis.cpp station.o
 	$(CPP) $(CPPFLAGS) -o dis dis.cpp station.o zone.o district.o deck.o room.o door.o rect.o tile.o
