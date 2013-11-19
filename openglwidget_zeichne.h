@@ -208,14 +208,14 @@ void Openglwidget::zeichne_station()
 
    for (int i=station->get_zones().size()-1; i >= 0; i--)
    {
+      glPushMatrix();
+      glRotatef(station->get_zones()[i].get_angle(), 0.0, 0.0, 1.0);
+         zeichne_zone(station->get_zones()[i]);
+      glPopMatrix();
+      
       float winkel = laufzeit*station->get_zones()[i].get_omega()/RAD;
       if(i%2==0) winkel*=-1;
       station->get_zones()[i].set_angle(winkel);
-      
-      glPushMatrix();
-      glRotatef(winkel, 0.0, 0.0, 1.0);
-         zeichne_zone(station->get_zones()[i]);
-      glPopMatrix();
       
       // do not draw inner zones, if a district is activated:
       if (station->get_active_district() != NULL) {

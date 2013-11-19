@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include <SDL/SDL.h>
+#include <SDL/SDL_ttf.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
