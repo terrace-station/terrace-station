@@ -178,7 +178,7 @@ void Deck::init()
             rect->bottom += 1;
             while (rect->right <= x + size_x && rect->bottom <= y + size_y
                                             && rect->get_aspect() <= ROOM_MAX_ASPECT_RATIO
-                                            && rect->get_aspect() >= 1.0 / ROOM_MAX_ASPECT_RATIO) {
+                                            && 1.0 / rect->get_aspect() <= ROOM_MAX_ASPECT_RATIO) {
                 bool overlapping = false;
                 for (int k = 0; k < rect->get_width(); ++k) {
                     for (int l = 0; l < rect->get_height(); ++l) {
@@ -200,7 +200,7 @@ void Deck::init()
             rect->bottom -= 1;
             while (rect->right <= x + size_x && rect->bottom <= y + size_y
                                             && rect->get_aspect() <= ROOM_MAX_ASPECT_RATIO
-                                            && rect->get_aspect() >= 1.0 / ROOM_MAX_ASPECT_RATIO) {
+                                            && 1.0 / rect->get_aspect() <= ROOM_MAX_ASPECT_RATIO) {
                 bool overlapping = false;
                 for (int k = 0; k < rect->get_width(); ++k) {
                     for (int l = 0; l < rect->get_height(); ++l) {
@@ -220,7 +220,7 @@ void Deck::init()
             rect->right -= 1;
             while (rect->right <= x + size_x && rect->bottom <= y + size_y
                                             && rect->get_aspect() <= ROOM_MAX_ASPECT_RATIO
-                                            && rect->get_aspect() >= 1.0 / ROOM_MAX_ASPECT_RATIO) {
+                                            && 1.0 / rect->get_aspect() <= ROOM_MAX_ASPECT_RATIO) {
                 bool overlapping = false;
                 for (int k = 0; k < rect->get_width(); ++k) {
                     for (int l = 0; l < rect->get_height(); ++l) {

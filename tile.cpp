@@ -156,21 +156,21 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientati
             float y3 = radius * sin(phi2);
             float y4 = radius2 * sin(phi2);
         
-            vertex4x = x2;
-            vertex4y = y2;
-            vertex4z = y + HALF_WALL_THICKNESS;
-            
-            vertex3x = x3;
-            vertex3y = y3;
-            vertex3z = y + HALF_WALL_THICKNESS;
-            
-            vertex2x = x4;
-            vertex2y = y4;
+            vertex2x = x2;
+            vertex2y = y2;
             vertex2z = y + HALF_WALL_THICKNESS;
             
-            vertex1x = x1;
-            vertex1y = y1;
+            vertex1x = x3;
+            vertex1y = y3;
             vertex1z = y + HALF_WALL_THICKNESS;
+            
+            vertex4x = x4;
+            vertex4y = y4;
+            vertex4z = y + HALF_WALL_THICKNESS;
+            
+            vertex3x = x1;
+            vertex3y = y1;
+            vertex3z = y + HALF_WALL_THICKNESS;
         }
     } else if (orientation == 2) { // west wall:
         float phi = x / district_radius;
