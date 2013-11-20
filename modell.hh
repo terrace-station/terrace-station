@@ -8,7 +8,8 @@
 #include <GL/glu.h>
 #include <GL/gl.h>
 
-#include "textur.hh"
+// #include "textur.hh"
+#include "textures.hh"
 #include "hilfsfunktionen.h"
 
 
@@ -78,12 +79,15 @@ class Modell
 {
   
 public:
+  static Textures* textures;
+  
   int anzahl_knoten;
   int anzahl_texkoords;
   int anzahl_objekte;
   int anzahl_materialien;
   
   bool flat_shading;
+  bool valid_modell;
   
   Element* objekte;
   Knoten* knoten;
@@ -92,8 +96,10 @@ public:
   
   void lade_textur();
   void zeichne();
+  void lade(std::string dateiname);
   
   Modell(bool flat_shading_);
+  Modell(std::string dateiname, bool flat_shading_);
 };
  
 Modell* lade_modell(std::string dateiname, bool flat_shading_);
