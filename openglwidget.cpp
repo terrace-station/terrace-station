@@ -318,10 +318,12 @@ void Openglwidget::selektiere_pos()
     }
 }
 
+#define TEXTURES_DIR "textures"
+// #define MODELTEXTURES_DIR "models/textures"
 
 void Openglwidget::initialisiere_gl()
 {
-   textures = new Textures;
+   textures = new Textures(TEXTURES_DIR);
    fonttextures = new Fonttextures;
    fonttextures->get_id("Test", "test", "jupiter", 255, 255, 0);
    

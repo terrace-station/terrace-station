@@ -1,12 +1,11 @@
 #include "textures.hh"
 
-#define TEXTURES_DIR "textures"
 #define DEFAULT_TEXTURE_LABEL "error"
 
 std::set<std::string> Textures::valid_extensions = {"png", "jpg", "jpeg",
                                                     "PNG", "JPG", "JPEG"};
 
-Textures::Textures()
+Textures::Textures(std::string pfad): pfad(pfad)
 {
     load();
 }
@@ -28,10 +27,10 @@ void Textures::load()
     int delim;
     DIR *dir;
     struct dirent *ent;
-    dir = opendir (TEXTURES_DIR);
+    dir = opendir (pfad.c_str());
     while ((ent = readdir (dir)) != NULL) {
         std::stringstream ss;
-        ss << TEXTURES_DIR << "/" << ent->d_name;
+        ss << pfad << "/" << ent->d_name;
         filepath = ss.str();
         label = ent->d_name;
         delim = label.find_last_of(".");

@@ -15,6 +15,8 @@
 
 class Textures
 {
+   std::string pfad;
+   
     static std::set<std::string> valid_extensions;
     
     std::unordered_map<std::string, GLuint> texture_ids;
@@ -22,7 +24,7 @@ class Textures
     void load();
 
 public:
-    Textures();
+    Textures(std::string pfad);
     
     GLuint get_id(std::string label);
 };
