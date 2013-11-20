@@ -21,21 +21,21 @@ void Planet::erstelle_zufall()
       case 0:
         klasse = 'A';
         spezial = rand()%4;
-        radius = 80.0 + float(rand()%5000)/500.0;
+        radius = 100.0 + float(rand()%5000)/500.0;
         texture_label = gas_texture_labels[rand() % 4];
         break;
         
       case 1:
         klasse = 'J';
         spezial = rand()%3;
-        radius = 10.0 + float(rand()%4000)/400.0; 
+        radius = 50.0 + float(rand()%4000)/400.0; 
         texture_label = rock_texture_labels[rand() % 4];
         break;
         
       case 2:
         klasse = 'K';
         spezial = rand()%3+3;
-        radius = 10.0 + float(rand()%4000)/400.0; 
+        radius = 50.0 + float(rand()%4000)/400.0; 
         texture_label = rock_texture_labels[rand() % 6];
         break;
       
@@ -51,14 +51,14 @@ System::System()
 {
    sonnenradius = 150;
    
-   position[0] = 10000;
+   position[0] = 12000;
    position[1] = 0;
    position[2] = 0;
    
    abstand_max = sqrt(pow(position[0],2) + pow(position[1],2) + pow(position[2],2)) + sonnenradius;
-   abstand_umlaufbahn = 1000;
+   abstand_umlaufbahn = 11000;
    
-   anzahl_planeten = 3+rand()%6;
+   anzahl_planeten = 8+rand()%6;
    
    planeten = new Planet[anzahl_planeten];
    
@@ -66,6 +66,12 @@ System::System()
    {
       planeten[i].erstelle_zufall();
    }
+   
+   planeten[0].klasse = 'A';
+   planeten[0].phase = -80.0;
+   planeten[0].spezial = 2;
+   planeten[0].radius = 3000;
+   planeten[0].texture_label = planeten[0].gas_texture_labels[rand() % 4];
 }
 
 

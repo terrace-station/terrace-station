@@ -112,7 +112,7 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
          break;
 
       case SDLK_LEFT:
-         phi_soll += 5;
+         phi_soll += 1.5;
          if (phi_soll > 360)
          {
             phi -= 360; 
@@ -121,7 +121,7 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
          break;
 
       case SDLK_RIGHT:
-         phi_soll -= 5;
+         phi_soll -= 1.5;
          if (phi_soll < 0)
          {
             phi += 360; 

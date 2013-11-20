@@ -139,7 +139,7 @@ void Openglwidget::parameter_regelung()
       else
          zeit_faktor = zeit_frame;
       
-      if (fabs(phi_soll-phi) > 0.1)
+      if (fabs(phi_soll-phi) > 0.01)
       {
          phi += 0.9*(phi_soll - phi)*zeit_faktor*8;
       }
@@ -367,7 +367,7 @@ void Openglwidget::zeichne_system(System& system_)
          case 'A':
          glPushMatrix();
             glRotatef(system_.planeten[i].phase, 0.0, 0.0, 1.0);
-            glTranslatef((i+1)*system_.abstand_umlaufbahn, 0, 0);
+            glTranslatef((i+1)*10+system_.abstand_umlaufbahn, 0, 0);
             
    //           glColor3f(0.6, 0.4, 0.4);
             glColor3f(1.0, 1.0, 1.0);
@@ -376,7 +376,7 @@ void Openglwidget::zeichne_system(System& system_)
             
             for (int j=0; j<system_.planeten[i].spezial; j++)
             {
-               glhilf::zeichne_ring(system_.planeten[i].radius*(1.2+j*j*0.2), system_.planeten[i].radius*(0.4*j+0.15), 40);
+               glhilf::zeichne_ring(system_.planeten[i].radius*(1.2+j*j*0.2), system_.planeten[i].radius*(0.4*j+0.15), 80);
             }
             
             glColor3f(0.8, 0.8, 0.8);
@@ -388,7 +388,7 @@ void Openglwidget::zeichne_system(System& system_)
          case 'K':
          glPushMatrix();
             glRotatef(system_.planeten[i].phase, 0.0, 0.0, 1.0);
-            glTranslatef((i+1)*system_.abstand_umlaufbahn, 0, 0);
+            glTranslatef((i+1)*10+system_.abstand_umlaufbahn, 0, 0);
             glBindTexture(GL_TEXTURE_2D, textures->get_id(system_.planeten[i].texture_label));
             glhilf::draw_texture_sphere(system_.planeten[i].radius, 20, 40);
             glBindTexture(GL_TEXTURE_2D, 0);
@@ -398,14 +398,13 @@ void Openglwidget::zeichne_system(System& system_)
          case 'M':
          glPushMatrix();
             glRotatef(system_.planeten[i].phase, 0.0, 0.0, 1.0);
-            glTranslatef((i+1)*system_.abstand_umlaufbahn, 0, 0);
+            glTranslatef((i+1)*10+system_.abstand_umlaufbahn, 0, 0);
             glBindTexture(GL_TEXTURE_2D, textures->get_id(system_.planeten[i].texture_label));
             glColor3f(1.0, 1.0, 1.0);
             glhilf::draw_texture_sphere(system_.planeten[i].radius, 20, 40);
             glBindTexture(GL_TEXTURE_2D, 0);
          glPopMatrix();
          break;
-         
       }
   }
   
@@ -419,7 +418,6 @@ void Openglwidget::zeichne_system(System& system_)
    glColor3f(1.0, 1.0, 0.7);
    glhilf::draw_texture_sphere(system_.sonnenradius, 100, 100);
    
-//    glEnable(GL_BLEND);
    glBlendFunc(GL_SRC_ALPHA,GL_ONE);
       glBindTexture(GL_TEXTURE_2D, textures->get_id("space-sun"));
       glColor4f(1.0, 1.0, 0.7, 0.4);
@@ -431,11 +429,11 @@ void Openglwidget::zeichne_system(System& system_)
       glEnd();
       glTranslatef(-system_.position[0], 0.0, 0.0);
       
-//    glGetIntegerv(GL_VIEWPORT, viewport2);
-//    glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix2);
-//    glGetDoublev(GL_PROJECTION_MATRIX, project_matrix2);
+   glGetIntegerv(GL_VIEWPORT, viewport_system);
+   glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix_system);
+   glGetDoublev(GL_PROJECTION_MATRIX, project_matrix_system);
    
-   gluProject(system_.position[0]-system_.sonnenradius*2, 0, 0, model_matrix, project_matrix, viewport, &fenster_x, &fenster_y, &fenster_z);
+   gluProject(system_.position[0]-system_.sonnenradius*2, 0, 0, model_matrix_system, project_matrix_system, viewport_system, &fenster_x, &fenster_y, &fenster_z);
       
    
    if(flare_theta < 0.5*PI && fenster_x >= 0 && fenster_x <= fenster_breite && fenster_y >= 0 && fenster_y <= fenster_hoehe) // Flare zeichnen

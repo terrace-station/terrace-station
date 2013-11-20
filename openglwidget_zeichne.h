@@ -1,5 +1,5 @@
 #define NEAR_CLIP 1.00
-#define FAR_CLIP 20000
+#define FAR_CLIP 25000
 
 void Openglwidget::draw()
 {
@@ -130,7 +130,8 @@ void Openglwidget::zeichne_szene()
 
    glLoadName(0);
    glPushMatrix();
-   glRotatef(30, 1.0, 0.0, 0.0);
+   glTranslatef(0.0, 0.0, 4000.0);
+   glRotatef(-10, 1.0, 0.0, 0.0);
    zeichne_system(sys);
    glPopMatrix();
    

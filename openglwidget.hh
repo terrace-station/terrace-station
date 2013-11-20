@@ -63,6 +63,10 @@ public:
    GLdouble model_matrix[16];
    GLdouble project_matrix[16];
 
+   GLint viewport_system[4];
+   GLdouble model_matrix_system[16];
+   GLdouble project_matrix_system[16];
+
    GLint viewport_menu[4];
    GLdouble model_matrix_menu[16];
    GLdouble project_matrix_menu[16];

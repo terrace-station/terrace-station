@@ -20,7 +20,8 @@
 
 int main(int argc, char* argv[])
 {
-   srand (time(NULL));
+   srand (2);
+//    srand (time(NULL));
    SDL_Init(SDL_INIT_VIDEO);
    TTF_Init();
    

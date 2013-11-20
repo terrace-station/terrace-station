@@ -20,7 +20,7 @@ int Rect::get_width() { return right - left; }
 int Rect::get_height() { return bottom - top; }
 
 int Rect::get_area() { return get_width() * get_height(); }
-float Rect::get_aspect() { return 1.0 * get_width() / get_height(); }
+float Rect::get_aspect() { return float(get_width()) / float(get_height()); }
 
 bool Rect::intersects(Rect other) {
     return left < other.get_right() && other.get_left() < right && top < other.get_bottom() && other.get_top() < bottom;

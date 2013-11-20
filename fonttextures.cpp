@@ -19,9 +19,6 @@ GLuint Fonttextures::get_id(std::string text, std::string label, std::string fon
    {
       SDL_Color color = {r, g, b, 0};
       SDL_Surface *surface = TTF_RenderText_Blended(get_font(font), text.c_str(), color);
-      std::cout << "bpp:" << surface->format->BytesPerPixel << std::endl;
-      std::cout << "w:" << surface->w << std::endl;
-      std::cout << "h:" << surface->h << std::endl;
       GLuint texture_id;
       int mode = GL_RGBA;
       glGenTextures(1, &texture_id);
@@ -39,17 +36,6 @@ GLuint Fonttextures::get_id(std::string text, std::string label, std::string fon
    }
 }
 
-// GLuint Fonttextures::get_id(std::string label)
-// {
-//    if (texture_ids.count(label))
-//    {
-//       return texture_ids[label];
-//    } else 
-//    {
-// //       std::cout << "Fonttexture '" << label << "' not found. Using texture '" << DEFAULT_TEXTURE_LABEL << "' instead." << std::endl;
-// //       return texture_ids[DEFAULT_TEXTURE_LABEL];
-//    }
-// }
 
 TTF_Font* Fonttextures::get_font(std::string label)
 {
@@ -82,7 +68,7 @@ void Fonttextures::load_fonts()
         if (valid_extensions.count(ext) == 1) 
         {
             std::cout << "Loading Font '" << label << "' from file '" << filepath << "' ...";
-            TTF_Font* font = TTF_OpenFont(filepath.c_str(), 50);
+            TTF_Font* font = TTF_OpenFont(filepath.c_str(), 100);
             font_ids[label] = font;
             std::cout << " done." << std::endl;
         } else 

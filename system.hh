@@ -37,9 +37,9 @@ public:
 
 class Planet
 {
+public:
     static std::vector<std::string> rock_texture_labels;
     static std::vector<std::string> gas_texture_labels;
-public:
    float temperatur;
    float radius;
    char klasse;
