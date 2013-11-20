@@ -27,7 +27,6 @@ void Openglwidget::draw()
    glLoadIdentity();
    
    gluLookAt(kamera_x, kamera_y, kamera_z, pos_x, pos_y, pos_z, oben_x, oben_y, oben_z);
-   if (station->active_district != NULL) glRotatef(-station->active_district->get_angle(), 0.0, 0.0, 1.0);
    
    flare_theta = atan2(sqrt(pow(pos_y-kamera_y,2) + pow(pos_z-kamera_z,2)),pos_x-kamera_x);
    flare_phi = atan2(pos_z-kamera_z,pos_y-kamera_y);
@@ -43,7 +42,7 @@ void Openglwidget::draw()
    glLightfv(GL_LIGHT0, GL_DIFFUSE, licht_diff);
    glLightfv(GL_LIGHT0, GL_SPECULAR, licht_spec);
    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION,  1.0);
-   glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION,    0.005);
+   glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION,    0.01);
    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0);
 
    sonne_pos[0] = sys.position[0];  // Sonnenlicht
@@ -81,8 +80,10 @@ void Openglwidget::draw()
    
 // // // // // // // // // // // // // // // // // // // // // // // //    
    
+   if (station->active_district != NULL) glRotatef(-station->active_district->get_angle(), 0.0, 0.0, 1.0); // sorgt dafür, dass die Kamera ausgewählten Distrikten folgt
+
    glEnable(GL_LIGHTING);
-   glDisable(GL_LIGHT1);
+   glEnable(GL_LIGHT1);
    glEnable(GL_LIGHT0);
    
    zeichne_szene();
