@@ -107,18 +107,23 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    
    Openglbutton button_close;
    button_close.set_callback(close_callback);
-   button_close.set_modell(lade_modell("models/button_grau", false));
-   menu.add_button(&button_close, 0, -3, 3, 1); // pos_x, pos_y, scale_x, scale_y
+   button_close.set_modell(lade_modell("models/button_menu", false));
+   menu.add_button(&button_close, 2, -3, 5, 1); // pos_x, pos_y, scale_x, scale_y
+   
+   Openglbutton button_return;
+   button_return.set_callback(return_callback);
+   button_return.set_modell(lade_modell("models/button_menu", false));
+   menu.add_button(&button_return, -3, -3, 3, 1); // pos_x, pos_y, scale_x, scale_y
    
    Opengltogglebutton button_fullscreen(&fullscreen);
    button_fullscreen.set_callback(toggle_fullscreen_callback);
    button_fullscreen.set_modell(lade_modell("models/button_gruen", false), lade_modell("models/button_rot", false));
-   menu.add_togglebutton(&button_fullscreen, 0, 1.5, 1, 1);
+   menu.add_togglebutton(&button_fullscreen, 2.0, 1.0, 0.7, 0.7);
    
    Opengltogglebutton button_aa(&antialiasing);
    button_aa.set_callback(toggle_antialiasing_callback);
    button_aa.set_modell(lade_modell("models/button_gruen", false), lade_modell("models/button_rot", false));
-   menu.add_togglebutton(&button_aa, 0, 0, 1, 1);
+   menu.add_togglebutton(&button_aa, 2.0, 0.0, 0.7, 0.7);
    
 }
 

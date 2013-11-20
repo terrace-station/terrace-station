@@ -17,7 +17,7 @@ GLuint Fonttextures::get_id(std::string text, std::string label, std::string fon
       return texture_ids[label];
    } else 
    {
-      SDL_Color color = {r, g, b, 0};
+      SDL_Color color = {b, g, r, 150};
       SDL_Surface *surface = TTF_RenderText_Blended(get_font(font), text.c_str(), color);
       GLuint texture_id;
       int mode = GL_RGBA;
@@ -79,3 +79,25 @@ void Fonttextures::load_fonts()
     closedir (dir);
     IMG_Quit();
 }
+
+void Fonttextures::text_rendern_m(std::string text, std::string label, float hoehe, std::string font, unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255)
+{
+   float breite, x, y;
+   GLfloat breite_tex, hoehe_tex;
+   glBindTexture(GL_TEXTURE_2D, get_id(text, label, font, r, g, b));
+   glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &breite_tex);
+   glGetTexLevelParameterfv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &hoehe_tex);   //    glBindTexture(GL_TEXTURE_2D, textures->get_id("Test"));
+   breite = hoehe*breite_tex/hoehe_tex;
+   x = breite*0.5;
+   y = hoehe*0.5;
+   glColor4f(1.0, 1.0, 1.0, a/float(255));
+   glBegin(GL_QUADS);
+      glNormal3f(0.0, 0.0, 1.0);
+      glTexCoord2f(0.0, 0.0); glVertex3f(-x, y, 0.0);
+      glTexCoord2f(0.99, 0.0); glVertex3f( x, y, 0.0);
+      glTexCoord2f(0.99, 0.99); glVertex3f( x,-y, 0.0);
+      glTexCoord2f(0.0,  0.99); glVertex3f(-x,-y, 0.0);
+   glEnd();
+   glBindTexture(GL_TEXTURE_2D, 0);
+}
+   

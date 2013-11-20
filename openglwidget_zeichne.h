@@ -153,7 +153,7 @@ void Openglwidget::zeichne_gamemenu()
    glDisable(GL_LIGHTING);
    glDisable(GL_DEPTH_TEST);
    
-   glColor4f(0.3, 0.3, 0.5, 0.5*menu_bg);
+   glColor4f(0.0, 0.2, 0.1, 0.5*menu_bg); // hintergrund des Menüs
    glBegin(GL_QUADS);
       glVertex3f(-100.0, -100.0, -10.0);
       glVertex3f( 100.0, -100.0, -10.0);
@@ -181,17 +181,7 @@ void Openglwidget::zeichne_gamemenu()
 
    glTranslatef(0.0, 0.0, (1.0-menu_bg)*10);
    
-   glColor3f(1.0, 1.0, 1.0);
-   glBindTexture(GL_TEXTURE_2D, fonttextures->get_id("Game Menu", "gamemenu", "jupiter", 200, 200, 0));
-//    glBindTexture(GL_TEXTURE_2D, textures->get_id("Test"));
-   glBegin(GL_QUADS);
-      glNormal3f(0.0, 0.0, 1.0);
-      glTexCoord2f(0.0, 0.0); glVertex3f(-2.5, 3.5, 0.0);
-      glTexCoord2f(1.0, 0.0); glVertex3f( 2.5, 3.5, 0.0);
-      glTexCoord2f(1.0, 1.0); glVertex3f( 2.5, 2.5, 0.0);
-      glTexCoord2f(0.0, 1.0); glVertex3f(-2.5, 2.5, 0.0);
-   glEnd();
-   glBindTexture(GL_TEXTURE_2D, 0);
+   
    
    for (std::list<Togglebutton_and_coords>::iterator it = menu.togglebuttons.begin(); it != menu.togglebuttons.end(); it++)
    {
@@ -211,11 +201,20 @@ void Openglwidget::zeichne_gamemenu()
       glPopMatrix();
    }
    
+   glDisable(GL_DEPTH_TEST);
+   glPushMatrix(); glTranslatef(0.0, 3.0, 0.0); fonttextures->text_rendern_m("Game Menu", "gamemenu", 1.5, "jupiter", 150, 250, 150, 150); glPopMatrix();
+   glPushMatrix(); glTranslatef(-2.0, 1.0, 0.0); fonttextures->text_rendern_m("fullscreen", "fullscreen", 0.8, "jupiter", 150, 250, 150, 150); glPopMatrix();
+   glPushMatrix(); glTranslatef(-2.0, 0.0, 0.0); fonttextures->text_rendern_m("anti-aliasing", "aa", 0.8, "jupiter", 150, 250, 150, 150); glPopMatrix();
+   glPushMatrix(); glTranslatef(2.0,-3.0, 0.0); fonttextures->text_rendern_m("Leave Program", "close", 0.8, "jupiter", 150, 250, 150, 150); glPopMatrix();
+   glPushMatrix(); glTranslatef(-3.0,-3.0, 0.0); fonttextures->text_rendern_m("Return", "return", 0.8, "jupiter", 150, 250, 150, 150); glPopMatrix();
+   glEnable(GL_DEPTH_TEST);
+   
    glGetIntegerv(GL_VIEWPORT, viewport);
    glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix);
    glGetDoublev(GL_PROJECTION_MATRIX, project_matrix);
    
 }
+
 
 
 void Openglwidget::zeichne_station()
