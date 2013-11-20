@@ -5,24 +5,45 @@
 #include <string>
 #include <vector>
 #include <math.h>
+#include <GL/gl.h>
 
 class Tile
 {
-    std::vector<float> vertex1;
-    std::vector<float> vertex2;
-    std::vector<float> vertex3;
-    std::vector<float> vertex4;
-    std::vector<float> normal;
+    GLfloat vertex1x;
+    GLfloat vertex1y;
+    GLfloat vertex1z;
+    GLfloat vertex2x;
+    GLfloat vertex2y;
+    GLfloat vertex2z;
+    GLfloat vertex3x;
+    GLfloat vertex3y;
+    GLfloat vertex3z;
+    GLfloat vertex4x;
+    GLfloat vertex4y;
+    GLfloat vertex4z;
+    GLfloat normalx;
+    GLfloat normaly;
+    GLfloat normalz;
     
 public:
     Tile(int x, int y, float district_radius, float deck_radius);
     Tile(int x, int y, float district_radius, float deck_radius, int orientation, bool top);
     
-    std::vector<float>& get_vertex1();
-    std::vector<float>& get_vertex2();
-    std::vector<float>& get_vertex3();
-    std::vector<float>& get_vertex4();
-    std::vector<float>& get_normal();
+    GLfloat& get_vertex1x();
+    GLfloat& get_vertex1y();
+    GLfloat& get_vertex1z();
+    GLfloat& get_vertex2x();
+    GLfloat& get_vertex2y();
+    GLfloat& get_vertex2z();
+    GLfloat& get_vertex3x();
+    GLfloat& get_vertex3y();
+    GLfloat& get_vertex3z();
+    GLfloat& get_vertex4x();
+    GLfloat& get_vertex4y();
+    GLfloat& get_vertex4z();
+    GLfloat& get_normalx();
+    GLfloat& get_normaly();
+    GLfloat& get_normalz();
     
     std::string str();
 };

@@ -129,7 +129,10 @@ void Openglwidget::zeichne_szene()
    glEnable(GL_LIGHT1);
 
    glLoadName(0);
+   glPushMatrix();
+   glRotatef(30, 1.0, 0.0, 0.0);
    zeichne_system(sys);
+   glPopMatrix();
    
    if (gamemenu)
    {
@@ -264,83 +267,67 @@ void Openglwidget::zeichne_district(District& district)
 
 void Openglwidget::zeichne_deck(Deck& deck)
 {
+    Room* room;
+    Tile* tile;
+   
     glDisable(GL_LIGHT1);
     for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
     {
-        Room& room = *room_it;
-        
+        room = &(*room_it);
         // draw floor:
-        glBindTexture(GL_TEXTURE_2D, textures->get_id(room.get_floor_texture_label()));
+        glBindTexture(GL_TEXTURE_2D, textures->get_id(room->get_floor_texture_label()));
         glColor3f(1.0, 1.0, 1.0);
-        for (std::vector<Tile>::iterator tile_it = room.get_floor_tiles().begin(); tile_it != room.get_floor_tiles().end(); tile_it++)
+        for (std::vector<Tile>::iterator tile_it = room->get_floor_tiles().begin(); tile_it != room->get_floor_tiles().end(); tile_it++)
         {
-            Tile& tile = *tile_it;
-            
-            std::vector<float>& vertex1 = tile.get_vertex1();
-            std::vector<float>& vertex2 = tile.get_vertex2();
-            std::vector<float>& vertex3 = tile.get_vertex3();
-            std::vector<float>& vertex4 = tile.get_vertex4();
-            std::vector<float>& normal = tile.get_normal();
+            tile = &(*tile_it);
             
             glBegin(GL_QUADS);
-                glNormal3f(normal[0], normal[1], normal[2]);
-                glTexCoord2f(0, 1);
-                glVertex3f(vertex1[0], vertex1[1], vertex1[2]);
-                glTexCoord2f(1, 1);
-                glVertex3f(vertex2[0], vertex2[1], vertex2[2]);
-                glTexCoord2f(1, 0);
-                glVertex3f(vertex3[0], vertex3[1], vertex3[2]);
-                glTexCoord2f(0, 0);
-                glVertex3f(vertex4[0], vertex4[1], vertex4[2]);
+                glNormal3f(tile->get_normalx(), tile->get_normaly(), tile->get_normalz());
+                glTexCoord2f(0e0, 1e0);
+                glVertex3f(tile->get_vertex1x(), tile->get_vertex1y(), tile->get_vertex1z());
+                glTexCoord2f(1e0, 1e0);
+                glVertex3f(tile->get_vertex2x(), tile->get_vertex2y(), tile->get_vertex2z());
+                glTexCoord2f(1e0, 0e0);
+                glVertex3f(tile->get_vertex3x(), tile->get_vertex3y(), tile->get_vertex3z());
+                glTexCoord2f(0e0, 0e0);
+                glVertex3f(tile->get_vertex4x(), tile->get_vertex4y(), tile->get_vertex4z());
             glEnd();
         }
         
         // draw walls:
-        glBindTexture(GL_TEXTURE_2D, textures->get_id(room.get_wall_texture_label()));
+        glBindTexture(GL_TEXTURE_2D, textures->get_id(room->get_wall_texture_label()));
         glColor3f(1.0, 1.0, 1.0);
-        for (std::vector<Tile>::iterator tile_it = room.get_wall_tiles().begin(); tile_it != room.get_wall_tiles().end(); tile_it++)
+        for (std::vector<Tile>::iterator tile_it = room->get_wall_tiles().begin(); tile_it != room->get_wall_tiles().end(); tile_it++)
         {
-            Tile& tile = *tile_it;
-            
-            std::vector<float>& vertex1 = tile.get_vertex1();
-            std::vector<float>& vertex2 = tile.get_vertex2();
-            std::vector<float>& vertex3 = tile.get_vertex3();
-            std::vector<float>& vertex4 = tile.get_vertex4();
-            std::vector<float>& normal = tile.get_normal();
+            tile = &(*tile_it);
             
             glBegin(GL_QUADS);
-                glNormal3f(normal[0], normal[1], normal[2]);
-                glTexCoord2f(0, 1);
-                glVertex3f(vertex1[0], vertex1[1], vertex1[2]);
-                glTexCoord2f(1, 1);
-                glVertex3f(vertex2[0], vertex2[1], vertex2[2]);
-                glTexCoord2f(1, 0);
-                glVertex3f(vertex3[0], vertex3[1], vertex3[2]);
-                glTexCoord2f(0, 0);
-                glVertex3f(vertex4[0], vertex4[1], vertex4[2]);
+                glNormal3f(tile->get_normalx(), tile->get_normaly(), tile->get_normalz());
+                glTexCoord2f(0e0, 1e0);
+                glVertex3f(tile->get_vertex1x(), tile->get_vertex1y(), tile->get_vertex1z());
+                glTexCoord2f(1e0, 1e0);
+                glVertex3f(tile->get_vertex2x(), tile->get_vertex2y(), tile->get_vertex2z());
+                glTexCoord2f(1e0, 0e0);
+                glVertex3f(tile->get_vertex3x(), tile->get_vertex3y(), tile->get_vertex3z());
+                glTexCoord2f(0e0, 0e0);
+                glVertex3f(tile->get_vertex4x(), tile->get_vertex4y(), tile->get_vertex4z());
             glEnd();
         }
         
         // draw wall-tops:
         glColor3f(0.0, 0.0, 0.0);
-        set_material_ambi(0.0, 0.0, 0.0, 0.0);
+        set_material_ambi(0.0, 0.0, 0.0, 1.0);
         set_material_diff(0.0, 0.0, 0.0, 1.0);
-        for (std::vector<Tile>::iterator tile_it = room.get_wall_top_tiles().begin(); tile_it != room.get_wall_top_tiles().end(); tile_it++)
+        for (std::vector<Tile>::iterator tile_it = room->get_wall_top_tiles().begin(); tile_it != room->get_wall_top_tiles().end(); tile_it++)
         {
-            Tile& tile = *tile_it;
-            
-            std::vector<float>& vertex1 = tile.get_vertex1();
-            std::vector<float>& vertex2 = tile.get_vertex2();
-            std::vector<float>& vertex3 = tile.get_vertex3();
-            std::vector<float>& vertex4 = tile.get_vertex4();
-            std::vector<float>& normal = tile.get_normal();
+            tile = &(*tile_it);
             
             glBegin(GL_QUADS);
-                glNormal3f(normal[0], normal[1], normal[2]);
-                glVertex3f(vertex1[0], vertex1[1], vertex1[2]);
-                glVertex3f(vertex2[0], vertex2[1], vertex2[2]);
-                glVertex3f(vertex3[0], vertex3[1], vertex3[2]);
-                glVertex3f(vertex4[0], vertex4[1], vertex4[2]);
+                glNormal3f(tile->get_normalx(), tile->get_normaly(), tile->get_normalz());
+                glVertex3f(tile->get_vertex1x(), tile->get_vertex1y(), tile->get_vertex1z());
+                glVertex3f(tile->get_vertex2x(), tile->get_vertex2y(), tile->get_vertex2z());
+                glVertex3f(tile->get_vertex3x(), tile->get_vertex3y(), tile->get_vertex3z());
+                glVertex3f(tile->get_vertex4x(), tile->get_vertex4y(), tile->get_vertex4z());
             glEnd();
         }
         set_material_std();
