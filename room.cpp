@@ -60,7 +60,7 @@ std::vector<std::string> Room::corridor_styles = {
  * \param   deck        the deck this room belongs to
  */
 Room::Room(std::string style_group, Rect rect, Deck* deck):
-    deck(deck)
+    style_group(style_group), deck(deck)
 {
     int i;
     if (style_group == "corridor") {
@@ -182,6 +182,10 @@ bool Room::intersects(Room other)
         }
     }
     return false;
+}
+
+std::string Room::get_style_group() {
+    return style_group;
 }
 
 std::string Room::get_style() {

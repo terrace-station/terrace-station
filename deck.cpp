@@ -52,7 +52,6 @@ void Deck::init()
         CorridorBuilder cb = {cb_x, cb_y, cb_d, CORRIDOR_MAX_WIDTH, true};
         cbs.push_back(cb);
     }
-    //~ int counter = 0;
     int active_cbs = 1;
     while (active_cbs > 0) {
         std::list<CorridorBuilder> new_cbs;
@@ -161,10 +160,6 @@ void Deck::init()
         for (std::list<CorridorBuilder>::iterator cb_it = cbs.begin(); cb_it != cbs.end(); cb_it++) {
             active_cbs += (*cb_it).active;
         }
-        
-        //~ // Notbremse:
-        //~ counter++;
-        //~ if (counter > 30) { break; }
     }
     
     // fill free space with rooms:
@@ -250,7 +245,41 @@ void Deck::init()
     }
     
     // split large rooms:
-    // ...
+    bool found_a_large_room = false;
+    //~ int counter = 0;
+    while (true) {
+        found_a_large_room = false;
+        for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
+            if (room_it->get_style_group() == "room" && room_it->get_area() > ROOM_MAX_AREA) {
+                Rect& rect = room_it->get_rects().front();
+                Rect* new_rect;
+                int split;
+                if (rect.get_aspect() > 1.0) {
+                    // vertical split:
+                    split = rect.get_left() + rect.get_width() / 2;
+                    new_rect = new Rect(rect.get_left(), rect.get_top(), split, rect.get_bottom());
+                    rooms.emplace_back("room", *new_rect, this);
+                    new_rect = new Rect(split, rect.get_top(), rect.get_right(), rect.get_bottom());
+                    rooms.emplace_back("room", *new_rect, this);
+                } else {
+                    // horizontal split:
+                    split = rect.get_top() + rect.get_height() / 2;
+                    new_rect = new Rect(rect.get_left(), rect.get_top(), rect.get_right(), split);
+                    rooms.emplace_back("room", *new_rect, this);
+                    new_rect = new Rect(rect.get_left(), split, rect.get_right(), rect.get_bottom());
+                    rooms.emplace_back("room", *new_rect, this);
+                }
+                rooms.erase(room_it);
+                found_a_large_room = true;
+                break;
+            }
+        }
+        if (!found_a_large_room) { break; }
+        
+        //~ // Notbremse:
+        //~ counter++;
+        //~ if (counter > 30) { break; }
+    }
     
     // turn narrow rooms into corridors:
     // ...

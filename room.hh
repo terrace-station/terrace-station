@@ -17,6 +17,7 @@ class Room
     static std::vector<std::string> room_styles;
     static std::vector<std::string> corridor_styles;
     
+    std::string style_group;
     std::string style;
     Deck* deck;
     std::list<Rect> rects;
@@ -42,6 +43,7 @@ public:
     bool intersects(Rect other);
     bool intersects(Room other);
     std::string get_style();
+    std::string get_style_group();
     std::list<Rect>& get_rects();
     Deck* get_deck();
     
