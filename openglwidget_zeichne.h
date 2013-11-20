@@ -282,15 +282,15 @@ void Openglwidget::zeichne_deck(Deck& deck)
             tile = &(*tile_it);
             
             glBegin(GL_QUADS);
-                glNormal3f(tile->get_normalx(), tile->get_normaly(), tile->get_normalz());
+                glNormal3f(tile->nx, tile->ny, tile->nz);
                 glTexCoord2f(0e0, 1e0);
-                glVertex3f(tile->get_vertex1x(), tile->get_vertex1y(), tile->get_vertex1z());
+                glVertex3f(tile->v1x, tile->v1y, tile->v1z);
                 glTexCoord2f(1e0, 1e0);
-                glVertex3f(tile->get_vertex2x(), tile->get_vertex2y(), tile->get_vertex2z());
+                glVertex3f(tile->v2x, tile->v2y, tile->v2z);
                 glTexCoord2f(1e0, 0e0);
-                glVertex3f(tile->get_vertex3x(), tile->get_vertex3y(), tile->get_vertex3z());
+                glVertex3f(tile->v3x, tile->v3y, tile->v3z);
                 glTexCoord2f(0e0, 0e0);
-                glVertex3f(tile->get_vertex4x(), tile->get_vertex4y(), tile->get_vertex4z());
+                glVertex3f(tile->v4x, tile->v4y, tile->v4z);
             glEnd();
         }
         
@@ -302,15 +302,15 @@ void Openglwidget::zeichne_deck(Deck& deck)
             tile = &(*tile_it);
             
             glBegin(GL_QUADS);
-                glNormal3f(tile->get_normalx(), tile->get_normaly(), tile->get_normalz());
+                glNormal3f(tile->nx, tile->ny, tile->nz);
                 glTexCoord2f(0e0, 1e0);
-                glVertex3f(tile->get_vertex1x(), tile->get_vertex1y(), tile->get_vertex1z());
+                glVertex3f(tile->v1x, tile->v1y, tile->v1z);
                 glTexCoord2f(1e0, 1e0);
-                glVertex3f(tile->get_vertex2x(), tile->get_vertex2y(), tile->get_vertex2z());
+                glVertex3f(tile->v2x, tile->v2y, tile->v2z);
                 glTexCoord2f(1e0, 0e0);
-                glVertex3f(tile->get_vertex3x(), tile->get_vertex3y(), tile->get_vertex3z());
+                glVertex3f(tile->v3x, tile->v3y, tile->v3z);
                 glTexCoord2f(0e0, 0e0);
-                glVertex3f(tile->get_vertex4x(), tile->get_vertex4y(), tile->get_vertex4z());
+                glVertex3f(tile->v4x, tile->v4y, tile->v4z);
             glEnd();
         }
         
@@ -323,11 +323,11 @@ void Openglwidget::zeichne_deck(Deck& deck)
             tile = &(*tile_it);
             
             glBegin(GL_QUADS);
-                glNormal3f(tile->get_normalx(), tile->get_normaly(), tile->get_normalz());
-                glVertex3f(tile->get_vertex1x(), tile->get_vertex1y(), tile->get_vertex1z());
-                glVertex3f(tile->get_vertex2x(), tile->get_vertex2y(), tile->get_vertex2z());
-                glVertex3f(tile->get_vertex3x(), tile->get_vertex3y(), tile->get_vertex3z());
-                glVertex3f(tile->get_vertex4x(), tile->get_vertex4y(), tile->get_vertex4z());
+                glNormal3f(tile->nx, tile->ny, tile->nz);
+                glVertex3f(tile->v1x, tile->v1y, tile->v1z);
+                glVertex3f(tile->v2x, tile->v2y, tile->v2z);
+                glVertex3f(tile->v3x, tile->v3y, tile->v3z);
+                glVertex3f(tile->v4x, tile->v4y, tile->v4z);
             glEnd();
         }
         set_material_std();
