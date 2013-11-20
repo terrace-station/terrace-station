@@ -200,13 +200,14 @@ void Openglwidget::zeichne_gamemenu()
          it->button.zeichne();
       glPopMatrix();
    }
+   glLoadName(0);
    
    glDisable(GL_DEPTH_TEST);
-   glPushMatrix(); glTranslatef(0.0, 3.0, 0.0); fonttextures->text_rendern_m("Game Menu", "gamemenu", 1.5, "jupiter", 150, 250, 150, 150); glPopMatrix();
-   glPushMatrix(); glTranslatef(-2.0, 1.0, 0.0); fonttextures->text_rendern_m("fullscreen", "fullscreen", 0.8, "jupiter", 150, 250, 150, 150); glPopMatrix();
-   glPushMatrix(); glTranslatef(-2.0, 0.0, 0.0); fonttextures->text_rendern_m("anti-aliasing", "aa", 0.8, "jupiter", 150, 250, 150, 150); glPopMatrix();
-   glPushMatrix(); glTranslatef(2.0,-3.0, 0.0); fonttextures->text_rendern_m("Leave Program", "close", 0.8, "jupiter", 150, 250, 150, 150); glPopMatrix();
-   glPushMatrix(); glTranslatef(-3.0,-3.0, 0.0); fonttextures->text_rendern_m("Return", "return", 0.8, "jupiter", 150, 250, 150, 150); glPopMatrix();
+   glPushMatrix(); glTranslatef(0.0, 3.0, 0.0); fonttextures->text_rendern_m("Game Menu", "gamemenu", 1.5, "jupiter", 180, 255, 180, 150); glPopMatrix();
+   glPushMatrix(); glTranslatef(-2.0, 1.0, 0.0); fonttextures->text_rendern_m("fullscreen", "fullscreen", 0.8, "jupiter", 180, 255, 180, 150); glPopMatrix();
+   glPushMatrix(); glTranslatef(-2.0, 0.0, 0.0); fonttextures->text_rendern_m("anti-aliasing", "aa", 0.8, "jupiter", 180, 250, 180, 150); glPopMatrix();
+   glPushMatrix(); glTranslatef(2.0,-3.0, 0.0); fonttextures->text_rendern_m("Leave Program", "close", 0.8, "jupiter", 180, 255, 180, 150); glPopMatrix();
+   glPushMatrix(); glTranslatef(-3.0,-3.0, 0.0); fonttextures->text_rendern_m("Return", "return", 0.8, "jupiter", 180, 255, 180, 150); glPopMatrix();
    glEnable(GL_DEPTH_TEST);
    
    glGetIntegerv(GL_VIEWPORT, viewport);
