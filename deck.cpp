@@ -41,7 +41,7 @@ void Deck::init()
     int y = district->get_y();
     int size_x = district->get_size_x();
     int size_y = district->get_size_y();
-    std::vector<std::vector<bool> > tiles_occupied(size_x, std::vector<bool>(size_y, false));
+    std::vector<std::vector<Room*> > tiles_occupied(size_x, std::vector<Room*>(size_y, NULL));
     
     // drill corridors:
     std::list<CorridorBuilder> cbs;
@@ -93,7 +93,7 @@ void Deck::init()
                     //~ }
                     for (int i = 0; i < rect_padding->get_width(); ++i) {
                         for (int j = 0; j < rect_padding->get_height(); ++j) {
-                            if (tiles_occupied[rect_padding->get_left() - x + i][rect_padding->get_top() - y + j]) {
+                            if (tiles_occupied[rect_padding->get_left() - x + i][rect_padding->get_top() - y + j] != NULL) {
                                 overlapping = true;
                                 break;
                             }
@@ -111,7 +111,7 @@ void Deck::init()
                 rooms.emplace_back("corridor", *rect, this);
                 for (int i = 0; i < rect->get_width(); ++i) {
                     for (int j = 0; j < rect->get_height(); ++j) {
-                        tiles_occupied[rect->get_left() - x + i][rect->get_top() - y + j] = true;
+                        tiles_occupied[rect->get_left() - x + i][rect->get_top() - y + j] = &rooms.back();
                     }
                 }
                 //~ self.doors.append(Door("door", cb.x, cb.y, cb.direction, cb.width))
@@ -168,7 +168,7 @@ void Deck::init()
         nx = i % size_x;
         ny = i / size_x;
         Rect* rect = new Rect(x + nx, y + ny, x + nx + 1, y + ny + 1);
-        if (!tiles_occupied[rect->get_left() - x][rect->get_top() - y]) {
+        if (tiles_occupied[rect->get_left() - x][rect->get_top() - y] == NULL) {
             rect->right += 1;
             rect->bottom += 1;
             while (rect->right <= x + size_x && rect->bottom <= y + size_y
@@ -177,7 +177,7 @@ void Deck::init()
                 bool overlapping = false;
                 for (int k = 0; k < rect->get_width(); ++k) {
                     for (int l = 0; l < rect->get_height(); ++l) {
-                        if (tiles_occupied[rect->get_left() - x + k][rect->get_top() - y + l]) {
+                        if (tiles_occupied[rect->get_left() - x + k][rect->get_top() - y + l] != NULL) {
                             overlapping = true;
                             break;
                         }
@@ -199,7 +199,7 @@ void Deck::init()
                 bool overlapping = false;
                 for (int k = 0; k < rect->get_width(); ++k) {
                     for (int l = 0; l < rect->get_height(); ++l) {
-                        if (tiles_occupied[rect->get_left() - x + k][rect->get_top() - y + l]) {
+                        if (tiles_occupied[rect->get_left() - x + k][rect->get_top() - y + l] != NULL) {
                             overlapping = true;
                             break;
                         }
@@ -219,7 +219,7 @@ void Deck::init()
                 bool overlapping = false;
                 for (int k = 0; k < rect->get_width(); ++k) {
                     for (int l = 0; l < rect->get_height(); ++l) {
-                        if (tiles_occupied[rect->get_left() - x + k][rect->get_top() - y + l]) {
+                        if (tiles_occupied[rect->get_left() - x + k][rect->get_top() - y + l] != NULL) {
                             overlapping = true;
                             break;
                         }
@@ -237,7 +237,7 @@ void Deck::init()
                 rooms.emplace_back("room", *rect, this);
                 for (int k = 0; k < rect->get_width(); ++k) {
                     for (int l = 0; l < rect->get_height(); ++l) {
-                        tiles_occupied[rect->get_left() - x + k][rect->get_top() - y + l] = true;
+                        tiles_occupied[rect->get_left() - x + k][rect->get_top() - y + l] = &rooms.back();
                     }
                 }
             }
@@ -282,10 +282,84 @@ void Deck::init()
     }
     
     // turn narrow rooms into corridors:
-    // ...
+    for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
+        if (room_it->get_rects().front().get_width() == 1 || room_it->get_rects().front().get_height() == 1) {
+            room_it->set_style_group("corridor");
+        }
+    }
     
     // randomly join some rooms:
-    // ...
+    int counter = 0;
+    while (counter < 50) {
+        // find small rooms:
+        std::list<Room> small_rooms_list;
+        for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
+            if (room_it->get_style_group() == "room" && room_it->get_area() < 50) {
+                small_rooms_list.push_back(*room_it);
+            }
+        }
+        std::vector<Room> small_rooms;
+        small_rooms.reserve(small_rooms_list.size());
+        for (std::list<Room>::iterator room_it = small_rooms_list.begin(); room_it != small_rooms_list.end(); room_it++) {
+            small_rooms.push_back(*room_it);
+        }
+        // choose a random small room:
+        Room* room = &small_rooms[rand() % small_rooms.size()];
+        Rect& rect = room->get_rects().front();
+        // choose a random direction:
+        int direction;
+        if (rect.get_aspect() > 1.0) {
+            direction = 1 + 2 * (rand() % 2);
+        } else {
+            direction = 2 * (rand() % 2);
+        }
+        int rx, ry;
+        if (direction == 0) {
+            // join west:
+            if (rect.get_left() == x) { continue; }
+            rx = rect.get_left() - 1;
+            ry = rect.get_top() + rand() % rect.get_height();
+        } else if (direction == 1) {
+            // join north:
+            if (rect.get_top() == y) { continue; }
+            rx = rect.get_left() + rand() % rect.get_width();
+            ry = rect.get_top() - 1;
+        } else if (direction == 2) {
+            // join east:
+            if (rect.get_right() == x + size_x) { continue; }
+            rx = rect.get_right();
+            ry = rect.get_top() + rand() % rect.get_height();
+        } else {
+            // join south:
+            if (rect.get_bottom() == y + size_y) { continue; }
+            rx = rect.get_left() + rand() % rect.get_width();
+            ry = rect.get_bottom();
+        }
+        // find the room next door:
+        //~ std::cout << x << " " << y << " " << size_x << " " << size_y << " " << rx << " " << ry << " " << std::endl;
+        Room* next_room = tiles_occupied[rx - x][ry - y];
+        if (next_room->get_style_group() == "room" && next_room != room) {
+            // add next_room's rects to room:
+            //~ for (std::list<Rect>::iterator rect_it = next_room->get_rects().begin(); rect_it != next_room->get_rects().end(); rect_it++) {
+                //~ room->add_rect(*rect_it);
+                //~ // update tile map:
+                //~ for (int k = 0; k < rect_it->get_width(); ++k) {
+                    //~ for (int l = 0; l < rect_it->get_height(); ++l) {
+                        //~ tiles_occupied[rect_it->get_left() - x + k][rect_it->get_top() - y + l] = room;
+                    //~ }
+                //~ }
+            //~ }
+            //~ // remove next_room:
+            //~ for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
+                //~ if (&(*room_it) == next_room) {
+                    //~ rooms.erase(room_it);
+                    //~ break;
+                //~ }
+            //~ }
+            ++counter;
+        }
+        //~ ++counter;
+    }
 }
 
 float Deck::get_radius() {

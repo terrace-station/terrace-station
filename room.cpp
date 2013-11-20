@@ -60,19 +60,9 @@ std::vector<std::string> Room::corridor_styles = {
  * \param   deck        the deck this room belongs to
  */
 Room::Room(std::string style_group, Rect rect, Deck* deck):
-    style_group(style_group), deck(deck)
+    deck(deck)
 {
-    int i;
-    if (style_group == "corridor") {
-        i = rand() % corridor_styles.size();
-        this->style = corridor_styles[i];
-    } else if (style_group == "room") {
-        i = rand() % room_styles.size();
-        this->style = room_styles[i];
-    } else {
-        std::cout << "Room has unknown style_group! Using '" << DEFAULT_STYLE_GROUP << "' as style." << std::endl;
-        this->style = DEFAULT_STYLE_GROUP;
-    }
+    set_style_group(style_group);
     this->rects.push_back(rect);
     update_tiles();
 }
@@ -173,6 +163,12 @@ bool Room::intersects(Rect other)
     return false;
 }
 
+void Room::add_rect(Rect rect)
+{
+    rects.push_back(rect);
+    update_tiles();
+}
+
 bool Room::intersects(Room other)
 {
     for (std::list<Rect>::iterator it = rects.begin(); it!=rects.end(); it++)
@@ -182,6 +178,20 @@ bool Room::intersects(Room other)
         }
     }
     return false;
+}
+
+void Room::set_style_group(std::string style_group) {
+    this->style_group = style_group;
+    int i;
+    if (style_group == "corridor") {
+        i = rand() % corridor_styles.size();
+        this->style = corridor_styles[i];
+    } else if (style_group == "room") {
+        i = rand() % room_styles.size();
+        this->style = room_styles[i];
+    } else {
+        this->style = DEFAULT_STYLE_GROUP;
+    }
 }
 
 std::string Room::get_style_group() {
