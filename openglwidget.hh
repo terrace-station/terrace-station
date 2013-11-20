@@ -11,7 +11,6 @@
 
 #include "glhilf.h"
 #include "mausobjekt.hh"
-#include "textur.hh"
 #include "textures.hh"
 #include "fonttextures.hh"
 #include "modell.hh"
