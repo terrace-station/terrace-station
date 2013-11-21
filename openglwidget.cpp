@@ -23,6 +23,7 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    gettimeofday(&zeit, 0);
    laufzeit = 0;
    models   = new Models(MODELS_DIR);
+   lights   = new Lights(laufzeit);
    
    running = true;
    antialiasing = true;
@@ -43,24 +44,6 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    fenster_breite = window_x;
    fenster_hoehe =  window_y;
    
-//     modelle_laden();
-   
-   
-   licht_pos[0]  = 0  ; licht_pos[1]  = 0  ; licht_pos[2]  = 0  ; licht_pos[3]  = 0  ;
-   licht_ambi[0] = 0.5; licht_ambi[1] = 0.5; licht_ambi[2] = 0.5; licht_ambi[3] = 1.0;
-   licht_diff[0] = 1.0; licht_diff[1] = 1.0; licht_diff[2] = 1.0; licht_diff[3] = 1.0;
-   licht_spec[0] = 1.0; licht_spec[1] = 1.0; licht_spec[2] = 1.0; licht_spec[3] = 1.0;
-
-   sonne_ambi[0] = 0.0; sonne_ambi[1] = 0.0; sonne_ambi[2] = 0.0; sonne_ambi[3] = 1.0;
-   sonne_diff[0] = 1.0; sonne_diff[1] = 1.0; sonne_diff[2] = 1.0; sonne_diff[3] = 1.0;
-   sonne_spec[0] = 1.0; sonne_spec[1] = 1.0; sonne_spec[2] = 1.0; sonne_spec[3] = 1.0;
-
-   spot_pos[0]  = 0  ; spot_pos[1]  = 0  ; spot_pos[2]  = 4  ; spot_pos[3]  = 0  ;
-   spot_dir[0]  = 1  ; spot_dir[1]  = 1  ; spot_dir[2]  = 0  ;
-   spot_ambi[0] = 1.0; spot_ambi[1] = 0.8; spot_ambi[2] = 0.0; spot_ambi[3] = 1.0;
-   spot_diff[0] = 1.0; spot_diff[1] = 0.5; spot_diff[2] = 0.5; spot_diff[3] = 1.0;
-   spot_spec[0] = 1.0; spot_spec[1] = 0.5; spot_spec[2] = 0.5; spot_spec[3] = 1.0;
-
    view_angle = 45;
    
    fps_counter = 0;
@@ -123,7 +106,6 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    button_aa.set_callback(toggle_antialiasing_callback);
    button_aa.set_modell(models->get("button_gruen"), models->get("button_rot"));
    menu.add_togglebutton(&button_aa, 2.0, 0.0, 0.7, 0.7);
-   
 }
 
 
@@ -336,9 +318,6 @@ void Openglwidget::initialisiere_gl()
    glEnable(GL_DEPTH_TEST);
    glDepthFunc(GL_LESS);
 
-   glEnable(GL_LIGHT0);
-   glEnable(GL_LIGHT1);
-   glEnable(GL_LIGHT2);
    glEnable(GL_COLOR_MATERIAL);
    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
@@ -355,6 +334,8 @@ void Openglwidget::initialisiere_gl()
 //     glBlendFunc(GL_ONE, GL_ONE);
    
    set_material_std();
+   lights->init_lights();
+   lights->set_sonne_pos(sys.position[0], 0.0, 0.0, 1.0);
    
    breite_zu_hoehe = float(fenster_breite) / float(fenster_hoehe);
 }
@@ -518,7 +499,7 @@ void Openglwidget::zeichne_system(System& system_)
    
    glBindTexture(GL_TEXTURE_2D, 0);
    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//    glDisable(GL_BLEND);
+   glEnable(GL_LIGHTING);
 }
 
 

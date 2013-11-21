@@ -20,6 +20,7 @@
 #include "enumerationen.h"
 #include "openglbutton.hh"
 #include "openglmenu.hh"
+#include "lights.hh"
 
 class Station;
 class Zone;
@@ -107,6 +108,7 @@ public:
    Textures* textures;
    Fonttextures* fonttextures;
    Models* models;
+   Lights* lights;
    
    int fenster_breite;
    int fenster_hoehe;
@@ -137,22 +139,6 @@ public:
    float x_offset, y_offset, z_offset;
    
    int fenster1;
-
-   GLfloat sonne_pos [4];
-   GLfloat sonne_ambi [4];
-   GLfloat sonne_diff [4];
-   GLfloat sonne_spec [4];
-   
-   GLfloat licht_pos [4];
-   GLfloat licht_ambi[4];
-   GLfloat licht_diff[4];
-   GLfloat licht_spec[4];
-   
-   GLfloat spot_pos [4];
-   GLfloat spot_dir [3];
-   GLfloat spot_ambi[4];
-   GLfloat spot_diff[4];
-   GLfloat spot_spec[4];
    
    GLfloat mat_ambi[4];
    GLfloat mat_diff[4];

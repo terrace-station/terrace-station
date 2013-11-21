@@ -33,29 +33,10 @@ void Openglwidget::draw()
 
 // // // // // // // // // // // // // // // // // // // // // // // //     Licht
     
-   licht_pos[0] = kamera_x;  // Kameralicht
-   licht_pos[1] = kamera_y;
-   licht_pos[2] = kamera_z;
-   licht_pos[3] = 1.0;
-   glLightfv(GL_LIGHT0, GL_POSITION, licht_pos);
-   glLightfv(GL_LIGHT0, GL_AMBIENT, licht_ambi);
-   glLightfv(GL_LIGHT0, GL_DIFFUSE, licht_diff);
-   glLightfv(GL_LIGHT0, GL_SPECULAR, licht_spec);
-   glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION,  1.0);
-   glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION,    0.01);
-   glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0);
-
-   sonne_pos[0] = sys.position[0];  // Sonnenlicht
-   sonne_pos[1] = 0.0;
-   sonne_pos[2] = 0.0;
-   sonne_pos[3] = 1.0;
-   glLightfv(GL_LIGHT1, GL_POSITION, sonne_pos);
-   glLightfv(GL_LIGHT1, GL_AMBIENT, sonne_ambi);
-   glLightfv(GL_LIGHT1, GL_DIFFUSE, sonne_diff);
-   glLightfv(GL_LIGHT1, GL_SPECULAR, sonne_spec);
-   glLightf(GL_LIGHT1, GL_CONSTANT_ATTENUATION,  1.0);
-   glLightf(GL_LIGHT1, GL_LINEAR_ATTENUATION,    0.0);
-   glLightf(GL_LIGHT1, GL_QUADRATIC_ATTENUATION, 0.0);
+   lights->set_kamera_pos(kamera_x, kamera_y, kamera_z, 1.0); // kameralicht
+   lights->set_kamera_att(1.0, 0.01, 0.0);
+   
+   lights->set_sonne_pos();
    
 // // // // // // // // //    Testlicht
    
@@ -83,8 +64,8 @@ void Openglwidget::draw()
    if (station->active_district != NULL) glRotatef(-station->active_district->get_angle(), 0.0, 0.0, 1.0); // sorgt dafür, dass die Kamera ausgewählten Distrikten folgt
 
    glEnable(GL_LIGHTING);
-   glEnable(GL_LIGHT1);
-   glEnable(GL_LIGHT0);
+   lights->kamera_on();
+   lights->sonne_on();
    
    zeichne_szene();
    
@@ -126,8 +107,8 @@ void Openglwidget::zeichne_szene()
 // // // // // // // // // // // // // // // Umgebung // // // // // //
    
    set_material_std();
-   glDisable(GL_LIGHT0);
-   glEnable(GL_LIGHT1);
+   lights->kamera_off();
+   lights->sonne_on();
 
    glLoadName(0);
    glPushMatrix();
@@ -163,16 +144,10 @@ void Openglwidget::zeichne_gamemenu()
    
    glEnable(GL_DEPTH_TEST);
    glEnable(GL_LIGHTING);
-   glDisable(GL_LIGHT1);
-   glEnable(GL_LIGHT0);
-   licht_pos[0] = 10.0;
-   licht_pos[1] =  8.0;
-   licht_pos[2] = 10.0;
-   licht_pos[3] = 1.0;
-   glLightfv(GL_LIGHT0, GL_POSITION, licht_pos);
-   glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION,  1.5);
-   glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION,    0.0);
-   glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.0);
+   lights->sonne_off();
+   lights->kamera_on();
+   lights->set_kamera_pos(10.0, 8.0, 10.0);
+   lights->set_kamera_att(1.5, 0.0, 0.0);
    
    set_material_ambi(0.00, 0.00, 0.00, 1.0);
    set_material_diff(0.10, 0.10, 0.20, 1.0);
@@ -180,8 +155,6 @@ void Openglwidget::zeichne_gamemenu()
    set_material_shin(128.0);
 
    glTranslatef(0.0, 0.0, (1.0-menu_bg)*10);
-   
-   
    
    for (std::list<Togglebutton_and_coords>::iterator it = menu.togglebuttons.begin(); it != menu.togglebuttons.end(); it++)
    {
@@ -272,7 +245,9 @@ void Openglwidget::zeichne_deck(Deck& deck)
     Room* room;
     Tile* tile;
    
-    glDisable(GL_LIGHT1);
+    lights->sonne_off();
+    lights->kamera_on();
+    
     for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
     {
         room = &(*room_it);
@@ -334,7 +309,7 @@ void Openglwidget::zeichne_deck(Deck& deck)
         }
         set_material_std();
     }
-    glEnable(GL_LIGHT1);
+    
 }
 
 #define DELTA_P 0.1
@@ -344,7 +319,8 @@ void Openglwidget::zeichne_district_outside(District& district)
    District& active_district = *station->get_active_district();
    
    glLoadName(district.objekt_id);
-   glEnable(GL_LIGHT1);
+   lights->kamera_on();
+   lights->sonne_on();
    
    glColor3f(0.5, 0.5, 0.5);
    
@@ -499,7 +475,6 @@ void Openglwidget::zeichne_district_outside(District& district)
    
    glBindTexture(GL_TEXTURE_2D, 0);
    set_material_std();
-   glDisable(GL_LIGHT1);
 }
 
 
