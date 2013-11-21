@@ -124,7 +124,7 @@ void Deck::init()
                         room_map[rect->get_left() - x + i][rect->get_top() - y + j] = &rooms.back();
                     }
                 }
-                //~ self.doors.append(Door("door", cb.x, cb.y, cb.direction, cb.width))
+                doors.push_back(Door("door", cb.x, cb.y, cb.direction, cb.width));
                 
                 // randomly spawn additional corridor builders with width
                 // smaller than or equal to this corridor's width. New corridor-
@@ -140,12 +140,12 @@ void Deck::init()
                         // horizontal corridor, upward fork:
                         CorridorBuilder new_cb = {cb.x - cb.direction / 2 * new_width, cb.y, 1, new_width, true};
                         new_cbs.push_back(new_cb);
-                        //~ self.doors.append(Door("door", new_cb.x, new_cb.y, new_cb.direction, new_cb.width))
+                        doors.push_back(Door("door", new_cb.x, new_cb.y, new_cb.direction, new_cb.width));
                     } else {
                         // vertical corridor, left fork:
                         CorridorBuilder new_cb = {cb.x, cb.y - cb.direction / 2 * new_width, 0, new_width, true};
                         new_cbs.push_back(new_cb);
-                        //~ self.doors.append(Door("door", new_cb.x, new_cb.y, new_cb.direction, new_cb.width))
+                        doors.push_back(Door("door", new_cb.x, new_cb.y, new_cb.direction, new_cb.width));
                     }
                 }
                 if (rand() % 100 < CORRIDOR_FORK_CHANCE_PERCENT) {
@@ -433,8 +433,9 @@ void Deck::init()
             door_it->room1->add_door(&(*door_it));
             door_it->room2->add_door(&(*door_it));
         }
-        std::cout << door_it->str();
     }
+    
+    
 }
 
 float Deck::get_radius() {
