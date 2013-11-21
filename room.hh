@@ -40,6 +40,7 @@ public:
     
     int get_area();
     int get_wall_length();
+    bool contains(int x, int y);
     bool intersects(Rect other);
     bool intersects(Room other);
     std::string get_style();

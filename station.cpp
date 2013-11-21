@@ -13,7 +13,7 @@
 
 Station::Station()
 {
-    std::cout << "Building station ...";
+    std::cout << "Building station...";
     zones.reserve(NR_OF_ZONES);
     int ring_zone = rand() % NR_OF_ZONES;
     for (int i = 0; i < NR_OF_ZONES; ++i)
@@ -27,7 +27,6 @@ Station::Station()
     }
     
     active_district = NULL;
-    std::cout << " done." << std::endl;
 }
 
 void Station::set_active_district(District* dis) { active_district = dis; }

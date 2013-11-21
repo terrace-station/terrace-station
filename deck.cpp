@@ -342,13 +342,17 @@ void Deck::init()
     
     // randomly join some rooms:
     int counter = 0;
-    while (counter < 50) {
+    while (counter < 100) {
         // find small rooms:
         std::list<Room*> small_rooms_list;
         for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
             if (room_it->get_style_group() == "room" && room_it->get_area() < 50) {
                 small_rooms_list.push_back(&(*room_it));
             }
+        }
+        std::cout << small_rooms_list.size() << std::endl;
+        if (small_rooms_list.size() < 10) {
+            break;
         }
         std::vector<Room*> small_rooms;
         small_rooms.reserve(small_rooms_list.size());
@@ -359,12 +363,12 @@ void Deck::init()
         Room* room = small_rooms[rand() % small_rooms.size()];
         Rect& rect = room->get_rects().front();
         // choose a random direction:
-        int direction;
-        if (rect.get_aspect() > 1.0) {
-            direction = 1 + 2 * (rand() % 2);
-        } else {
-            direction = 2 * (rand() % 2);
-        }
+        int direction = rand() % 4;
+        //~ if (rect.get_aspect() > 1.0) {
+            //~ direction = 1 + 2 * (rand() % 2);
+        //~ } else {
+            //~ direction = 2 * (rand() % 2);
+        //~ }
         int rx, ry;
         if (direction == 0) {
             // join west:
@@ -388,7 +392,6 @@ void Deck::init()
             ry = rect.get_bottom();
         }
         // find the room next door:
-        // std::cout << x << " " << y << " " << size_x << " " << size_y << " " << rx << " " << ry << " " << std::endl;
         Room* next_room = room_map[rx - x][ry - y];
         if (next_room->get_style_group() == "room" && next_room != room) {
             // add next_room's rects to room:
@@ -404,13 +407,12 @@ void Deck::init()
             // remove next_room:
             for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
                 if (&(*room_it) == next_room) {
-                    //~ rooms.erase(room_it);
+                    rooms.erase(room_it);
                     break;
                 }
             }
             ++counter;
         }
-        // ++counter;
     }
 }
 
@@ -430,9 +432,9 @@ std::string Deck::str()
 {
     std::stringstream ss;
     ss << "      Deck:      (radius_offset = " << radius_offset << ")" << std::endl;
-    //~ for (std::list<Room>::iterator it = rooms.begin(); it != rooms.end(); it++)
-    //~ {
-        //~ ss << it->str();
-    //~ }
+    for (std::list<Room>::iterator it = rooms.begin(); it != rooms.end(); it++)
+    {
+        ss << it->str();
+    }
     return ss.str();
 }

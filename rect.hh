@@ -24,6 +24,7 @@ public:
     int get_height();
     int get_area();
     float get_aspect();
+    bool contains(int x, int y);
     bool intersects(Rect other);
     bool intersects(Room other);
     std::string str();
