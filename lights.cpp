@@ -14,12 +14,13 @@ void Lights::init_lights()
 {
    init_kamera();
    init_sonne();
+   init_warn1();
 }
 
 
 void Lights::init_sonne()
 {
-   sonne_pos[0]  = 100000; sonne_pos[1]= 0  ;sonne_pos[2]  = 0  ; sonne_pos[3]  = 0  ;
+   sonne_pos[0]  = 100000; sonne_pos[1]= 0  ;sonne_pos[2]  = 0  ; sonne_pos[3]  = 1.0;
    sonne_ambi[0] = 0.0; sonne_ambi[1] = 0.0; sonne_ambi[2] = 0.0; sonne_ambi[3] = 1.0;
    sonne_diff[0] = 1.0; sonne_diff[1] = 1.0; sonne_diff[2] = 1.0; sonne_diff[3] = 1.0;
    sonne_spec[0] = 1.0; sonne_spec[1] = 1.0; sonne_spec[2] = 1.0; sonne_spec[3] = 1.0;
@@ -33,7 +34,7 @@ void Lights::init_sonne()
 
 void Lights::init_kamera()
 {
-   kamera_pos[0]  = 0  ; kamera_pos[1]  = 0  ; kamera_pos[2]  = 0  ; kamera_pos[3]  = 0  ;
+   kamera_pos[0]  = 0  ; kamera_pos[1]  = 0  ; kamera_pos[2]  = 0  ; kamera_pos[3]  = 1.0;
    kamera_ambi[0] = 0.5; kamera_ambi[1] = 0.5; kamera_ambi[2] = 0.5; kamera_ambi[3] = 1.0;
    kamera_diff[0] = 1.0; kamera_diff[1] = 1.0; kamera_diff[2] = 1.0; kamera_diff[3] = 1.0;
    kamera_spec[0] = 1.0; kamera_spec[1] = 1.0; kamera_spec[2] = 1.0; kamera_spec[3] = 1.0;
@@ -48,6 +49,26 @@ void Lights::init_kamera()
    glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION,  kamera_att_const);
    glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION,    kamera_att_linear);
    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, kamera_att_quad);
+}
+
+
+void Lights::init_warn1()
+{
+   warn1_pos[0]  = 0  ; warn1_pos[1]  = 0  ; warn1_pos[2]  = 0  ; warn1_pos[3]  = 1.0;
+   warn1_ambi[0] = 0.8; warn1_ambi[1] = 0.0; warn1_ambi[2] = 0.0; warn1_ambi[3] = 1.0;
+   warn1_diff[0] = 0.8; warn1_diff[1] = 0.0; warn1_diff[2] = 0.0; warn1_diff[3] = 1.0;
+   warn1_spec[0] = 0.8; warn1_spec[1] = 0.0; warn1_spec[2] = 0.0; warn1_spec[3] = 1.0;
+   
+   glLightfv(GL_LIGHT2, GL_POSITION, warn1_pos);
+   glLightfv(GL_LIGHT2, GL_AMBIENT,  warn1_ambi);
+   glLightfv(GL_LIGHT2, GL_DIFFUSE,  warn1_diff);
+   glLightfv(GL_LIGHT2, GL_SPECULAR, warn1_spec);
+   
+   warn1_att_const = 1.0; warn1_att_linear = 0.1; warn1_att_quad = 0.0;
+   
+   glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION,  warn1_att_const);
+   glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION,    warn1_att_linear);
+   glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, warn1_att_quad);
 }
 
 
@@ -73,6 +94,20 @@ void Lights::set_sonne_pos(GLfloat x, GLfloat y, GLfloat z, GLfloat a)
 void Lights::set_sonne_pos()
 {
    glLightfv(GL_LIGHT1, GL_POSITION, sonne_pos);
+}
+
+
+void Lights::set_warn1_pos(GLfloat x, GLfloat y, GLfloat z, GLfloat a)
+{
+   warn1_pos[0] = x; warn1_pos[1] = y; warn1_pos[2] = z; warn1_pos[3] = a;
+   glLightfv(GL_LIGHT2, GL_POSITION, warn1_pos);
+}
+
+
+void Lights::set_warn1_pos(GLfloat x, GLfloat y, GLfloat z)
+{
+   warn1_pos[0] = x; warn1_pos[1] = y; warn1_pos[2] = z;
+   glLightfv(GL_LIGHT2, GL_POSITION, warn1_pos);
 }
 
 
@@ -106,6 +141,30 @@ void Lights::set_kamera_att(GLfloat att_const, GLfloat att_linear, GLfloat att_q
    glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, kamera_att_quad);
 }
 
+void Lights::set_warn1_att(GLfloat att_const, GLfloat att_linear, GLfloat att_quad)
+{
+   warn1_att_const = att_const; warn1_att_linear = att_linear; warn1_att_quad = att_quad;
+   
+   glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION,  warn1_att_const);
+   glLightf(GL_LIGHT2, GL_LINEAR_ATTENUATION,    warn1_att_linear);
+   glLightf(GL_LIGHT2, GL_QUADRATIC_ATTENUATION, warn1_att_quad);
+}
+
+void Lights::set_warn1_att(GLfloat att_const)
+{
+   warn1_att_const = att_const;
+   
+   glLightf(GL_LIGHT2, GL_CONSTANT_ATTENUATION,  warn1_att_const);
+}
+
+#define WARN1_AMP  1
+#define WARN1_FREQ 2
+
+void Lights::update_warn1()
+{
+   set_warn1_att(WARN1_AMP+WARN1_AMP*sin(laufzeit*WARN1_FREQ));
+}
+
 void Lights::kamera_on()
 {
    glEnable(GL_LIGHT0);
@@ -124,6 +183,16 @@ void Lights::sonne_on()
 void Lights::sonne_off()
 {
    glDisable(GL_LIGHT1);
+}
+
+void Lights::warn1_on()
+{
+   glEnable(GL_LIGHT2);
+}
+
+void Lights::warn1_off()
+{
+   glDisable(GL_LIGHT2);
 }
 
 

@@ -38,6 +38,11 @@ void Openglwidget::draw()
    
    lights->set_sonne_pos();
    
+   lights->update_warn1(); // Nur für zeitabhängige Lichter
+   
+   lights->set_warn1_pos(-58.5505, 17.3438, 5.95199); // NUR ZUM TEST
+   lights->warn1_on();                                // NUR ZUM TEST
+   
 // // // // // // // // //    Testlicht
    
 //    float zeit_tmp = zeit_aktuell();
