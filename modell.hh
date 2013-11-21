@@ -88,6 +88,7 @@ public:
   
   bool flat_shading;
   bool valid_modell;
+  bool textures_loaded;
   
   Element* objekte;
   Knoten* knoten;

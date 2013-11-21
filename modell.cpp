@@ -5,16 +5,14 @@ Textures* Modell::textures = NULL;
 
 Modell::Modell(bool flat_shading) : flat_shading(flat_shading)
 {
-   if (textures == NULL)
-      textures = new Textures(MODELTEXTURES_DIR);
+   textures_loaded = false;
 }
 
 
 Modell::Modell(std::string dateiname, bool flat_shading) : flat_shading(flat_shading)
 {
    lade(dateiname);
-   if (textures == NULL)
-      textures = new Textures(MODELTEXTURES_DIR);
+   textures_loaded = false;
 }
 
 
@@ -38,10 +36,16 @@ void Modell::lade_textur()
          materialien[i].textur_id = textures->get_id(label);
       }
    }
+   textures_loaded = true;
 }
   
 void Modell::zeichne()
 {
+   if (textures == NULL)
+      textures = new Textures(MODELTEXTURES_DIR);
+   if (!textures_loaded)
+      lade_textur();
+   
    if (valid_modell)
    {
       for (int i=0; i<anzahl_objekte; i++)
@@ -587,7 +591,6 @@ void Modell::lade(std::string dateiname)
   
 
   eingang.close();
-  this->lade_textur();
   valid_modell = true;
 }
 
@@ -909,7 +912,6 @@ Modell* lade_modell(std::string dateiname, bool flat_shading_)
   
 
   eingang.close();
-  modell->lade_textur();
   modell->valid_modell = true;
   return modell;
 }
