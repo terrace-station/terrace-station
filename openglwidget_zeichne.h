@@ -307,6 +307,24 @@ void Openglwidget::zeichne_deck(Deck& deck)
                 glVertex3f(tile->v4x, tile->v4y, tile->v4z);
             glEnd();
         }
+        
+        // draw door-tops:
+        glColor3f(1.0, 0.0, 0.0);
+        set_material_ambi(1.0, 0.0, 0.0, 1.0);
+        set_material_diff(1.0, 0.0, 0.0, 1.0);
+        for (std::vector<Tile>::iterator tile_it = room->get_door_top_tiles().begin(); tile_it != room->get_door_top_tiles().end(); tile_it++)
+        {
+            tile = &(*tile_it);
+            
+            glBegin(GL_QUADS);
+                glNormal3f(tile->nx, tile->ny, tile->nz);
+                glVertex3f(tile->v1x, tile->v1y, tile->v1z);
+                glVertex3f(tile->v2x, tile->v2y, tile->v2z);
+                glVertex3f(tile->v3x, tile->v3y, tile->v3z);
+                glVertex3f(tile->v4x, tile->v4y, tile->v4z);
+            glEnd();
+        }
+        
         set_material_std();
     }
     

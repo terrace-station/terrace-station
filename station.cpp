@@ -1,5 +1,6 @@
 #include "tile.hh"
 #include "rect.hh"
+#include "door.hh"
 #include "room.hh"
 #include "deck.hh"
 #include "district.hh"

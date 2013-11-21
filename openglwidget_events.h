@@ -65,7 +65,7 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
          zoom_soll = zoom_soll*0.98;
          if (zoom_soll < ZOOM_CAP_MIN) zoom_soll = ZOOM_CAP_MIN;
          break;
-         
+
       case '-' :
          zoom_soll = zoom_soll*1.02;
          if (zoom_soll > ZOOM_CAP_MAX) zoom_soll = ZOOM_CAP_MAX;

@@ -11,9 +11,22 @@
 
 class Door
 {
+    std::string style;
+    int x;
+    int y;
+    int orientation;
+    int width;
     
 public:
-    Door();
+    Door(std::string style, int x, int y, int orientation, int width);
+    
+    Room* room1;
+    Room* room2;
+    
+    int get_x();
+    int get_y();
+    int get_orientation();
+    int get_width();
     
     std::string str();
 };

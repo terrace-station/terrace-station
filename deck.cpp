@@ -1,5 +1,6 @@
 #include "tile.hh"
 #include "rect.hh"
+#include "door.hh"
 #include "room.hh"
 #include "deck.hh"
 #include "district.hh"
@@ -52,9 +53,12 @@ void Deck::init()
     for (int i=0; i < CORRIDOR_SPAWN_POINTS; ++i) {
         int cb_x = x + CORRIDOR_SPAWN_POINT_MARGIN + rand() % (size_x - 2 * CORRIDOR_SPAWN_POINT_MARGIN);
         int cb_y = y + CORRIDOR_SPAWN_POINT_MARGIN + rand() % (size_y - 2 * CORRIDOR_SPAWN_POINT_MARGIN);
-        int cb_d = rand() % 4;
+        int cb_d = rand() % 2;
         CorridorBuilder cb = {cb_x, cb_y, cb_d, CORRIDOR_MAX_WIDTH, true};
         cbs.push_back(cb);
+        cb = {cb_x, cb_y, cb_d + 2, CORRIDOR_MAX_WIDTH, true};
+        cbs.push_back(cb);
+        doors.push_back(Door("door", cb_x, cb_y, cb_d, CORRIDOR_MAX_WIDTH));
     }
     
     // if there are active corridor-builders left ...
@@ -350,7 +354,6 @@ void Deck::init()
                 small_rooms_list.push_back(&(*room_it));
             }
         }
-        std::cout << small_rooms_list.size() << std::endl;
         if (small_rooms_list.size() < 10) {
             break;
         }
@@ -414,6 +417,24 @@ void Deck::init()
             ++counter;
         }
     }
+    
+    // connect all doors to their rooms (and vice versa):
+    for (std::list<Door>::iterator door_it = doors.begin(); door_it != doors.end(); door_it++) {
+        if (door_it->get_orientation() % 2 == 0) {
+            // west-east door:
+            door_it->room1 = room_map[door_it->get_x() - x - 1][door_it->get_y() - y];
+            door_it->room2 = room_map[door_it->get_x() - x][door_it->get_y() - y];
+            door_it->room1->add_door(&(*door_it));
+            door_it->room2->add_door(&(*door_it));
+        } else {
+            // north-south door:
+            door_it->room1 = room_map[door_it->get_x() - x][door_it->get_y() - y - 1];
+            door_it->room2 = room_map[door_it->get_x() - x][door_it->get_y() - y];
+            door_it->room1->add_door(&(*door_it));
+            door_it->room2->add_door(&(*door_it));
+        }
+        std::cout << door_it->str();
+    }
 }
 
 float Deck::get_radius() {
@@ -432,9 +453,9 @@ std::string Deck::str()
 {
     std::stringstream ss;
     ss << "      Deck:      (radius_offset = " << radius_offset << ")" << std::endl;
-    for (std::list<Room>::iterator it = rooms.begin(); it != rooms.end(); it++)
-    {
-        ss << it->str();
-    }
+    //~ for (std::list<Room>::iterator it = rooms.begin(); it != rooms.end(); it++)
+    //~ {
+        //~ ss << it->str();
+    //~ }
     return ss.str();
 }

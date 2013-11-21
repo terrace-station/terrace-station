@@ -1,7 +1,7 @@
 #include "tile.hh"
 
 #define DECK_HEIGHT 2
-#define HALF_WALL_THICKNESS 0.05
+#define HALF_WALL_THICKNESS 0.2
 
 /**
  * Creates a new floor tile

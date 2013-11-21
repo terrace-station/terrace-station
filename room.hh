@@ -8,6 +8,7 @@
 #include <vector>
 
 class Deck;
+class Door;
 class Rect;
 class Tile;
 
@@ -21,10 +22,12 @@ class Room
     std::string style;
     Deck* deck;
     std::list<Rect> rects;
+    std::list<Door*> doors;
     
     std::vector<Tile> floor_tiles;
     std::vector<Tile> wall_tiles;
     std::vector<Tile> wall_top_tiles;
+    std::vector<Tile> door_top_tiles;
     
 public:
     Room(std::string style, Rect rect, Deck* deck);
@@ -37,6 +40,7 @@ public:
     std::vector<Tile>& get_floor_tiles();
     std::vector<Tile>& get_wall_tiles();
     std::vector<Tile>& get_wall_top_tiles();
+    std::vector<Tile>& get_door_top_tiles();
     
     int get_area();
     int get_wall_length();
@@ -48,6 +52,7 @@ public:
     void set_style_group(std::string style_group);
     std::list<Rect>& get_rects();
     void add_rect(Rect rect);
+    void add_door(Door* door);
     Deck* get_deck();
     
     std::string str();

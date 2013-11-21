@@ -8,6 +8,7 @@
 
 class District;
 class Room;
+class Door;
 
 struct CorridorBuilder {
     int     x;
@@ -22,6 +23,7 @@ class Deck
     float radius_offset;
     District* district;
     std::list<Room> rooms;
+    std::list<Door> doors;
     void init();
     
 public:
