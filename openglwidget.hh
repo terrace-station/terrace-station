@@ -14,6 +14,7 @@
 #include "textures.hh"
 #include "fonttextures.hh"
 #include "modell.hh"
+#include "models.hh"
 #include "system.hh"
 #include "zeit.h"
 #include "enumerationen.h"
@@ -105,6 +106,7 @@ public:
    
    Textures* textures;
    Fonttextures* fonttextures;
+   Models* models;
    
    int fenster_breite;
    int fenster_hoehe;

@@ -13,18 +13,17 @@
 #include "openglwidget_events.h"
 #include "openglwidget_zeichne.h"
 
-// // // //  Modelle/Texturen definieren
-// #include "modelle.hh"
-
 #include "callback_funktionen.h"
+
+#define TEXTURES_DIR "textures"
+#define MODELS_DIR   "models"
 
 Openglwidget::Openglwidget(int breite_, int hoehe_)
 {
    gettimeofday(&zeit, 0);
    laufzeit = 0;
-   //~ tex = new Texturensammlung;
+   models   = new Models(MODELS_DIR);
    
-//    idle_redraw = false;
    running = true;
    antialiasing = true;
    fullscreen = false;
@@ -107,22 +106,22 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    
    Openglbutton button_close;
    button_close.set_callback(close_callback);
-   button_close.set_modell(lade_modell("models/button_menu", false));
+   button_close.set_modell(models->get("button_menu"));
    menu.add_button(&button_close, 2, -3, 5, 1); // pos_x, pos_y, scale_x, scale_y
    
    Openglbutton button_return;
    button_return.set_callback(return_callback);
-   button_return.set_modell(lade_modell("models/button_menu", false));
+   button_return.set_modell(models->get("button_menu"));
    menu.add_button(&button_return, -3, -3, 3, 1); // pos_x, pos_y, scale_x, scale_y
    
    Opengltogglebutton button_fullscreen(&fullscreen);
    button_fullscreen.set_callback(toggle_fullscreen_callback);
-   button_fullscreen.set_modell(lade_modell("models/button_gruen", false), lade_modell("models/button_rot", false));
+   button_fullscreen.set_modell(models->get("button_gruen"), models->get("button_rot"));
    menu.add_togglebutton(&button_fullscreen, 2.0, 1.0, 0.7, 0.7);
    
    Opengltogglebutton button_aa(&antialiasing);
    button_aa.set_callback(toggle_antialiasing_callback);
-   button_aa.set_modell(lade_modell("models/button_gruen", false), lade_modell("models/button_rot", false));
+   button_aa.set_modell(models->get("button_gruen"), models->get("button_rot"));
    menu.add_togglebutton(&button_aa, 2.0, 0.0, 0.7, 0.7);
    
 }
@@ -323,14 +322,11 @@ void Openglwidget::selektiere_pos()
     }
 }
 
-#define TEXTURES_DIR "textures"
-// #define MODELTEXTURES_DIR "models/textures"
 
 void Openglwidget::initialisiere_gl()
 {
    textures = new Textures(TEXTURES_DIR);
    fonttextures = new Fonttextures;
-   fonttextures->get_id("Test", "test", "jupiter", 255, 255, 0);
    
    glLineWidth(2);
    glPolygonOffset(1.0,1.0);

@@ -337,8 +337,8 @@ void Deck::init()
         }
         // find the room next door:
         //~ std::cout << x << " " << y << " " << size_x << " " << size_y << " " << rx << " " << ry << " " << std::endl;
-        Room* next_room = tiles_occupied[rx - x][ry - y];
-        if (next_room->get_style_group() == "room" && next_room != room) {
+//         Room* next_room = tiles_occupied[rx - x][ry - y];
+//         if (next_room->get_style_group() == "room" && next_room != room) {
             // add next_room's rects to room:
             //~ for (std::list<Rect>::iterator rect_it = next_room->get_rects().begin(); rect_it != next_room->get_rects().end(); rect_it++) {
                 //~ room->add_rect(*rect_it);
@@ -357,7 +357,7 @@ void Deck::init()
                 //~ }
             //~ }
             ++counter;
-        }
+//         }
         //~ ++counter;
     }
 }
