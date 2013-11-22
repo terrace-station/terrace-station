@@ -251,11 +251,15 @@ void Openglwidget::zeichne_deck(Deck& deck)
     Tile* tile;
    
     lights->sonne_off();
-    lights->kamera_on();
+    lights->kamera_off();
     
     for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
     {
         room = &(*room_it);
+        
+       lights->warn1_on();
+       lights->set_warn1_pos(room->get_wall_tiles().front().v1x, room->get_wall_tiles().front().v1y, room->get_wall_tiles().front().v1z);
+       
         // draw floor:
         glBindTexture(GL_TEXTURE_2D, textures->get_id(room->get_floor_texture_label()));
         glColor3f(1.0, 1.0, 1.0);
@@ -332,7 +336,7 @@ void Openglwidget::zeichne_deck(Deck& deck)
         
         set_material_std();
     }
-    
+    lights->warn1_off();
 }
 
 #define DELTA_P 0.1
