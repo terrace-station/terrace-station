@@ -39,9 +39,13 @@ void Openglwidget::draw()
    lights->set_sonne_pos();
    
    lights->update_warn1(); // Nur für zeitabhängige Lichter
+   lights->update_warn2(); // Nur für zeitabhängige Lichter
    
-   lights->set_warn1_pos(-58.5505, 17.3438, 5.95199); // NUR ZUM TEST
-   lights->warn1_on();                                // NUR ZUM TEST
+//    lights->set_warn1_pos(-58.5505, 17.3438, 5.95199); // NUR ZUM TEST
+//    lights->warn1_on();                                // NUR ZUM TEST
+   
+   lights->set_warn2_pos(-61.0317, 5.96832, 4.78562); // NUR ZUM TEST
+   lights->warn2_on();                                // NUR ZUM TEST
    
 // // // // // // // // //    Testlicht
    
@@ -251,14 +255,14 @@ void Openglwidget::zeichne_deck(Deck& deck)
     Tile* tile;
    
     lights->sonne_off();
-    lights->kamera_off();
+    lights->kamera_on();
     
     for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
     {
         room = &(*room_it);
         
-       lights->warn1_on();
-       lights->set_warn1_pos(room->get_wall_tiles().front().v1x, room->get_wall_tiles().front().v1y, room->get_wall_tiles().front().v1z);
+//        lights->warn1_on();
+//        lights->set_warn1_pos(room->get_wall_tiles().front().v1x, room->get_wall_tiles().front().v1y, room->get_wall_tiles().front().v1z);
        
         // draw floor:
         glBindTexture(GL_TEXTURE_2D, textures->get_id(room->get_floor_texture_label()));
@@ -336,7 +340,7 @@ void Openglwidget::zeichne_deck(Deck& deck)
         
         set_material_std();
     }
-    lights->warn1_off();
+//     lights->warn1_off();
 }
 
 #define DELTA_P 0.1
