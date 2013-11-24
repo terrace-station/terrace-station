@@ -106,6 +106,8 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    button_aa.set_callback(toggle_antialiasing_callback);
    button_aa.set_modell(models->get("button_gruen"), models->get("button_rot"));
    menu.add_togglebutton(&button_aa, 2.0, 0.0, 0.7, 0.7);
+   
+//    lamp.set_lamptype(LAMP_FLICKER);  // TEST
 }
 
 

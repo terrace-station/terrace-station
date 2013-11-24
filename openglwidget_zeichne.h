@@ -38,7 +38,6 @@ void Openglwidget::draw()
    
    lights->set_sonne_pos();
    
-//    lamp.set_lamptype(LAMP_PULS);  // TEST
 //    lamp.set_position(-61.0, 2.87188, 5.75743);
 //    lamp.lampbegin();
    
@@ -250,7 +249,7 @@ void Openglwidget::zeichne_deck(Deck& deck)
     Tile* tile;
    
     lights->sonne_off();
-    lights->kamera_on();
+    lights->kamera_on(); // Soll später off!
     
     for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
     {

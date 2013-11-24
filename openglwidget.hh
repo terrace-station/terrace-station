@@ -41,6 +41,8 @@ private:
    
 public:
    
+//    Lamp lamp; // TEST
+   
    Openglmenu menu;
    
    bool gamemenu;

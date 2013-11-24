@@ -66,18 +66,22 @@ void Lamp::lampbegin()
       case LAMP_FLICKER:
          
 #define FLICKER_ON_PROB  2
-#define FLICKER_OFF_PROB 2
+#define FLICKER_OFF_PROB 4
 
          if (working)
          {
+            if (constant_attenuation < 0.3)
+               constant_attenuation = 0.7;
+            
             if ((rand()%(int(Openglwidget::fps_average)+1)) < FLICKER_OFF_PROB)
             {
                working = false;
-               constant_attenuation = 3.0;
+               constant_attenuation = 10.0;
             }
          }
          else
          {
+
             if ((rand()%(int(Openglwidget::fps_average)+1)) < FLICKER_ON_PROB)
             {
                working = true;
