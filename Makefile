@@ -1,4 +1,4 @@
-OBJEKTE  = openglwidget.o openglbutton.o openglmenu.o mausobjekt.o system.o textures.o station.o zone.o district.o deck.o room.o door.o rect.o tile.o modell.o fonttextures.o models.o lights.o
+OBJEKTE  = openglwidget.o openglbutton.o openglmenu.o mausobjekt.o system.o textures.o station.o zone.o district.o deck.o room.o door.o rect.o tile.o modell.o fonttextures.o models.o lights.o lamp.o
 CPP      = g++-4.7
 CPPFLAGS = -std=c++11 -O2 -g
 
@@ -11,11 +11,14 @@ dis: dis.cpp station.o
 system.o: system.hh system.cpp glhilf.h
 	$(CPP) $(CPPFLAGS) -c system.cpp
 
-openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h zeit.h station.o mausobjekt.o openglwidget_material.h openglwidget_events.h openglwidget_zeichne.h openglbutton.o openglmenu.o modell.o fonttextures.o textures.o tile.o callback_funktionen.h models.o lights.o
+openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h zeit.h station.o mausobjekt.o openglwidget_material.h openglwidget_events.h openglwidget_zeichne.h openglbutton.o openglmenu.o modell.o fonttextures.o textures.o tile.o callback_funktionen.h models.o lights.o lamp.o
 	$(CPP) $(CPPFLAGS) -c openglwidget.cpp
 
 openglbutton.o: openglbutton.cpp openglbutton.hh
 	$(CPP) $(CPPFLAGS) -c openglbutton.cpp
+
+lamp.o: lamp.cpp lamp.hh
+	$(CPP) $(CPPFLAGS) -c lamp.cpp
 
 openglmenu.o: openglmenu.cpp openglmenu.hh openglbutton.o
 	$(CPP) $(CPPFLAGS) -c openglmenu.cpp
@@ -50,7 +53,7 @@ district.o: district.cpp district.hh deck.o mausobjekt.o
 deck.o: deck.cpp deck.hh
 	$(CPP) $(CPPFLAGS) -c deck.cpp
 
-room.o: room.cpp room.hh door.o rect.o
+room.o: room.cpp room.hh door.o rect.o lamp.o
 	$(CPP) $(CPPFLAGS) -c room.cpp
 
 door.o: door.cpp door.hh rect.o

@@ -38,14 +38,9 @@ void Openglwidget::draw()
    
    lights->set_sonne_pos();
    
-   lights->update_warn1(); // Nur für zeitabhängige Lichter
-   lights->update_warn2(); // Nur für zeitabhängige Lichter
-   
-//    lights->set_warn1_pos(-58.5505, 17.3438, 5.95199); // NUR ZUM TEST
-//    lights->warn1_on();                                // NUR ZUM TEST
-   
-   lights->set_warn2_pos(-61.0317, 5.96832, 4.78562); // NUR ZUM TEST
-   lights->warn2_on();                                // NUR ZUM TEST
+//    lamp.set_lamptype(LAMP_PULS);  // TEST
+//    lamp.set_position(-61.0, 2.87188, 5.75743);
+//    lamp.lampbegin();
    
 // // // // // // // // //    Testlicht
    

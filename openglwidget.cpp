@@ -1,6 +1,8 @@
 #include "openglwidget.hh"
 
-
+   float Openglwidget::laufzeit = 0.0;
+   float Openglwidget::fps_average = 0.0;
+   
 #include "station.hh"
 #include "zone.hh"
 #include "district.hh"
@@ -21,7 +23,6 @@
 Openglwidget::Openglwidget(int breite_, int hoehe_)
 {
    gettimeofday(&zeit, 0);
-   laufzeit = 0;
    models   = new Models(MODELS_DIR);
    lights   = new Lights(laufzeit);
    
@@ -47,7 +48,6 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    view_angle = 45;
    
    fps_counter = 0;
-   fps_average = 0.0;
    fps_sum = 0.0;
 
    kamera_x = 0;

@@ -21,6 +21,7 @@
 #include "openglbutton.hh"
 #include "openglmenu.hh"
 #include "lights.hh"
+#include "lamp.hh"
 
 class Station;
 class Zone;
@@ -103,7 +104,14 @@ public:
    
    
    timeval zeit;
-   float zeit_ende, zeit_frame, zeit_anfang, laufzeit;
+   float zeit_ende, zeit_frame, zeit_anfang;
+   
+   int fps_counter;
+   float fps_sum;
+   
+   static float fps_average;
+   static float laufzeit;
+
    
    Textures* textures;
    Fonttextures* fonttextures;
@@ -156,10 +164,6 @@ public:
    void set_material_std();
    void set_material(MATERIAL material);
    
-   int fps_counter;
-   float fps_average;
-   float fps_sum;
-
    Mausobjekt& get_target();
    void interact_with(Mausobjekt& mo_);
 
