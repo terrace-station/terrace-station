@@ -16,6 +16,7 @@ class Lamp
 public:
    
    LAMPTYPE type;
+   GLenum lightinuse;
    
    bool enabled;
    bool working;

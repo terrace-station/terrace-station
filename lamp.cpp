@@ -2,8 +2,6 @@
 
 #include "openglwidget.hh"
 
-#define STANDARD_LAMP GL_LIGHT7
-
 Lamp::Lamp()
 {
    working = true;
@@ -28,22 +26,34 @@ Lamp::Lamp(LAMPTYPE type, GLfloat position_x, GLfloat position_y, GLfloat positi
 
 void Lamp::lampbegin()
 {
+   lightinuse = GL_LIGHT7;
+
+   while(glIsEnabled(lightinuse)) // freies Licht suchen
+   {
+      if (lightinuse == GL_LIGHT4)
+      {
+         std::cout << "Mehr als 4 Lichter in Benutzung!" << std::endl;
+         break;
+      }
+      lightinuse = lightinuse-1;
+   }
+      
    if (!enabled)
       return;
    
-   glEnable(GL_LIGHT7);
+   glEnable(lightinuse);
    
    switch(type)
    {
       case LAMP_STATIC:
-         glLightfv(GL_LIGHT7, GL_POSITION, position);
-         glLightfv(GL_LIGHT7, GL_AMBIENT,  ambient);
-         glLightfv(GL_LIGHT7, GL_DIFFUSE,  diffuse);
-         glLightfv(GL_LIGHT7, GL_SPECULAR, specular);
+         glLightfv(lightinuse, GL_POSITION, position);
+         glLightfv(lightinuse, GL_AMBIENT,  ambient);
+         glLightfv(lightinuse, GL_DIFFUSE,  diffuse);
+         glLightfv(lightinuse, GL_SPECULAR, specular);
          
-         glLightf(GL_LIGHT7, GL_CONSTANT_ATTENUATION,  constant_attenuation);
-         glLightf(GL_LIGHT7, GL_LINEAR_ATTENUATION,    linear_attenuation);
-         glLightf(GL_LIGHT7, GL_QUADRATIC_ATTENUATION, quadratic_attenuation);
+         glLightf(lightinuse, GL_CONSTANT_ATTENUATION,  constant_attenuation);
+         glLightf(lightinuse, GL_LINEAR_ATTENUATION,    linear_attenuation);
+         glLightf(lightinuse, GL_QUADRATIC_ATTENUATION, quadratic_attenuation);
          break;
    
       case LAMP_PULS:
@@ -53,14 +63,14 @@ void Lamp::lampbegin()
 
          constant_attenuation = PULS_AMP+PULS_AMP*sin(Openglwidget::laufzeit*PULS_FREQ);
          
-         glLightfv(GL_LIGHT7, GL_POSITION, position);
-         glLightfv(GL_LIGHT7, GL_AMBIENT,  ambient);
-         glLightfv(GL_LIGHT7, GL_DIFFUSE,  diffuse);
-         glLightfv(GL_LIGHT7, GL_SPECULAR, specular);
+         glLightfv(lightinuse, GL_POSITION, position);
+         glLightfv(lightinuse, GL_AMBIENT,  ambient);
+         glLightfv(lightinuse, GL_DIFFUSE,  diffuse);
+         glLightfv(lightinuse, GL_SPECULAR, specular);
          
-         glLightf(GL_LIGHT7, GL_CONSTANT_ATTENUATION,  constant_attenuation);
-         glLightf(GL_LIGHT7, GL_LINEAR_ATTENUATION,    linear_attenuation);
-         glLightf(GL_LIGHT7, GL_QUADRATIC_ATTENUATION, quadratic_attenuation);
+         glLightf(lightinuse, GL_CONSTANT_ATTENUATION,  constant_attenuation);
+         glLightf(lightinuse, GL_LINEAR_ATTENUATION,    linear_attenuation);
+         glLightf(lightinuse, GL_QUADRATIC_ATTENUATION, quadratic_attenuation);
          break;
    
       case LAMP_FLICKER:
@@ -89,14 +99,14 @@ void Lamp::lampbegin()
             }
          }
          
-         glLightfv(GL_LIGHT7, GL_POSITION, position);
-         glLightfv(GL_LIGHT7, GL_AMBIENT,  ambient);
-         glLightfv(GL_LIGHT7, GL_DIFFUSE,  diffuse);
-         glLightfv(GL_LIGHT7, GL_SPECULAR, specular);
+         glLightfv(lightinuse, GL_POSITION, position);
+         glLightfv(lightinuse, GL_AMBIENT,  ambient);
+         glLightfv(lightinuse, GL_DIFFUSE,  diffuse);
+         glLightfv(lightinuse, GL_SPECULAR, specular);
          
-         glLightf(GL_LIGHT7, GL_CONSTANT_ATTENUATION,  constant_attenuation);
-         glLightf(GL_LIGHT7, GL_LINEAR_ATTENUATION,    linear_attenuation);
-         glLightf(GL_LIGHT7, GL_QUADRATIC_ATTENUATION, quadratic_attenuation);
+         glLightf(lightinuse, GL_CONSTANT_ATTENUATION,  constant_attenuation);
+         glLightf(lightinuse, GL_LINEAR_ATTENUATION,    linear_attenuation);
+         glLightf(lightinuse, GL_QUADRATIC_ATTENUATION, quadratic_attenuation);
          break;
          
       case LAMP_SPOT:
@@ -108,7 +118,7 @@ void Lamp::lampbegin()
 
 void Lamp::lampend()
 {
-   glDisable(GL_LIGHT7);
+   glDisable(lightinuse);
 }
 
 void Lamp::set_std()
