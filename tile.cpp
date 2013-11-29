@@ -1,7 +1,7 @@
 #include "tile.hh"
 
 #define DECK_HEIGHT 2
-#define HALF_WALL_THICKNESS 0.2
+#define HALF_WALL_THICKNESS 0.05
 
 /**
  * Creates a new floor tile
@@ -91,8 +91,8 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientati
             v4y = y2;
             v4z = y;
         } else {
-            nx = cos(phi_d);
-            ny = sin(phi_d);
+            nx = -sin(phi_d);
+            ny = -cos(phi_d);
             nz = 0.0;
         
             float x1 = radius * cos(phi_d);
@@ -100,21 +100,21 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientati
             float y1 = radius * sin(phi_d);
             float y2 = radius2 * sin(phi_d);
             
-            v1x = x1;
-            v1y = y1;
-            v1z = y;
-            
             v2x = x1;
             v2y = y1;
-            v2z = y + 1;
+            v2z = y;
             
-            v3x = x2;
-            v3y = y2;
-            v3z = y + 1;
+            v1x = x1;
+            v1y = y1;
+            v1z = y + 1;
             
             v4x = x2;
             v4y = y2;
-            v4z = y;
+            v4z = y + 1;
+            
+            v3x = x2;
+            v3y = y2;
+            v3z = y;
         }
     } else if (orientation == 1) { // south wall:
         if (top) {
@@ -156,21 +156,21 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientati
             float y3 = radius * sin(phi2);
             float y4 = radius2 * sin(phi2);
         
-            v2x = x2;
-            v2y = y2;
-            v2z = y + HALF_WALL_THICKNESS;
-            
-            v1x = x3;
-            v1y = y3;
+            v1x = x2;
+            v1y = y2;
             v1z = y + HALF_WALL_THICKNESS;
             
-            v4x = x4;
-            v4y = y4;
-            v4z = y + HALF_WALL_THICKNESS;
+            v2x = x3;
+            v2y = y3;
+            v2z = y + HALF_WALL_THICKNESS;
             
-            v3x = x1;
-            v3y = y1;
+            v3x = x4;
+            v3y = y4;
             v3z = y + HALF_WALL_THICKNESS;
+            
+            v4x = x1;
+            v4y = y1;
+            v4z = y + HALF_WALL_THICKNESS;
         }
     } else if (orientation == 2) { // west wall:
         float phi = x / district_radius;
@@ -202,8 +202,8 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientati
             v4y = y2;
             v4z = y + 1;
         } else {
-            nx = cos(phi_d);
-            ny = -sin(phi_d);
+            nx = -sin(phi_d);
+            ny = cos(phi_d);
             nz = 0.0;
             
             float x1 = radius * cos(phi_d);
@@ -267,21 +267,21 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientati
             float y3 = radius * sin(phi2);
             float y4 = radius2 * sin(phi2);
         
-            v1x = x2;
-            v1y = y2;
-            v1z = y - HALF_WALL_THICKNESS;
-            
-            v2x = x3;
-            v2y = y3;
+            v2x = x2;
+            v2y = y2;
             v2z = y - HALF_WALL_THICKNESS;
             
-            v3x = x4;
-            v3y = y4;
-            v3z = y - HALF_WALL_THICKNESS;
+            v1x = x3;
+            v1y = y3;
+            v1z = y - HALF_WALL_THICKNESS;
             
-            v4x = x1;
-            v4y = y1;
+            v4x = x4;
+            v4y = y4;
             v4z = y - HALF_WALL_THICKNESS;
+            
+            v3x = x1;
+            v3y = y1;
+            v3z = y - HALF_WALL_THICKNESS;
         }
     }    
 }

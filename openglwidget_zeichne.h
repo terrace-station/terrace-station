@@ -249,7 +249,7 @@ void Openglwidget::zeichne_deck(Deck& deck)
     Tile* tile;
    
     lights->sonne_off();
-    //~ lights->kamera_on(); // Soll später off!
+    lights->kamera_off(); // Soll später off!
     
     for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
     {
@@ -265,8 +265,9 @@ void Openglwidget::zeichne_deck(Deck& deck)
         // draw floor:
         glBindTexture(GL_TEXTURE_2D, textures->get_id(room->get_floor_texture_label()));
         glColor3f(1.0, 1.0, 1.0);
-        set_material_ambi(0.0, 0.0, 0.0, 1.0);
-        set_material_diff(1.0, 1.0, 1.0, 1.0);
+        set_material_ambi(0.2, 0.2, 0.2, 1.0);
+        set_material_diff(0.8, 0.8, 0.8, 1.0);
+        set_material_spec(0.0, 0.0, 0.0, 1.0);
         for (std::vector<Tile>::iterator tile_it = room->get_floor_tiles().begin(); tile_it != room->get_floor_tiles().end(); tile_it++)
         {
             tile = &(*tile_it);
@@ -287,8 +288,9 @@ void Openglwidget::zeichne_deck(Deck& deck)
         // draw walls:
         glBindTexture(GL_TEXTURE_2D, textures->get_id(room->get_wall_texture_label()));
         glColor3f(1.0, 1.0, 1.0);
-        set_material_ambi(0.0, 0.0, 0.0, 1.0);
-        set_material_diff(0.5, 0.5, 0.5, 1.0);
+        set_material_ambi(0.01, 0.01, 0.01, 1.0);
+        set_material_diff(0.8, 0.8, 0.8, 1.0);
+        set_material_spec(0.0, 0.0, 0.0, 1.0);
         for (std::vector<Tile>::iterator tile_it = room->get_wall_tiles().begin(); tile_it != room->get_wall_tiles().end(); tile_it++)
         {
             tile = &(*tile_it);
@@ -310,6 +312,7 @@ void Openglwidget::zeichne_deck(Deck& deck)
         glColor3f(0.0, 0.0, 0.0);
         set_material_ambi(0.0, 0.0, 0.0, 1.0);
         set_material_diff(0.0, 0.0, 0.0, 1.0);
+        set_material_spec(0.0, 0.0, 0.0, 1.0);
         for (std::vector<Tile>::iterator tile_it = room->get_wall_top_tiles().begin(); tile_it != room->get_wall_top_tiles().end(); tile_it++)
         {
             tile = &(*tile_it);
@@ -327,6 +330,7 @@ void Openglwidget::zeichne_deck(Deck& deck)
         glColor3f(1.0, 0.0, 0.0);
         set_material_ambi(1.0, 0.0, 0.0, 1.0);
         set_material_diff(1.0, 0.0, 0.0, 1.0);
+        set_material_spec(0.0, 0.0, 0.0, 1.0);
         for (std::vector<Tile>::iterator tile_it = room->get_door_top_tiles().begin(); tile_it != room->get_door_top_tiles().end(); tile_it++)
         {
             tile = &(*tile_it);
