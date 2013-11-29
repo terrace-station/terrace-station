@@ -249,18 +249,24 @@ void Openglwidget::zeichne_deck(Deck& deck)
     Tile* tile;
    
     lights->sonne_off();
-    lights->kamera_on(); // Soll später off!
+    //~ lights->kamera_on(); // Soll später off!
     
     for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
     {
         room = &(*room_it);
         
-//        lights->warn1_on();
-//        lights->set_warn1_pos(room->get_wall_tiles().front().v1x, room->get_wall_tiles().front().v1y, room->get_wall_tiles().front().v1z);
+        for (std::list<Lamp>::iterator lamp_it = room->get_lamps().begin(); lamp_it != room->get_lamps().end(); lamp_it++)
+        {
+            lamp_it->lampbegin();
+        }
+        //~ lights->warn1_on();
+        //~ lights->set_warn1_pos(room->get_wall_tiles().front().v1x, room->get_wall_tiles().front().v1y, room->get_wall_tiles().front().v1z);
        
         // draw floor:
         glBindTexture(GL_TEXTURE_2D, textures->get_id(room->get_floor_texture_label()));
         glColor3f(1.0, 1.0, 1.0);
+        set_material_ambi(0.0, 0.0, 0.0, 1.0);
+        set_material_diff(1.0, 1.0, 1.0, 1.0);
         for (std::vector<Tile>::iterator tile_it = room->get_floor_tiles().begin(); tile_it != room->get_floor_tiles().end(); tile_it++)
         {
             tile = &(*tile_it);
@@ -281,6 +287,8 @@ void Openglwidget::zeichne_deck(Deck& deck)
         // draw walls:
         glBindTexture(GL_TEXTURE_2D, textures->get_id(room->get_wall_texture_label()));
         glColor3f(1.0, 1.0, 1.0);
+        set_material_ambi(0.0, 0.0, 0.0, 1.0);
+        set_material_diff(0.5, 0.5, 0.5, 1.0);
         for (std::vector<Tile>::iterator tile_it = room->get_wall_tiles().begin(); tile_it != room->get_wall_tiles().end(); tile_it++)
         {
             tile = &(*tile_it);
@@ -333,8 +341,12 @@ void Openglwidget::zeichne_deck(Deck& deck)
         }
         
         set_material_std();
+        for (std::list<Lamp>::iterator lamp_it = room->get_lamps().begin(); lamp_it != room->get_lamps().end(); lamp_it++)
+        {
+            lamp_it->lampend();
+        }
     }
-//     lights->warn1_off();
+    //~ lights->warn1_off();
 }
 
 #define DELTA_P 0.1

@@ -22,7 +22,7 @@
 int main(int argc, char* argv[])
 {
    srand (2);
-//    srand (time(NULL));
+   //~ srand (time(NULL));
    SDL_Init(SDL_INIT_VIDEO);
    TTF_Init();
    

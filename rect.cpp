@@ -1,4 +1,5 @@
 #include "rect.hh"
+#include "lamp.hh"
 #include "door.hh"
 #include "room.hh"
 #include "deck.hh"

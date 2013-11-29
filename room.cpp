@@ -1,4 +1,5 @@
 #include "tile.hh"
+#include "lamp.hh"
 #include "rect.hh"
 #include "door.hh"
 #include "room.hh"
@@ -226,6 +227,11 @@ void Room::add_door(Door* door)
     update_tiles();
 }
 
+void Room::add_lamp(Lamp lamp)
+{
+    lamps.push_back(lamp);
+}
+
 bool Room::intersects(Room other)
 {
     for (std::list<Rect>::iterator it = rects.begin(); it!=rects.end(); it++)
@@ -261,6 +267,10 @@ std::string Room::get_style() {
 
 std::list<Rect>& Room::get_rects() {
     return rects;
+}
+
+std::list<Lamp>& Room::get_lamps() {
+    return lamps;
 }
 
 Deck* Room::get_deck() {

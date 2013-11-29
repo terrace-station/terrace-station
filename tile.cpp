@@ -91,8 +91,8 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientati
             v4y = y2;
             v4z = y;
         } else {
-            nx = -sin(phi_d);
-            ny = -cos(phi_d);
+            nx = cos(phi_d);
+            ny = sin(phi_d);
             nz = 0.0;
         
             float x1 = radius * cos(phi_d);
@@ -145,7 +145,7 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientati
         } else {
             nx = 0.0;
             ny = 0.0;
-            nz = 1.0;
+            nz = -1.0;
             
             float x1 = radius2 * cos(phi1);
             float x2 = radius * cos(phi1);
@@ -202,8 +202,8 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientati
             v4y = y2;
             v4z = y + 1;
         } else {
-            nx = sin(phi_d);
-            ny = cos(phi_d);
+            nx = cos(phi_d);
+            ny = -sin(phi_d);
             nz = 0.0;
             
             float x1 = radius * cos(phi_d);
@@ -256,7 +256,7 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientati
         } else {
             nx = 0.0;
             ny = 0.0;
-            nz = -1.0;
+            nz = 1.0;
             
             float x1 = radius2 * cos(phi1);
             float x2 = radius * cos(phi1);

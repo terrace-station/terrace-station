@@ -1,4 +1,5 @@
 #include "tile.hh"
+#include "lamp.hh"
 #include "rect.hh"
 #include "door.hh"
 #include "room.hh"
@@ -435,7 +436,21 @@ void Deck::init()
         }
     }
     
-    
+    // add a lamp in the center of the first rect of each room:
+    for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
+        Rect& rect = room_it->get_rects().front();
+        float rx = rect.get_left() + rect.get_width() / 2.0;
+        float ry = rect.get_top() + rect.get_height() / 2.0;
+        float radius = get_radius() - DECK_HEIGHT;
+        float phi = rx / get_district()->get_radius();
+        
+        float lx = radius * cos(phi);
+        float ly = radius * sin(phi);
+        float lz = ry;
+        
+        Lamp lamp(LAMPTYPE(rand() % 4), lx, ly, lz);
+        room_it->add_lamp(lamp);
+    }
 }
 
 float Deck::get_radius() {

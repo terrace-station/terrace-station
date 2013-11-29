@@ -10,6 +10,7 @@
 class Deck;
 class Door;
 class Rect;
+class Lamp;
 class Tile;
 
 
@@ -23,6 +24,7 @@ class Room
     Deck* deck;
     std::list<Rect> rects;
     std::list<Door*> doors;
+    std::list<Lamp> lamps;
     
     std::vector<Tile> floor_tiles;
     std::vector<Tile> wall_tiles;
@@ -51,8 +53,10 @@ public:
     std::string get_style_group();
     void set_style_group(std::string style_group);
     std::list<Rect>& get_rects();
+    std::list<Lamp>& get_lamps();
     void add_rect(Rect rect);
     void add_door(Door* door);
+    void add_lamp(Lamp lamp);
     Deck* get_deck();
     
     std::string str();
