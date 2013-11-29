@@ -436,6 +436,49 @@ void Deck::init()
         }
     }
     
+    // split narrow rects:
+    bool found_a_narrow_rect = false;
+    while (true) {
+        found_a_narrow_rect = false;
+        for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
+            Room& room = *room_it;
+            for (std::list<Rect>::iterator rect_it = room_it->get_rects().begin(); rect_it != room_it->get_rects().end(); rect_it++) {
+                // is this a narrow rect?
+                if (rect_it->get_aspect() > ROOM_MAX_ASPECT_RATIO || rect_it->get_aspect() < 1.0 / ROOM_MAX_ASPECT_RATIO) {
+                    Rect& rect = *rect_it;
+                    Rect* new_rect;
+                    int split;
+                    if (rect.get_aspect() > 1.0) {
+                        // vertical split:
+                        split = rect.get_left() + rect.get_width() / 2;
+                        new_rect = new Rect(rect.get_left(), rect.get_top(), split, rect.get_bottom());
+                        // create new rect left of the split:
+                        room.add_rect(*new_rect);
+                        new_rect = new Rect(split, rect.get_top(), rect.get_right(), rect.get_bottom());
+                        // create new room right of the split:
+                        room.add_rect(*new_rect);
+                    } else {
+                        // horizontal split:
+                        split = rect.get_top() + rect.get_height() / 2;
+                        new_rect = new Rect(rect.get_left(), rect.get_top(), rect.get_right(), split);
+                        // create new room above the split:
+                        room.add_rect(*new_rect);
+                        new_rect = new Rect(rect.get_left(), split, rect.get_right(), rect.get_bottom());
+                        // create new room below the split:
+                        room.add_rect(*new_rect);
+                    }
+                    // remove the old room:
+                    room.get_rects().erase(rect_it);
+                    found_a_narrow_rect = true;
+                    break;
+                }
+            }
+        }
+        
+        // if no large room was found by now, there is none left, so stop it:
+        if (!found_a_narrow_rect) { break; }
+    }
+    
     // add a lamp in the center of every rect of each room:
     for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
         int lamptype = rand() % 4;
