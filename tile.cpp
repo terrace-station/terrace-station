@@ -91,7 +91,7 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientati
             v4y = y2;
             v4z = y;
         } else {
-            nx = -sin(phi_d);
+            nx = sin(phi_d);
             ny = -cos(phi_d);
             nz = 0.0;
         
