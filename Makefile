@@ -50,7 +50,7 @@ zone.o: zone.cpp zone.hh district.o
 district.o: district.cpp district.hh deck.o mausobjekt.o
 	$(CPP) $(CPPFLAGS) -c district.cpp
 
-deck.o: deck.cpp deck.hh
+deck.o: deck.cpp deck.hh room.o
 	$(CPP) $(CPPFLAGS) -c deck.cpp
 
 room.o: room.cpp room.hh door.o rect.o lamp.o

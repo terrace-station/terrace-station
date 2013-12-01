@@ -60,6 +60,7 @@ public:
     Deck* get_deck();
     
     std::string str();
+    bool onscreen;
     
 };
 
