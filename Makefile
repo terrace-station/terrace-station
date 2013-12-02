@@ -66,4 +66,6 @@ tile.o: tile.cpp tile.hh
 	$(CPP) $(CPPFLAGS) -c tile.cpp
 
 clear:
-	rm *.o & rm *.gch & rm main
+	rm *.o -f
+	rm *.gch -f
+	rm main -f

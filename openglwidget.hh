@@ -6,8 +6,12 @@
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_ttf.h>
+
+#define GL_GLEXT_PROTOTYPES 1
+
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <GL/glext.h>
 
 #include "glhilf.h"
 #include "mausobjekt.hh"
