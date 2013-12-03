@@ -1,6 +1,5 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_ttf.h>
-
 #include <GL/gl.h>
 #include <GL/glu.h>
 
@@ -34,12 +33,6 @@ int main(int argc, char* argv[])
    glwidget.set_station(&station1);
    
    SDL_Init(SDL_INIT_VIDEO);
-   
-   int test;
-   glGetIntegerv( GL_MAX_GENERAL_COMBINERS_NV, &test);
-   std::cout << "combiner: " << test << std::endl;
-   glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &test);
-   std::cout << "max textures: " << test << std::endl;
 
    const SDL_VideoInfo* info = SDL_GetVideoInfo();
    
