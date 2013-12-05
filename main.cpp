@@ -35,12 +35,6 @@ int main(int argc, char* argv[])
    
    SDL_Init(SDL_INIT_VIDEO);
    
-   int test;
-   glGetIntegerv( GL_MAX_GENERAL_COMBINERS_NV, &test);
-   std::cout << "combiner: " << test << std::endl;
-   glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &test);
-   std::cout << "max textures: " << test << std::endl;
-
    const SDL_VideoInfo* info = SDL_GetVideoInfo();
    
    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -51,6 +45,12 @@ int main(int argc, char* argv[])
    
    SDL_EnableKeyRepeat(20, 20);
    glwidget.initialisiere_gl();
+
+   int test;
+   glGetIntegerv( GL_MAX_GENERAL_COMBINERS_NV, &test);
+   std::cout << "combiner: " << test << std::endl;
+   glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &test);
+   std::cout << "max textures: " << test << std::endl;
 
    while(glwidget.running)
    {

@@ -120,6 +120,7 @@ public:
 
    
    Textures* textures;
+   Textures* normalmaps;
    Fonttextures* fonttextures;
    Models* models;
    Lights* lights;

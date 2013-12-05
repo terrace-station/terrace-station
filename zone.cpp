@@ -54,7 +54,7 @@ Zone::Zone(int circumference, std::string style, Station* station) :
         }
     }
     
-    omega = sqrt(9.81/(this->get_radius())) / 10.0;
+    omega = sqrt(9.81/(this->get_radius())) * 0.5;
 }
 
 float Zone::get_radius() {

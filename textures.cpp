@@ -37,7 +37,7 @@ void Textures::load()
         ext = label.substr(delim + 1);
         label = label.substr(0, delim);
         if (valid_extensions.count(ext) == 1) {
-            //~ std::cout << "Loading texture '" << label << "' from file '" << filepath << "' ...";
+            std::cout << "Loading texture '" << label << "' from file '" << filepath << "' ...";
             GLuint texture_id;
             SDL_Surface* surface = IMG_Load(filepath.c_str());
             int mode, source_mode;
@@ -60,7 +60,7 @@ void Textures::load()
             glBindTexture(GL_TEXTURE_2D, 0);
             SDL_FreeSurface(surface);
             texture_ids[label] = texture_id;
-            //~ std::cout << " done." << std::endl;
+            std::cout << " done." << std::endl;
         } else {
             std::cout << "Skipping '" << filepath << "'" << std::endl;
         }

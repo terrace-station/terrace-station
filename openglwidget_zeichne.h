@@ -36,8 +36,6 @@ void Openglwidget::draw()
    lights->set_kamera_pos(kamera_x, kamera_y, kamera_z, 1.0); // kameralicht
    lights->set_kamera_att(1.0, 0.01, 0.0);
    
-   lights->set_sonne_pos();
-   
 //    lamp.set_position(-61.0, 2.87188, 5.75743);
 //    lamp.lampbegin();
    
@@ -66,6 +64,8 @@ void Openglwidget::draw()
    
    if (station->active_district != NULL) glRotatef(-station->active_district->get_angle(), 0.0, 0.0, 1.0); // sorgt dafür, dass die Kamera ausgewählten Distrikten folgt
 
+   lights->set_sonne_pos();
+   
    glEnable(GL_LIGHTING);
    lights->kamera_on();
    lights->sonne_on();
@@ -373,6 +373,31 @@ void Openglwidget::zeichne_deck(Deck& deck)
 
 #define DELTA_P 0.1
 
+void setLightColor(float tang1_x,  float tang1_y,  float tang1_z,
+                   float tang2_x,  float tang2_y,  float tang2_z,
+                   float normal_x, float normal_y, float normal_z,
+                   float position_x, float position_y, float position_z,
+                   float quelle_x, float quelle_y, float quelle_z)
+{
+   quelle_x = position_x - quelle_x;  // vec position - vec quelle - vektor vom licht zur aktuellen position zeigt
+   quelle_y = position_y - quelle_y;
+   quelle_z = position_z - quelle_z;
+   
+   GLfloat licht_x = quelle_x*tang1_x  + quelle_y*tang1_y  + quelle_z*tang1_z;
+   GLfloat licht_y = quelle_x*tang2_x  + quelle_y*tang2_y  + quelle_z*tang2_z;
+   GLfloat licht_z = quelle_x*normal_x + quelle_y*normal_y + quelle_z*normal_z;
+
+   hilf::normieren(licht_x, licht_y, licht_z);
+
+   licht_x *= 0.5; licht_x += 0.5;
+   licht_y *= 0.5; licht_y += 0.5;
+   licht_z *= 0.5; licht_z += 0.5;
+//    licht_z *= 0.25; licht_z += 0.75;
+
+   glColor3f(licht_x, licht_y, licht_z);
+//    std::cout << "licht:  " << licht_x << ",  " << licht_y << ",  " << licht_z << std::endl;
+}
+
 void Openglwidget::zeichne_district_outside(District& district)
 {
    District& active_district = *station->get_active_district();
@@ -380,8 +405,6 @@ void Openglwidget::zeichne_district_outside(District& district)
    glLoadName(district.objekt_id);
    lights->kamera_on();
    lights->sonne_on();
-   
-   glColor3f(0.5, 0.5, 0.5);
    
    set_material_ambi(0.00, 0.00, 0.00, 1.0);
    set_material_diff(0.30, 0.30, 0.50, 1.0);
@@ -425,63 +448,20 @@ void Openglwidget::zeichne_district_outside(District& district)
    
 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
    
-   glActiveTextureARB(GL_TEXTURE0_ARB);
+   glDisable(GL_BLEND);
+      
+   glActiveTexture(GL_TEXTURE0);
+   glEnable(GL_TEXTURE_2D);
+   glBindTexture(GL_TEXTURE_2D, normalmaps->get_id("district-hull"));
+   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+   glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_DOT3_RGB) ;
+   glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PRIMARY_COLOR) ;
+   glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE) ;
+
+   glActiveTexture(GL_TEXTURE1);
    glEnable(GL_TEXTURE_2D);
    glBindTexture(GL_TEXTURE_2D, textures->get_id("district-hull"));
-   
-   glActiveTextureARB(GL_TEXTURE1_ARB);
-   glEnable(GL_TEXTURE_2D);
-   glBindTexture(GL_TEXTURE_2D, textures->get_id("district-hull-normal"));
-
-   glEnable(GL_REGISTER_COMBINERS_NV);
-//    glDisable(GL_BLEND);
-
-glCombinerParameteriNV(GL_NUM_GENERAL_COMBINERS_NV, 1);
-   
-glCombinerInputNV(
-    GL_COMBINER0_NV,            //Combiner, der benutzt wird
-    GL_RGB,
-    GL_VARIABLE_A_NV,           //Variable beim Combiner
-    GL_TEXTURE1_ARB,            //Wert: Bumpmap Textur
-    GL_EXPAND_NORMAL_NV,
-    GL_RGB
-  );
- 
-  glCombinerInputNV(
-    GL_COMBINER0_NV,            //Combiner, der benutzt wird, wie oben
-    GL_RGB,
-    GL_VARIABLE_B_NV,           // Variable beim Combiner
-    GL_PRIMARY_COLOR_NV,        //Wert: RGB Wert der Oberfläche
-    GL_EXPAND_NORMAL_NV,
-    GL_RGB
-  );
-  
-glCombinerOutputNV(
-    GL_COMBINER0_NV,
-    GL_RGB,
-    GL_SPARE0_NV,       // Output von A und B
-    GL_DISCARD_NV,      // Output von C und D
-    GL_DISCARD_NV,      // Summe von allen Variablen
-    GL_NONE,            // Skalierung
-    GL_NONE,            // Bias
-    GL_TRUE,            // Ja/Nein Output von A und B
-    GL_FALSE,           // Ja/Nein Output von C und D
-    GL_FALSE            // Muxsum
-  );
-
-glFinalCombinerInputNV(GL_VARIABLE_A_NV, GL_SPARE0_NV, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-
-glFinalCombinerInputNV(GL_VARIABLE_B_NV, GL_TEXTURE0_ARB, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-
-glFinalCombinerInputNV(GL_VARIABLE_C_NV, GL_ZERO, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-
-glFinalCombinerInputNV(GL_VARIABLE_D_NV, GL_ZERO, GL_UNSIGNED_IDENTITY_NV, GL_RGB); 
-
-glFinalCombinerInputNV(GL_VARIABLE_E_NV, GL_ZERO, GL_UNSIGNED_IDENTITY_NV, GL_RGB); 
-
-glFinalCombinerInputNV(GL_VARIABLE_F_NV, GL_ZERO, GL_UNSIGNED_IDENTITY_NV, GL_RGB);
-
-//    glActiveTextureARB(GL_TEXTURE0_ARB);
+   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
 
@@ -537,23 +517,30 @@ glFinalCombinerInputNV(GL_VARIABLE_F_NV, GL_ZERO, GL_UNSIGNED_IDENTITY_NV, GL_RG
          glVertex3f(x4, y4, z_min);
          
          // district outer hull:
+setLightColor(0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,    cosp1, sinp1, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x4, y4, z_min);
             glNormal3f(cosp1, sinp1, 0.0);
-         glMultiTexCoord2fARB(GL_TEXTURE0_ARB, texcoord_x1, texcoord_y1);
-         glMultiTexCoord2fARB(GL_TEXTURE1_ARB, texcoord_x1, texcoord_y1);
+         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x1, texcoord_y2);
+         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x1, texcoord_y2);
 //          glTexCoord2f(texcoord_x1, texcoord_y1);
             glVertex3f(x4, y4, z_min);
+            
+setLightColor(0.0, 0.0, 1.0,    sinp2, -cosp2, 0.0,    cosp2, sinp2, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x2, y2, z_min);
             glNormal3f(cosp2, sinp2, 0.0);
-         glMultiTexCoord2fARB(GL_TEXTURE0_ARB, texcoord_x1, texcoord_y2);
-         glMultiTexCoord2fARB(GL_TEXTURE1_ARB, texcoord_x1, texcoord_y2);
+         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x1, texcoord_y1);
+         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x1, texcoord_y1);
 //          glTexCoord2f(texcoord_x1, texcoord_y2);
             glVertex3f(x2, y2, z_min);
-         glMultiTexCoord2fARB(GL_TEXTURE0_ARB, texcoord_x2, texcoord_y2);
-         glMultiTexCoord2fARB(GL_TEXTURE1_ARB, texcoord_x2, texcoord_y2);
+            
+setLightColor(0.0, 0.0, 1.0,    sinp2, -cosp2, 0.0,    cosp2, sinp2, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x2, y2, z_max);
+         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x2, texcoord_y1);
+         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x2, texcoord_y1);
 //          glTexCoord2f(texcoord_x2, texcoord_y2);   
             glVertex3f(x2, y2, z_max);
+            
+setLightColor(0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,    cosp1, sinp1, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x4, y4, z_max);
             glNormal3f(cosp1, sinp1, 0.0);
-         glMultiTexCoord2fARB(GL_TEXTURE0_ARB, texcoord_x2, texcoord_y1);
-         glMultiTexCoord2fARB(GL_TEXTURE1_ARB, texcoord_x2, texcoord_y1);
+         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x2, texcoord_y2);
+         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x2, texcoord_y2);
 //          glTexCoord2f(texcoord_x2, texcoord_y1);   
             glVertex3f(x4, y4, z_max);
          
@@ -567,23 +554,30 @@ glFinalCombinerInputNV(GL_VARIABLE_F_NV, GL_ZERO, GL_UNSIGNED_IDENTITY_NV, GL_RG
          // district inner hull:
          // do not draw, if district is active:
          if (station->get_active_district() == NULL || &district != &active_district) {
+            
+setLightColor(0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,    -cosp1, -sinp1, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x3, y3, z_max);
                 glNormal3f(-cosp1, -sinp1, 0.0);
-         glMultiTexCoord2fARB(GL_TEXTURE0_ARB, texcoord_x1, texcoord_y1);
-         glMultiTexCoord2fARB(GL_TEXTURE1_ARB, texcoord_x1, texcoord_y1);
+         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x1, texcoord_y1);
+         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x1, texcoord_y1);
 //              glTexCoord2f(texcoord_x1, texcoord_y1);   
                 glVertex3f(x3, y3, z_max);
+                
+setLightColor(0.0, 0.0, 1.0,    sinp2, -cosp2, 0.0,    -cosp2, -sinp2, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x1, y1, z_max);
                 glNormal3f(-cosp2, -sinp2, 0.0);
-         glMultiTexCoord2fARB(GL_TEXTURE0_ARB, texcoord_x1, texcoord_y2);
-         glMultiTexCoord2fARB(GL_TEXTURE1_ARB, texcoord_x1, texcoord_y2);
+         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x1, texcoord_y2);
+         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x1, texcoord_y2);
 //              glTexCoord2f(texcoord_x1, texcoord_y2);
                 glVertex3f(x1, y1, z_max);
-         glMultiTexCoord2fARB(GL_TEXTURE0_ARB, texcoord_x2, texcoord_y2);
-         glMultiTexCoord2fARB(GL_TEXTURE1_ARB, texcoord_x2, texcoord_y2);
+                
+         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x2, texcoord_y2);
+         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x2, texcoord_y2);
 //              glTexCoord2f(texcoord_x2, texcoord_y2);   
                 glVertex3f(x1, y1, z_min);
+                
+setLightColor(0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,    -cosp1, -sinp1, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x3, y3, z_min);
                 glNormal3f(-cosp1, -sinp1, 0.0);
-         glMultiTexCoord2fARB(GL_TEXTURE0_ARB, texcoord_x2, texcoord_y1);
-         glMultiTexCoord2fARB(GL_TEXTURE1_ARB, texcoord_x2, texcoord_y1);
+         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x2, texcoord_y1);
+         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x2, texcoord_y1);
 //              glTexCoord2f(texcoord_x2, texcoord_y1);   
                 glVertex3f(x3, y3, z_min);
          }
@@ -616,9 +610,15 @@ glFinalCombinerInputNV(GL_VARIABLE_F_NV, GL_ZERO, GL_UNSIGNED_IDENTITY_NV, GL_RG
       glEnd();
    }
    
-   glDisable(GL_REGISTER_COMBINERS_NV);
-//    glDisable(GL_TEXTURE_2D);
+// // // // // // // // // // // // // // // // // // // //    
+   
+//    glDisable(GL_REGISTER_COMBINERS_NV);
+   glActiveTextureARB(GL_TEXTURE1); // Texturen leeren
    glBindTexture(GL_TEXTURE_2D, 0);
+   glActiveTexture(GL_TEXTURE0);
+   glBindTexture(GL_TEXTURE_2D, 0);
+   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+   glEnable(GL_BLEND);
    set_material_std();
 }
 
