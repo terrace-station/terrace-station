@@ -7,6 +7,8 @@
 #include <list>
 #include <vector>
 
+#include "mausobjekt.hh"
+
 class Deck;
 class Door;
 class Rect;
@@ -14,7 +16,7 @@ class Lamp;
 class Tile;
 
 
-class Room
+class Room: public Mausobjekt
 {
     static std::vector<std::string> room_styles;
     static std::vector<std::string> corridor_styles;
@@ -40,7 +42,7 @@ class Room
 public:
     Room(std::string style, Rect rect, Deck* deck);
     
-    void update_tiles();
+    void update();
     
     bool is_visible();
     bool is_light_on();

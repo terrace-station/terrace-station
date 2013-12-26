@@ -167,7 +167,7 @@ public:
    void set_material(MATERIAL material);
    
    Mausobjekt& get_target();
-   void interact_with(Mausobjekt& mo_);
+   void interact_with(Mausobjekt& mo_, SDL_MouseButtonEvent& button);
 
    void set_station(Station* station_);
    void zeichne_system(System& system_);

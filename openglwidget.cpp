@@ -172,29 +172,29 @@ void Openglwidget::parameter_regelung()
 }
 
 
-void Openglwidget::interact_with(Mausobjekt& mo_)
+void Openglwidget::interact_with(Mausobjekt& mo_, SDL_MouseButtonEvent& button)
 {
-   if (mo_.objekt_typ == "District")
-   {
-      District& dis = (District&) mo_;
-      station->set_active_district(&dis);
-      pos_radius_soll = dis.get_radius_min();
-      pos_z_soll = (dis.get_z_min()+dis.get_z_max())*0.5;
-      phi_soll = dis.get_phi_min()<dis.get_phi_max()?(dis.get_phi_min()+dis.get_phi_max())*0.5/RAD:(dis.get_phi_min()+dis.get_phi_max()+2*PI)*0.5/RAD;
-      zoom_soll = 0.4; 
-   }
-   else if (mo_.objekt_typ == "Openglbutton")
-   {
-      std::cout << "Openglbutton gedrückt" << std::endl;
-      Openglbutton& but = (Openglbutton&) mo_;
-      but.callback_fkt(*this);
-   }
-   else if (mo_.objekt_typ == "Opengltogglebutton")
-   {
-      std::cout << "Opengltogglebutton gedrückt" << std::endl;
-      Opengltogglebutton& but = (Opengltogglebutton&) mo_;
-      but.callback_fkt(*this);
-   }
+    if (mo_.objekt_typ == "District" && button.button == SDL_BUTTON_LEFT) {
+        District& dis = (District&) mo_;
+        if ( &dis != station->get_active_district() ) {
+            station->set_active_district(&dis);
+            pos_radius_soll = dis.get_radius_min();
+            pos_z_soll = (dis.get_z_min()+dis.get_z_max())*0.5;
+            phi_soll = dis.get_phi_min()<dis.get_phi_max()?(dis.get_phi_min()+dis.get_phi_max())*0.5/RAD:(dis.get_phi_min()+dis.get_phi_max()+2*PI)*0.5/RAD;
+            zoom_soll = 0.4;
+        }
+    } else if (mo_.objekt_typ == "Room" && button.button == SDL_BUTTON_RIGHT) {
+        Room& room = (Room&) mo_;
+        room.set_light_on(!room.is_light_on());
+    } else if (mo_.objekt_typ == "Openglbutton" && button.button == SDL_BUTTON_LEFT) {
+        std::cout << "Openglbutton gedrückt" << std::endl;
+        Openglbutton& but = (Openglbutton&) mo_;
+        but.callback_fkt(*this);
+    } else if (mo_.objekt_typ == "Opengltogglebutton" && button.button == SDL_BUTTON_LEFT) {
+        std::cout << "Opengltogglebutton gedrückt" << std::endl;
+        Opengltogglebutton& but = (Opengltogglebutton&) mo_;
+        but.callback_fkt(*this);
+    }
 }
 
 
@@ -203,33 +203,38 @@ Mausobjekt& Openglwidget::get_target()
    if (target_id == 0)
       return nichts;
    
-   for (std::vector<Zone>::iterator zone_it = station->get_zones().begin(); zone_it != station->get_zones().end(); zone_it++)
-   {
-      for (std::vector<District>::iterator district_it = zone_it->get_districts().begin(); district_it != zone_it->get_districts().end(); district_it++)
-      {
-         if (district_it->objekt_id == target_id)
-            return (Mausobjekt&) (*district_it);
-      }
-   }
-   
-   for (std::list<Togglebutton_and_coords>::iterator it = menu.togglebuttons.begin(); it != menu.togglebuttons.end(); it++)
-   {
-      if (it->button.objekt_id == target_id)
-         return (Mausobjekt&) it->button;
-   }
-   
-   for (std::list<Button_and_coords>::iterator it = menu.buttons.begin(); it != menu.buttons.end(); it++)
-   {
-      if (it->button.objekt_id == target_id)
-         return (Mausobjekt&) it->button;
-   }
-//    if(target_id == button_fullscreen->objekt_id) // Hier soll dann über eine Liste aus buttons iteriert werden
-//       return (Mausobjekt&) *button_fullscreen;
-   
-//    if(target_id == button_close->objekt_id)
-//       return (Mausobjekt&) *button_close;
-   
-   return nichts;
+    for (std::vector<Zone>::iterator zone_it = station->get_zones().begin(); zone_it != station->get_zones().end(); zone_it++)
+    {
+        for (std::vector<District>::iterator district_it = zone_it->get_districts().begin(); district_it != zone_it->get_districts().end(); district_it++)
+        {
+            if (district_it->objekt_id == target_id) { return (Mausobjekt&) (*district_it); }
+            for (std::vector<Deck>::iterator deck_it = district_it->get_decks().begin(); deck_it != district_it->get_decks().end(); deck_it++)
+            {
+                //~ if (deck_it->objekt_id == target_id) { return (Mausobjekt&) (*deck_it); }
+                for (std::list<Room>::iterator room_it = deck_it->get_rooms().begin(); room_it != deck_it->get_rooms().end(); room_it++)
+                {
+                    if (room_it->objekt_id == target_id) { return (Mausobjekt&) (*room_it); }
+                }
+            }
+        }
+    }
+
+    for (std::list<Togglebutton_and_coords>::iterator it = menu.togglebuttons.begin(); it != menu.togglebuttons.end(); it++)
+    {
+        if (it->button.objekt_id == target_id) { return (Mausobjekt&) it->button; }
+    }
+
+    for (std::list<Button_and_coords>::iterator it = menu.buttons.begin(); it != menu.buttons.end(); it++)
+    {
+        if (it->button.objekt_id == target_id) { return (Mausobjekt&) it->button; }
+    }
+    //    if(target_id == button_fullscreen->objekt_id) // Hier soll dann über eine Liste aus buttons iteriert werden
+    //       return (Mausobjekt&) *button_fullscreen;
+
+    //    if(target_id == button_close->objekt_id)
+    //       return (Mausobjekt&) *button_close;
+
+    return nichts;
 }
 
 

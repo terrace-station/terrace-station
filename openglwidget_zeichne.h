@@ -242,6 +242,7 @@ void Openglwidget::zeichne_district(District& district)
         //only draw the first (outermost) deck for now:
         zeichne_deck(district.get_decks()[0]);
     }
+
 }
 
 void Openglwidget::zeichne_deck(Deck& deck)
@@ -255,29 +256,31 @@ void Openglwidget::zeichne_deck(Deck& deck)
      
     for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
     {
+        
         // Check if this room is inside the current viewport (i.e. if it should be drawn):
-        bool room_on_screen = false;
-        for (std::vector<std::vector<GLfloat> >::iterator it = room_it->get_bounding_box().begin(); it != room_it->get_bounding_box().end(); it++)
+        gluProject(room_it->get_bounding_box()[0][0], room_it->get_bounding_box()[0][1], room_it->get_bounding_box()[0][2], model_matrix_system, project_matrix_system, viewport_system, &fenster_x, &fenster_y, &fenster_z);
+        float x_min = fenster_x, x_max = fenster_x, y_min = fenster_y, y_max = fenster_y;
+        for (std::vector<std::vector<GLfloat> >::iterator it = room_it->get_bounding_box().begin() + 1; it != room_it->get_bounding_box().end(); it++)
         {
             gluProject((*it)[0], (*it)[1], (*it)[2], model_matrix_system, project_matrix_system, viewport_system, &fenster_x, &fenster_y, &fenster_z);
-            if(fenster_x >= -VIEWPORT_PADDING && fenster_x <= fenster_breite+VIEWPORT_PADDING && fenster_y >= -VIEWPORT_PADDING && fenster_y <= fenster_hoehe+VIEWPORT_PADDING)
-            {
-                room_on_screen = true;
-            }
+            if (fenster_x < x_min) { x_min = fenster_x; }
+            if (fenster_x > x_max) { x_max = fenster_x; }
+            if (fenster_y < y_min) { y_min = fenster_y; }
+            if (fenster_y > y_max) { y_max = fenster_y; }
         }
-        if (!room_on_screen) { continue; }
+        if ( x_max < -VIEWPORT_PADDING || x_min > fenster_breite+VIEWPORT_PADDING ||
+             y_max < -VIEWPORT_PADDING || y_min > fenster_hoehe+VIEWPORT_PADDING ) { continue; }
         
         if (room_it->is_visible())
         {
+            glLoadName(room_it->objekt_id);
             if (room_it->is_light_on()) {
                 for (std::list<Lamp>::iterator lamp_it = room_it->get_lamps().begin(); lamp_it != room_it->get_lamps().end(); lamp_it++)
                 {
                     lamp_it->lampbegin();
                 }
             }
-            //~ lights->warn1_on();
-            //~ lights->set_warn1_pos(room->get_wall_tiles().front().v1x, room->get_wall_tiles().front().v1y, room->get_wall_tiles().front().v1z);
-
+            
             // draw floor tiles:
             glBindTexture(GL_TEXTURE_2D, textures->get_id(room_it->get_floor_texture_label()));
             glColor3f(1.0, 1.0, 1.0);
