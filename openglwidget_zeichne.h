@@ -1,6 +1,6 @@
 #define NEAR_CLIP 1.00
 #define FAR_CLIP 25000
-#define VIEW_PADDING 200
+#define VIEWPORT_PADDING 50
 
 void Openglwidget::draw()
 {
@@ -246,157 +246,139 @@ void Openglwidget::zeichne_district(District& district)
 
 void Openglwidget::zeichne_deck(Deck& deck)
 {
-    Room* room;
-    Tile* tile;
-   
     lights->sonne_off();
     lights->kamera_off();
     
     glGetIntegerv(GL_VIEWPORT, viewport_system);
     glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix_system);
     glGetDoublev(GL_PROJECTION_MATRIX, project_matrix_system);
-    
+     
     for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
     {
+        // Check if this room is inside the current viewport (i.e. if it should be drawn):
+        bool room_on_screen = false;
+        for (std::vector<std::vector<GLfloat> >::iterator it = room_it->get_bounding_box().begin(); it != room_it->get_bounding_box().end(); it++)
+        {
+            gluProject((*it)[0], (*it)[1], (*it)[2], model_matrix_system, project_matrix_system, viewport_system, &fenster_x, &fenster_y, &fenster_z);
+            if(fenster_x >= -VIEWPORT_PADDING && fenster_x <= fenster_breite+VIEWPORT_PADDING && fenster_y >= -VIEWPORT_PADDING && fenster_y <= fenster_hoehe+VIEWPORT_PADDING)
+            {
+                room_on_screen = true;
+            }
+        }
+        if (!room_on_screen) { continue; }
         
-        gluProject(room_it->get_lamps().front().position[0], room_it->get_lamps().front().position[1], room_it->get_lamps().front().position[2], model_matrix_system, project_matrix_system, viewport_system, &fenster_x, &fenster_y, &fenster_z);
-        
-        if(fenster_x >= -VIEW_PADDING && fenster_x <= fenster_breite+VIEW_PADDING && fenster_y >= -VIEW_PADDING && fenster_y <= fenster_hoehe+VIEW_PADDING)
-           room_it->onscreen = true;
-        else
-           room_it->onscreen = false;
+        if (room_it->is_visible())
+        {
+            if (room_it->is_light_on()) {
+                for (std::list<Lamp>::iterator lamp_it = room_it->get_lamps().begin(); lamp_it != room_it->get_lamps().end(); lamp_it++)
+                {
+                    lamp_it->lampbegin();
+                }
+            }
+            //~ lights->warn1_on();
+            //~ lights->set_warn1_pos(room->get_wall_tiles().front().v1x, room->get_wall_tiles().front().v1y, room->get_wall_tiles().front().v1z);
+
+            // draw floor tiles:
+            glBindTexture(GL_TEXTURE_2D, textures->get_id(room_it->get_floor_texture_label()));
+            glColor3f(1.0, 1.0, 1.0);
+            set_material_ambi(0.2, 0.2, 0.2, 1.0);
+            set_material_diff(0.8, 0.8, 0.8, 1.0);
+            set_material_spec(0.0, 0.0, 0.0, 1.0);
+            for (std::vector<Tile>::iterator tile_it = room_it->get_floor_tiles().begin(); tile_it != room_it->get_floor_tiles().end(); tile_it++)
+            {
+                glBegin(GL_QUADS);
+                    glNormal3f(tile_it->nx, tile_it->ny, tile_it->nz);
+                    glTexCoord2f(0e0, 1e0);
+                    glVertex3f(tile_it->v1x, tile_it->v1y, tile_it->v1z);
+                    glTexCoord2f(1e0, 1e0);
+                    glVertex3f(tile_it->v2x, tile_it->v2y, tile_it->v2z);
+                    glTexCoord2f(1e0, 0e0);
+                    glVertex3f(tile_it->v3x, tile_it->v3y, tile_it->v3z);
+                    glTexCoord2f(0e0, 0e0);
+                    glVertex3f(tile_it->v4x, tile_it->v4y, tile_it->v4z);
+                glEnd();
+            }
+
+            // draw wall tiles:
+            glBindTexture(GL_TEXTURE_2D, textures->get_id(room_it->get_wall_texture_label()));
+            glColor3f(1.0, 1.0, 1.0);
+            set_material_ambi(0.01, 0.01, 0.01, 1.0);
+            set_material_diff(0.8, 0.8, 0.8, 1.0);
+            set_material_spec(0.0, 0.0, 0.0, 1.0);
+            for (std::vector<Tile>::iterator tile_it = room_it->get_wall_tiles().begin(); tile_it != room_it->get_wall_tiles().end(); tile_it++)
+            {
+                glBegin(GL_QUADS);
+                    glNormal3f(tile_it->nx, tile_it->ny, tile_it->nz);
+                    glTexCoord2f(0e0, 1e0);
+                    glVertex3f(tile_it->v1x, tile_it->v1y, tile_it->v1z);
+                    glTexCoord2f(1e0, 1e0);
+                    glVertex3f(tile_it->v2x, tile_it->v2y, tile_it->v2z);
+                    glTexCoord2f(1e0, 0e0);
+                    glVertex3f(tile_it->v3x, tile_it->v3y, tile_it->v3z);
+                    glTexCoord2f(0e0, 0e0);
+                    glVertex3f(tile_it->v4x, tile_it->v4y, tile_it->v4z);
+                glEnd();
+            }
+
+            // draw wall roof tiles:
+            glColor3f(0.0, 0.0, 0.0);
+            set_material_ambi(0.0, 0.0, 0.0, 1.0);
+            set_material_diff(0.0, 0.0, 0.0, 1.0);
+            set_material_spec(0.0, 0.0, 0.0, 1.0);
+            for (std::vector<Tile>::iterator tile_it = room_it->get_wall_top_tiles().begin(); tile_it != room_it->get_wall_top_tiles().end(); tile_it++)
+            {
+                glBegin(GL_QUADS);
+                    glNormal3f(tile_it->nx, tile_it->ny, tile_it->nz);
+                    glVertex3f(tile_it->v1x, tile_it->v1y, tile_it->v1z);
+                    glVertex3f(tile_it->v2x, tile_it->v2y, tile_it->v2z);
+                    glVertex3f(tile_it->v3x, tile_it->v3y, tile_it->v3z);
+                    glVertex3f(tile_it->v4x, tile_it->v4y, tile_it->v4z);
+                glEnd();
+            }
+
+            // draw door roof tiles:
+            glColor3f(1.0, 0.0, 0.0);
+            set_material_ambi(1.0, 0.0, 0.0, 1.0);
+            set_material_diff(1.0, 0.0, 0.0, 1.0);
+            set_material_spec(0.0, 0.0, 0.0, 1.0);
+            for (std::vector<Tile>::iterator tile_it = room_it->get_door_top_tiles().begin(); tile_it != room_it->get_door_top_tiles().end(); tile_it++)
+            {
+                glBegin(GL_QUADS);
+                    glNormal3f(tile_it->nx, tile_it->ny, tile_it->nz);
+                    glVertex3f(tile_it->v1x, tile_it->v1y, tile_it->v1z);
+                    glVertex3f(tile_it->v2x, tile_it->v2y, tile_it->v2z);
+                    glVertex3f(tile_it->v3x, tile_it->v3y, tile_it->v3z);
+                    glVertex3f(tile_it->v4x, tile_it->v4y, tile_it->v4z);
+                glEnd();
+            }
+
+            set_material_std();
+            for (std::list<Lamp>::iterator lamp_it = room_it->get_lamps().begin(); lamp_it != room_it->get_lamps().end(); lamp_it++)
+            {
+                lamp_it->lampend();
+            }
+        } else { // room is not visible:
+            // draw roof:
+            glColor3f(0.0, 0.0, 0.0);
+            set_material_ambi(0.0, 0.0, 0.0, 1.0);
+            set_material_diff(0.0, 0.0, 0.0, 1.0);
+            set_material_spec(0.0, 0.0, 0.0, 1.0);
+            for (std::vector<Tile>::iterator tile_it = room_it->get_roof_tiles().begin(); tile_it != room_it->get_roof_tiles().end(); tile_it++)
+            {
+                glBegin(GL_QUADS);
+                    glNormal3f(tile_it->nx, tile_it->ny, tile_it->nz);
+                    glTexCoord2f(0e0, 1e0);
+                    glVertex3f(tile_it->v1x, tile_it->v1y, tile_it->v1z);
+                    glTexCoord2f(1e0, 1e0);
+                    glVertex3f(tile_it->v2x, tile_it->v2y, tile_it->v2z);
+                    glTexCoord2f(1e0, 0e0);
+                    glVertex3f(tile_it->v3x, tile_it->v3y, tile_it->v3z);
+                    glTexCoord2f(0e0, 0e0);
+                    glVertex3f(tile_it->v4x, tile_it->v4y, tile_it->v4z);
+                glEnd();
+            }
+        }
     }
-           
-    for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
-    {
-       if (room_it->onscreen)
-       {
-         room = &(*room_it);
-         
-         if (room_it->is_visible())
-         {
-             if (room_it->is_light_on()) {
-                 for (std::list<Lamp>::iterator lamp_it = room->get_lamps().begin(); lamp_it != room->get_lamps().end(); lamp_it++)
-                 {
-                       lamp_it->lampbegin();
-                 }
-             }
-             //~ lights->warn1_on();
-             //~ lights->set_warn1_pos(room->get_wall_tiles().front().v1x, room->get_wall_tiles().front().v1y, room->get_wall_tiles().front().v1z);
-             
-             // draw floor:
-             glBindTexture(GL_TEXTURE_2D, textures->get_id(room->get_floor_texture_label()));
-             glColor3f(1.0, 1.0, 1.0);
-             set_material_ambi(0.2, 0.2, 0.2, 1.0);
-             set_material_diff(0.8, 0.8, 0.8, 1.0);
-             set_material_spec(0.0, 0.0, 0.0, 1.0);
-             for (std::vector<Tile>::iterator tile_it = room->get_floor_tiles().begin(); tile_it != room->get_floor_tiles().end(); tile_it++)
-             {
-                   tile = &(*tile_it);
-                   
-                   glBegin(GL_QUADS);
-                      glNormal3f(tile->nx, tile->ny, tile->nz);
-                      glTexCoord2f(0e0, 1e0);
-                      glVertex3f(tile->v1x, tile->v1y, tile->v1z);
-                      glTexCoord2f(1e0, 1e0);
-                      glVertex3f(tile->v2x, tile->v2y, tile->v2z);
-                      glTexCoord2f(1e0, 0e0);
-                      glVertex3f(tile->v3x, tile->v3y, tile->v3z);
-                      glTexCoord2f(0e0, 0e0);
-                      glVertex3f(tile->v4x, tile->v4y, tile->v4z);
-                   glEnd();
-             }
-             
-             // draw walls:
-             glBindTexture(GL_TEXTURE_2D, textures->get_id(room->get_wall_texture_label()));
-             glColor3f(1.0, 1.0, 1.0);
-             set_material_ambi(0.01, 0.01, 0.01, 1.0);
-             set_material_diff(0.8, 0.8, 0.8, 1.0);
-             set_material_spec(0.0, 0.0, 0.0, 1.0);
-             for (std::vector<Tile>::iterator tile_it = room->get_wall_tiles().begin(); tile_it != room->get_wall_tiles().end(); tile_it++)
-             {
-                   tile = &(*tile_it);
-                   
-                   glBegin(GL_QUADS);
-                      glNormal3f(tile->nx, tile->ny, tile->nz);
-                      glTexCoord2f(0e0, 1e0);
-                      glVertex3f(tile->v1x, tile->v1y, tile->v1z);
-                      glTexCoord2f(1e0, 1e0);
-                      glVertex3f(tile->v2x, tile->v2y, tile->v2z);
-                      glTexCoord2f(1e0, 0e0);
-                      glVertex3f(tile->v3x, tile->v3y, tile->v3z);
-                      glTexCoord2f(0e0, 0e0);
-                      glVertex3f(tile->v4x, tile->v4y, tile->v4z);
-                   glEnd();
-             }
-             
-             // draw wall-tops:
-             glColor3f(0.0, 0.0, 0.0);
-             set_material_ambi(0.0, 0.0, 0.0, 1.0);
-             set_material_diff(0.0, 0.0, 0.0, 1.0);
-             set_material_spec(0.0, 0.0, 0.0, 1.0);
-             for (std::vector<Tile>::iterator tile_it = room->get_wall_top_tiles().begin(); tile_it != room->get_wall_top_tiles().end(); tile_it++)
-             {
-                   tile = &(*tile_it);
-                   
-                   glBegin(GL_QUADS);
-                      glNormal3f(tile->nx, tile->ny, tile->nz);
-                      glVertex3f(tile->v1x, tile->v1y, tile->v1z);
-                      glVertex3f(tile->v2x, tile->v2y, tile->v2z);
-                      glVertex3f(tile->v3x, tile->v3y, tile->v3z);
-                      glVertex3f(tile->v4x, tile->v4y, tile->v4z);
-                   glEnd();
-             }
-             
-             // draw door-tops:
-             glColor3f(1.0, 0.0, 0.0);
-             set_material_ambi(1.0, 0.0, 0.0, 1.0);
-             set_material_diff(1.0, 0.0, 0.0, 1.0);
-             set_material_spec(0.0, 0.0, 0.0, 1.0);
-             for (std::vector<Tile>::iterator tile_it = room->get_door_top_tiles().begin(); tile_it != room->get_door_top_tiles().end(); tile_it++)
-             {
-                   tile = &(*tile_it);
-                   
-                   glBegin(GL_QUADS);
-                      glNormal3f(tile->nx, tile->ny, tile->nz);
-                      glVertex3f(tile->v1x, tile->v1y, tile->v1z);
-                      glVertex3f(tile->v2x, tile->v2y, tile->v2z);
-                      glVertex3f(tile->v3x, tile->v3y, tile->v3z);
-                      glVertex3f(tile->v4x, tile->v4y, tile->v4z);
-                   glEnd();
-             }
-             
-             set_material_std();
-             for (std::list<Lamp>::iterator lamp_it = room->get_lamps().begin(); lamp_it != room->get_lamps().end(); lamp_it++)
-             {
-                   lamp_it->lampend();
-             }
-           } else {
-               // draw roof:
-                 glColor3f(0.0, 0.0, 0.0);
-                 set_material_ambi(0.0, 0.0, 0.0, 1.0);
-                 set_material_diff(0.0, 0.0, 0.0, 1.0);
-                 set_material_spec(0.0, 0.0, 0.0, 1.0);
-                 for (std::vector<Tile>::iterator tile_it = room->get_roof_tiles().begin(); tile_it != room->get_roof_tiles().end(); tile_it++)
-                 {
-                       tile = &(*tile_it);
-                       
-                       glBegin(GL_QUADS);
-                          glNormal3f(tile->nx, tile->ny, tile->nz);
-                          glTexCoord2f(0e0, 1e0);
-                          glVertex3f(tile->v1x, tile->v1y, tile->v1z);
-                          glTexCoord2f(1e0, 1e0);
-                          glVertex3f(tile->v2x, tile->v2y, tile->v2z);
-                          glTexCoord2f(1e0, 0e0);
-                          glVertex3f(tile->v3x, tile->v3y, tile->v3z);
-                          glTexCoord2f(0e0, 0e0);
-                          glVertex3f(tile->v4x, tile->v4y, tile->v4z);
-                       glEnd();
-                 }
-           }
-       }
-    }
-    //~ lights->warn1_off();
 }
 
 #define DELTA_P 0.1

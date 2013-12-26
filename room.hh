@@ -74,6 +74,7 @@ public:
     
     std::string str();
     bool onscreen;
+    std::vector<std::vector<GLfloat> >& get_bounding_box();
     
 };
 

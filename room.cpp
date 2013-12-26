@@ -7,6 +7,7 @@
 #include "district.hh"
 #include "zone.hh"
 #include "station.hh"
+#include "hilfsfunktionen.h"
 
 #define DEFAULT_STYLE_GROUP "error"
 
@@ -71,9 +72,14 @@ Room::Room(std::string style_group, Rect rect, Deck* deck):
     update_tiles();
 }
 
+/**
+ * Update cached data
+ * 
+ * Some redundant data - like tiles and the bounding box - are cached for better
+ * performance. This method must be called, whenever this rooms geometry
+ * changes to reflect the current state of this room.
+ */
 void Room::update_tiles() {
-    //~ std::cout << "Updating tiles ...";
-    
     // update bounding box:
     bounding_box.clear();
     int left = rects.front().get_left();
@@ -88,7 +94,15 @@ void Room::update_tiles() {
         if (rect_it->get_top() < top) { top = rect_it->get_top(); }
         if (rect_it->get_bottom() > bottom) { bottom = rect_it->get_bottom(); }
     }
-    
+    std::vector<GLfloat> point(3);
+    hilf::deck2station(left, top, deck->get_district()->get_radius(), deck->get_radius(), point[0], point[1], point[2]);
+    bounding_box.push_back(point);
+    hilf::deck2station(right, top, deck->get_district()->get_radius(), deck->get_radius(), point[0], point[1], point[2]);
+    bounding_box.push_back(point);
+    hilf::deck2station(right, bottom, deck->get_district()->get_radius(), deck->get_radius(), point[0], point[1], point[2]);
+    bounding_box.push_back(point);
+    hilf::deck2station(left, bottom, deck->get_district()->get_radius(), deck->get_radius(), point[0], point[1], point[2]);
+    bounding_box.push_back(point);
     
     // update floor tiles:
     floor_tiles.clear();
@@ -116,7 +130,7 @@ void Room::update_tiles() {
         }
     }
     
-    // update wall- and wall-top-tiles:
+    // update wall tiles:
     wall_tiles.clear();
     wall_tiles.reserve(get_wall_length());
     wall_top_tiles.clear();
@@ -193,8 +207,6 @@ void Room::update_tiles() {
             }
         }
     }
-    
-    //~ std::cout << " done." << std::endl;
 }
 
 bool Room::is_visible() { return visible; }
@@ -310,6 +322,10 @@ std::list<Rect>& Room::get_rects() {
 
 std::list<Lamp>& Room::get_lamps() {
     return lamps;
+}
+
+std::vector<std::vector<GLfloat> >& Room::get_bounding_box() {
+    return bounding_box;
 }
 
 Deck* Room::get_deck() {
