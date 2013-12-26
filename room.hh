@@ -30,12 +30,22 @@ class Room
     std::vector<Tile> wall_tiles;
     std::vector<Tile> wall_top_tiles;
     std::vector<Tile> door_top_tiles;
+    std::vector<Tile> roof_tiles;
+    
+    bool visible;
+    bool light_on;
     
 public:
     Room(std::string style, Rect rect, Deck* deck);
     
     void update_tiles();
     
+    bool is_visible();
+    bool is_light_on();
+
+    void set_visible(bool new_value);
+    void set_light_on(bool new_value);
+
     std::string get_floor_texture_label();
     std::string get_wall_texture_label();
     
@@ -43,6 +53,7 @@ public:
     std::vector<Tile>& get_wall_tiles();
     std::vector<Tile>& get_wall_top_tiles();
     std::vector<Tile>& get_door_top_tiles();
+    std::vector<Tile>& get_roof_tiles();
     
     int get_area();
     int get_wall_length();

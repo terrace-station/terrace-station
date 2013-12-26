@@ -496,6 +496,11 @@ void Deck::init()
             room_it->add_lamp(lamp);
         }
     }
+    
+    // Set some random rooms visible:
+    for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
+        if (rand() % 5 == 0) { room_it->set_visible(true); }
+    }
 }
 
 float Deck::get_radius() {

@@ -1,47 +1,79 @@
 #include "tile.hh"
 
 #define DECK_HEIGHT 2
-#define HALF_WALL_THICKNESS 0.05
+#define HALF_WALL_THICKNESS 0.1
 
 /**
- * Creates a new floor tile
+ * Creates a new floor or roof tile
  * 
  * \param   x               x-position in local deck-coordinates
  * \param   y               y-position in local deck-coordinates
  * \param   district_radius district radius
  * \param   deck_radius     deck radius
  */
-Tile::Tile(int x, int y, float district_radius, float deck_radius)
+Tile::Tile(int x, int y, float district_radius, float deck_radius, bool roof)
 {
-    float radius = deck_radius;
-    float phi1 = x / district_radius;
-    float phi2 = (x + 1) / district_radius;
-    float phi = (x + 0.5) / district_radius;
-    
-    float x1 = radius * cos(phi1);
-    float x2 = radius * cos(phi2);
-    float y1 = radius * sin(phi1);
-    float y2 = radius * sin(phi2);
-    
-    v1x = x1;
-    v1y = y1;
-    v1z = y;
-    
-    v2x = x1;
-    v2y = y1;
-    v2z = y + 1;
-    
-    v3x = x2;
-    v3y = y2;
-    v3z = y + 1;
-    
-    v4x = x2;
-    v4y = y2;
-    v4z = y;
-    
-    nx = cos(phi);
-    ny = sin(phi);
-    nz = 0.0;
+    if (roof) {
+        float radius = deck_radius - DECK_HEIGHT;
+        float phi1 = x / district_radius;
+        float phi2 = (x + 1) / district_radius;
+        float phi = (x + 0.5) / district_radius;
+        
+        float x1 = radius * cos(phi1);
+        float x2 = radius * cos(phi2);
+        float y1 = radius * sin(phi1);
+        float y2 = radius * sin(phi2);
+        
+        v1x = x1;
+        v1y = y1;
+        v1z = y;
+        
+        v2x = x1;
+        v2y = y1;
+        v2z = y + 1;
+        
+        v3x = x2;
+        v3y = y2;
+        v3z = y + 1;
+        
+        v4x = x2;
+        v4y = y2;
+        v4z = y;
+        
+        nx = cos(phi);
+        ny = sin(phi);
+        nz = 0.0;
+    } else {
+        float radius = deck_radius;
+        float phi1 = x / district_radius;
+        float phi2 = (x + 1) / district_radius;
+        float phi = (x + 0.5) / district_radius;
+        
+        float x1 = radius * cos(phi1);
+        float x2 = radius * cos(phi2);
+        float y1 = radius * sin(phi1);
+        float y2 = radius * sin(phi2);
+        
+        v1x = x1;
+        v1y = y1;
+        v1z = y;
+        
+        v2x = x1;
+        v2y = y1;
+        v2z = y + 1;
+        
+        v3x = x2;
+        v3y = y2;
+        v3z = y + 1;
+        
+        v4x = x2;
+        v4y = y2;
+        v4z = y;
+        
+        nx = cos(phi);
+        ny = sin(phi);
+        nz = 0.0;
+    }
 }
 
 /**

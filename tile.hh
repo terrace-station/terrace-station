@@ -26,7 +26,7 @@ public:
     GLfloat ny;
     GLfloat nz;
     
-    Tile(int x, int y, float district_radius, float deck_radius);
+    Tile(int x, int y, float district_radius, float deck_radius, bool roof=false);
     Tile(int x, int y, float district_radius, float deck_radius, int orientation, bool top);
     
     std::string str();

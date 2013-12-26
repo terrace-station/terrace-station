@@ -64,6 +64,8 @@ std::vector<std::string> Room::corridor_styles = {
 Room::Room(std::string style_group, Rect rect, Deck* deck):
     deck(deck)
 {
+    visible = false;
+    light_on = false;
     set_style_group(style_group);
     this->rects.push_back(rect);
     update_tiles();
@@ -80,6 +82,19 @@ void Room::update_tiles() {
         for (int x = rect.get_left(); x < rect.get_right(); ++x) {
             for (int y = rect.get_top(); y < rect.get_bottom(); ++y) {
                 floor_tiles.push_back(Tile(x, y, deck->get_district()->get_radius(), deck->get_radius()));
+            }
+        }
+    }
+    
+    // update roof tiles:
+    roof_tiles.clear();
+    roof_tiles.reserve(get_area());
+    for (std::list<Rect>::iterator it = rects.begin(); it!=rects.end(); it++)
+    {
+        Rect& rect = *it;
+        for (int x = rect.get_left(); x < rect.get_right(); ++x) {
+            for (int y = rect.get_top(); y < rect.get_bottom(); ++y) {
+                roof_tiles.push_back(Tile(x, y, deck->get_district()->get_radius(), deck->get_radius(), true));
             }
         }
     }
@@ -165,6 +180,12 @@ void Room::update_tiles() {
     //~ std::cout << " done." << std::endl;
 }
 
+bool Room::is_visible() { return visible; }
+bool Room::is_light_on() { return light_on; }
+
+void Room::set_visible(bool new_value) { visible = new_value; }
+void Room::set_light_on(bool new_value) { light_on = new_value; }
+
 std::string Room::get_floor_texture_label() { return "floor-" + style; }
 std::string Room::get_wall_texture_label() { return "wall-" + style; }
 
@@ -172,6 +193,7 @@ std::vector<Tile>& Room::get_floor_tiles() { return floor_tiles; }
 std::vector<Tile>& Room::get_wall_tiles() { return wall_tiles; }
 std::vector<Tile>& Room::get_wall_top_tiles() { return wall_top_tiles; }
 std::vector<Tile>& Room::get_door_top_tiles() { return door_top_tiles; }
+std::vector<Tile>& Room::get_roof_tiles() { return roof_tiles; }
 
 int Room::get_area()
 {
