@@ -186,6 +186,14 @@ void Openglwidget::interact_with(Mausobjekt& mo_, SDL_MouseButtonEvent& button)
     } else if (mo_.objekt_typ == "Room" && button.button == SDL_BUTTON_RIGHT) {
         Room& room = (Room&) mo_;
         room.set_light_on(!room.is_light_on());
+    } else if (mo_.objekt_typ == "Room" && button.button == SDL_BUTTON_MIDDLE) {
+        Room& room = (Room&) mo_;
+        std::list<Room*> neighbours = room.get_neighbours();
+        for (std::list<Room*>::iterator room_it = neighbours.begin(); room_it != neighbours.end(); room_it++)
+        {
+            std::cout << "Click" << std::endl;
+            (*room_it)->set_visible(true);
+        }
     } else if (mo_.objekt_typ == "Openglbutton" && button.button == SDL_BUTTON_LEFT) {
         std::cout << "Openglbutton gedrückt" << std::endl;
         Openglbutton& but = (Openglbutton&) mo_;

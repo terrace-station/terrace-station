@@ -329,6 +329,18 @@ Deck* Room::get_deck() {
     return deck;
 }
 
+std::list<Room*> Room::get_neighbours() {
+    std::list<Room*> neighbours;
+    for (std::list<Door*>::iterator door_it = doors.begin(); door_it != doors.end(); door_it++) {
+        if ((*door_it)->room1 != this) {
+            neighbours.push_back((*door_it)->room1);
+        } else {
+            neighbours.push_back((*door_it)->room2);
+        }
+    }
+    return neighbours;
+}
+
 std::string Room::str()
 {
     std::stringstream ss;

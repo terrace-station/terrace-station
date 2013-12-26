@@ -74,6 +74,8 @@ public:
     void add_lamp(Lamp lamp);
     Deck* get_deck();
     
+    std::list<Room*> get_neighbours();
+    
     std::string str();
     bool onscreen;
     std::vector<std::vector<GLfloat> >& get_bounding_box();
