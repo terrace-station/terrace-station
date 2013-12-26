@@ -1,5 +1,6 @@
 #define NEAR_CLIP 1.00
 #define FAR_CLIP 25000
+#define VIEW_PADDING 200
 
 void Openglwidget::draw()
 {
@@ -254,13 +255,13 @@ void Openglwidget::zeichne_deck(Deck& deck)
     glGetIntegerv(GL_VIEWPORT, viewport_system);
     glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix_system);
     glGetDoublev(GL_PROJECTION_MATRIX, project_matrix_system);
-        
+    
     for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
     {
         
         gluProject(room_it->get_lamps().front().position[0], room_it->get_lamps().front().position[1], room_it->get_lamps().front().position[2], model_matrix_system, project_matrix_system, viewport_system, &fenster_x, &fenster_y, &fenster_z);
         
-        if(fenster_x >= -100 && fenster_x <= fenster_breite+100 && fenster_y >= -100 && fenster_y <= fenster_hoehe+100)
+        if(fenster_x >= -VIEW_PADDING && fenster_x <= fenster_breite+VIEW_PADDING && fenster_y >= -VIEW_PADDING && fenster_y <= fenster_hoehe+VIEW_PADDING)
            room_it->onscreen = true;
         else
            room_it->onscreen = false;
@@ -274,9 +275,11 @@ void Openglwidget::zeichne_deck(Deck& deck)
          
          if (room_it->is_visible())
          {
-             for (std::list<Lamp>::iterator lamp_it = room->get_lamps().begin(); lamp_it != room->get_lamps().end(); lamp_it++)
-             {
-                   lamp_it->lampbegin();
+             if (room_it->is_light_on()) {
+                 for (std::list<Lamp>::iterator lamp_it = room->get_lamps().begin(); lamp_it != room->get_lamps().end(); lamp_it++)
+                 {
+                       lamp_it->lampbegin();
+                 }
              }
              //~ lights->warn1_on();
              //~ lights->set_warn1_pos(room->get_wall_tiles().front().v1x, room->get_wall_tiles().front().v1y, room->get_wall_tiles().front().v1z);

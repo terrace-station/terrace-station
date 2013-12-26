@@ -481,7 +481,6 @@ void Deck::init()
     
     // add a lamp in the center of every rect of each room:
     for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
-        int lamptype = rand() % 4;
         for (std::list<Rect>::iterator rect_it = room_it->get_rects().begin(); rect_it != room_it->get_rects().end(); rect_it++) {
             float rx = rect_it->get_left() + 0.5 * rect_it->get_width();
             float ry = rect_it->get_top() + 0.5 * rect_it->get_height();
@@ -492,6 +491,12 @@ void Deck::init()
             float ly = radius * sin(phi);
             float lz = ry;
             
+            int lamptype;
+            if (rand() % 5 == 0) {
+                lamptype = LAMPTYPE::LAMP_FLICKER;
+            } else {
+                lamptype = LAMPTYPE::LAMP_STATIC;
+            }
             Lamp lamp(LAMPTYPE(lamptype), lx, ly, lz);
             room_it->add_lamp(lamp);
         }
@@ -499,7 +504,12 @@ void Deck::init()
     
     // Set some random rooms visible:
     for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
-        if (rand() % 5 == 0) { room_it->set_visible(true); }
+        if (rand() % 3 == 0) { room_it->set_visible(true); }
+    }
+    
+    // Switch on the light in some random rooms:
+    for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
+        if (rand() % 2 == 0) { room_it->set_light_on(true); }
     }
 }
 

@@ -73,6 +73,23 @@ Room::Room(std::string style_group, Rect rect, Deck* deck):
 
 void Room::update_tiles() {
     //~ std::cout << "Updating tiles ...";
+    
+    // update bounding box:
+    bounding_box.clear();
+    int left = rects.front().get_left();
+    int right = rects.front().get_right();
+    int top = rects.front().get_top();
+    int bottom = rects.front().get_bottom();
+    for (std::list<Rect>::iterator rect_it = rects.begin(); rect_it != rects.end(); rect_it++)
+    {
+        Rect& rect = *rect_it;
+        if (rect_it->get_left() < left) { left = rect_it->get_left(); }
+        if (rect_it->get_right() > right) { right = rect_it->get_right(); }
+        if (rect_it->get_top() < top) { top = rect_it->get_top(); }
+        if (rect_it->get_bottom() > bottom) { bottom = rect_it->get_bottom(); }
+    }
+    
+    
     // update floor tiles:
     floor_tiles.clear();
     floor_tiles.reserve(get_area());
@@ -81,7 +98,7 @@ void Room::update_tiles() {
         Rect& rect = *it;
         for (int x = rect.get_left(); x < rect.get_right(); ++x) {
             for (int y = rect.get_top(); y < rect.get_bottom(); ++y) {
-                floor_tiles.push_back(Tile(x, y, deck->get_district()->get_radius(), deck->get_radius()));
+                floor_tiles.push_back(Tile(x, y, deck->get_district()->get_radius(), deck->get_radius(), TileType::FLOOR));
             }
         }
     }
@@ -94,7 +111,7 @@ void Room::update_tiles() {
         Rect& rect = *it;
         for (int x = rect.get_left(); x < rect.get_right(); ++x) {
             for (int y = rect.get_top(); y < rect.get_bottom(); ++y) {
-                roof_tiles.push_back(Tile(x, y, deck->get_district()->get_radius(), deck->get_radius(), true));
+                roof_tiles.push_back(Tile(x, y, deck->get_district()->get_radius(), deck->get_radius(), TileType::ROOF));
             }
         }
     }
@@ -108,70 +125,70 @@ void Room::update_tiles() {
     {
         Rect& rect = *rect_it;
         for (int x = rect.get_left(); x < rect.get_right(); ++x) {
-            // add northern wall-tiles:
+            // add southern wall-tiles:
             if (!contains(x, rect.get_top() - 1)) {
                 bool is_door = false;
                 for (std::list<Door*>::iterator door_it = doors.begin(); door_it!=doors.end(); door_it++)
                 {
                     if ((*door_it)->get_x() == x && (*door_it)->get_y() == rect.get_top() && (*door_it)->get_orientation() % 2 == 1) {
-                        door_top_tiles.push_back(Tile(x, rect.get_top(), deck->get_district()->get_radius(), deck->get_radius(), 1, true));
+                        door_top_tiles.push_back(Tile(x, rect.get_top(), deck->get_district()->get_radius(), deck->get_radius(), TileType::WALL_ROOF_SOUTH));
                         is_door = true;
                         break;
                     }
                 }
                 if (!is_door) {
-                    wall_tiles.push_back(Tile(x, rect.get_top(), deck->get_district()->get_radius(), deck->get_radius(), 1, false));
-                    wall_top_tiles.push_back(Tile(x, rect.get_top(), deck->get_district()->get_radius(), deck->get_radius(), 1, true));
+                    wall_tiles.push_back(Tile(x, rect.get_top(), deck->get_district()->get_radius(), deck->get_radius(), TileType::WALL_SOUTH));
+                    wall_top_tiles.push_back(Tile(x, rect.get_top(), deck->get_district()->get_radius(), deck->get_radius(), TileType::WALL_ROOF_SOUTH));
                 }
             }
-            // add southern wall-tiles:
+            // add northern wall-tiles:
             if (!contains(x, rect.get_bottom())) {
                 bool is_door = false;
                 for (std::list<Door*>::iterator door_it = doors.begin(); door_it!=doors.end(); door_it++)
                 {
                     if ((*door_it)->get_x() == x && (*door_it)->get_y() == rect.get_bottom() && (*door_it)->get_orientation() % 2 == 1) {
-                        door_top_tiles.push_back(Tile(x, rect.get_bottom(), deck->get_district()->get_radius(), deck->get_radius(), 3, true));
+                        door_top_tiles.push_back(Tile(x, rect.get_bottom(), deck->get_district()->get_radius(), deck->get_radius(), TileType::WALL_ROOF_NORTH));
                         is_door = true;
                         break;
                     }
                 }
                 if (!is_door) {
-                    wall_tiles.push_back(Tile(x, rect.get_bottom(), deck->get_district()->get_radius(), deck->get_radius(), 3, false));
-                    wall_top_tiles.push_back(Tile(x, rect.get_bottom(), deck->get_district()->get_radius(), deck->get_radius(), 3, true));
+                    wall_tiles.push_back(Tile(x, rect.get_bottom(), deck->get_district()->get_radius(), deck->get_radius(), TileType::WALL_NORTH));
+                    wall_top_tiles.push_back(Tile(x, rect.get_bottom(), deck->get_district()->get_radius(), deck->get_radius(), TileType::WALL_ROOF_NORTH));
                 }
             }
         }
         for (int y = rect.get_top(); y < rect.get_bottom(); ++y) {
-            // add western wall-tiles:
+            // add eastern wall-tiles:
             if (!contains(rect.get_left() - 1, y)) {
                 bool is_door = false;
                 for (std::list<Door*>::iterator door_it = doors.begin(); door_it!=doors.end(); door_it++)
                 {
                     if ((*door_it)->get_x() == rect.get_left() && (*door_it)->get_y() == y && (*door_it)->get_orientation() % 2 == 0) {
-                        door_top_tiles.push_back(Tile(rect.get_left(), y, deck->get_district()->get_radius(), deck->get_radius(), 0, true));
+                        door_top_tiles.push_back(Tile(rect.get_left(), y, deck->get_district()->get_radius(), deck->get_radius(), TileType::WALL_ROOF_EAST));
                         is_door = true;
                         break;
                     }
                 }
                 if (!is_door) {
-                    wall_tiles.push_back(Tile(rect.get_left(), y, deck->get_district()->get_radius(), deck->get_radius(), 0, false));
-                    wall_top_tiles.push_back(Tile(rect.get_left(), y, deck->get_district()->get_radius(), deck->get_radius(), 0, true));
+                    wall_tiles.push_back(Tile(rect.get_left(), y, deck->get_district()->get_radius(), deck->get_radius(), TileType::WALL_EAST));
+                    wall_top_tiles.push_back(Tile(rect.get_left(), y, deck->get_district()->get_radius(), deck->get_radius(), TileType::WALL_ROOF_EAST));
                 }
             }
-            // add eastern wall-tiles:
+            // add western wall-tiles:
             if (!contains(rect.get_right(), y)) {
                 bool is_door = false;
                 for (std::list<Door*>::iterator door_it = doors.begin(); door_it!=doors.end(); door_it++)
                 {
                     if ((*door_it)->get_x() == rect.get_right() && (*door_it)->get_y() == y && (*door_it)->get_orientation() % 2 == 0) {
-                        door_top_tiles.push_back(Tile(rect.get_right(), y, deck->get_district()->get_radius(), deck->get_radius(), 2, true));
+                        door_top_tiles.push_back(Tile(rect.get_right(), y, deck->get_district()->get_radius(), deck->get_radius(), TileType::WALL_ROOF_WEST));
                         is_door = true;
                         break;
                     }
                 }
                 if (!is_door) {
-                    wall_tiles.push_back(Tile(rect.get_right(), y, deck->get_district()->get_radius(), deck->get_radius(), 2, false));
-                    wall_top_tiles.push_back(Tile(rect.get_right(), y, deck->get_district()->get_radius(), deck->get_radius(), 2, true));
+                    wall_tiles.push_back(Tile(rect.get_right(), y, deck->get_district()->get_radius(), deck->get_radius(), TileType::WALL_WEST));
+                    wall_top_tiles.push_back(Tile(rect.get_right(), y, deck->get_district()->get_radius(), deck->get_radius(), TileType::WALL_ROOF_WEST));
                 }
             }
         }

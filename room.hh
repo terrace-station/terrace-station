@@ -35,6 +35,8 @@ class Room
     bool visible;
     bool light_on;
     
+    std::vector<std::vector<GLfloat> > bounding_box;
+    
 public:
     Room(std::string style, Rect rect, Deck* deck);
     
