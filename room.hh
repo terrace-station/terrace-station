@@ -69,6 +69,7 @@ public:
     void set_style_group(std::string style_group);
     std::list<Rect>& get_rects();
     std::list<Lamp>& get_lamps();
+    std::list<Door*>& get_doors();
     void add_rect(Rect rect);
     void add_door(Door* door);
     void add_lamp(Lamp lamp);

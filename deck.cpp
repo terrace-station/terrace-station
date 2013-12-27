@@ -419,6 +419,52 @@ void Deck::init()
         }
     }
     
+    // Add some more doors:
+    for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
+        for (std::list<Rect>::iterator rect_it = room_it->get_rects().begin(); rect_it != room_it->get_rects().end(); rect_it++) {
+            // choose a random direction:
+            int direction = rand() % 4;
+            int rx, ry;
+            if (direction == 0) {
+                // join west:
+                if (rect_it->get_left() == x) { continue; }
+                rx = rect_it->get_left() - 1;
+                ry = rect_it->get_top() + rand() % rect_it->get_height();
+            } else if (direction == 1) {
+                // join north:
+                if (rect_it->get_top() == y) { continue; }
+                rx = rect_it->get_left() + rand() % rect_it->get_width();
+                ry = rect_it->get_top() - 1;
+            } else if (direction == 2) {
+                // join east:
+                if (rect_it->get_right() == x + size_x) { continue; }
+                rx = rect_it->get_right();
+                ry = rect_it->get_top() + rand() % rect_it->get_height();
+            } else {
+                // join south:
+                if (rect_it->get_bottom() == y + size_y) { continue; }
+                rx = rect_it->get_left() + rand() % rect_it->get_width();
+                ry = rect_it->get_bottom();
+            }
+            // find the room next door:
+            Room* next_room = room_map[rx - x][ry - y];
+            if (next_room != &(*room_it)) {
+                doors.push_back(Door("door", rx, ry, direction, 1));
+            }
+        }
+    }
+    
+    //~ // update room_map:
+    //~ for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
+        //~ for (std::list<Rect>::iterator rect_it = room_it->get_rects().begin(); rect_it != room_it->get_rects().end(); rect_it++) {
+            //~ for (int k = 0; k < rect_it->get_width(); ++k) {
+                //~ for (int l = 0; l < rect_it->get_height(); ++l) {
+                    //~ room_map[rect_it->get_left() - x + k][rect_it->get_top() - y + l] = &(*room_it);
+                //~ }
+            //~ }
+        //~ }
+    //~ }
+    
     // connect all doors to their rooms (and vice versa):
     for (std::list<Door>::iterator door_it = doors.begin(); door_it != doors.end(); door_it++) {
         if (door_it->get_orientation() % 2 == 0) {
@@ -502,14 +548,67 @@ void Deck::init()
         }
     }
     
-    // Set some random rooms visible:
+    // Remove redundant doors:
+    std::list<Door*> redundant_doors;
     for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
-        if (rand() % 3 == 0) { room_it->set_visible(true); }
+        std::set<Room*> neighbours;
+        for (std::list<Door*>::iterator door_it = room_it->get_doors().begin(); door_it != room_it->get_doors().end(); door_it++) {
+            if ((*door_it)->room1 != &(*room_it)) {
+                if (neighbours.count((*door_it)->room1) == 1) {
+                    redundant_doors.push_back(*door_it);
+                } else {
+                    neighbours.insert((*door_it)->room1);
+                }
+            } else {
+                if (neighbours.count((*door_it)->room2) == 1) {
+                    redundant_doors.push_back(*door_it);
+                } else {
+                    neighbours.insert((*door_it)->room2);
+                }
+            }
+        }
+    }
+    for (std::list<Door*>::iterator redoor_it = redundant_doors.begin(); redoor_it != redundant_doors.end(); redoor_it++) {
+        for (std::list<Door>::iterator door_it = doors.begin(); door_it != doors.end(); door_it++) {
+            if (*redoor_it == &(*door_it)) {
+                doors.erase(door_it);
+                break;
+            }
+        }
     }
     
-    // Switch on the light in some random rooms:
+    // remove all doors from rooms:
     for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
-        if (rand() % 2 == 0) { room_it->set_light_on(true); }
+        room_it->get_doors().clear();
+    }
+    
+    // connect all doors to their rooms (and vice versa):
+    for (std::list<Door>::iterator door_it = doors.begin(); door_it != doors.end(); door_it++) {
+        if (door_it->get_orientation() % 2 == 0) {
+            // west-east door:
+            door_it->room1 = room_map[door_it->get_x() - x - 1][door_it->get_y() - y];
+            door_it->room2 = room_map[door_it->get_x() - x][door_it->get_y() - y];
+            door_it->room1->add_door(&(*door_it));
+            door_it->room2->add_door(&(*door_it));
+        } else {
+            // north-south door:
+            door_it->room1 = room_map[door_it->get_x() - x][door_it->get_y() - y - 1];
+            door_it->room2 = room_map[door_it->get_x() - x][door_it->get_y() - y];
+            door_it->room1->add_door(&(*door_it));
+            door_it->room2->add_door(&(*door_it));
+        }
+    }
+    
+    
+    // Set some rooms visible:
+    for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
+        if (rand() % 5 == 0) { room_it->set_visible(true); }
+    }
+    //~ rooms.front().set_visible(true);
+    
+    // Switch off the light in some random rooms:
+    for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
+        if (rand() % 5 == 0) { room_it->set_light_on(false); }
     }
 }
 

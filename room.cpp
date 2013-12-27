@@ -14,23 +14,23 @@
 std::vector<std::string> Room::room_styles = {
                                                 //~ "corridor-chrome-clean",
                                                 //~ "corridor-chrome-dirty",
-                                                "corridor-gold-clean",
-                                                "corridor-gold-dirty",
+                                                //~ "corridor-gold-clean",
+                                                //~ "corridor-gold-dirty",
                                                 "corridor-copper-clean",
                                                 "corridor-copper-dirty",
                                                 //~ "industrial-chrome-clean",
                                                 //~ "industrial-chrome-dirty",
-                                                "industrial-gold-clean",
-                                                "industrial-gold-dirty",
+                                                //~ "industrial-gold-clean",
+                                                //~ "industrial-gold-dirty",
                                                 "industrial-copper-clean",
                                                 "industrial-copper-dirty",
                                                 //~ "lab-chrome-clean",
                                                 //~ "lab-chrome-dirty",
-                                                "lab-gold-clean",
-                                                "lab-gold-dirty",
+                                                //~ "lab-gold-clean",
+                                                //~ "lab-gold-dirty",
                                                 "lab-copper-clean",
                                                 "lab-copper-dirty",
-                                                "holo"
+                                                //~ "holo"
                                                 };
 
 std::vector<std::string> Room::corridor_styles = {
@@ -66,7 +66,7 @@ Room::Room(std::string style_group, Rect rect, Deck* deck):
     deck(deck)
 {
     visible = false;
-    light_on = false;
+    light_on = true;
     set_style_group(style_group);
     this->rects.push_back(rect);
     update();
@@ -319,6 +319,10 @@ std::list<Rect>& Room::get_rects() {
 
 std::list<Lamp>& Room::get_lamps() {
     return lamps;
+}
+
+std::list<Door*>& Room::get_doors() {
+    return doors;
 }
 
 std::vector<std::vector<GLfloat> >& Room::get_bounding_box() {
