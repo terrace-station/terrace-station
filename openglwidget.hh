@@ -95,6 +95,9 @@ public:
    void zeichne_szene();
    void selektiere_id();
    void selektiere_pos();
+   
+   void bindTextures(std::string label);
+   void unbindTextures();
 
    void resize(int position_x_, int position_y_, int breite_, int hoehe_);
 

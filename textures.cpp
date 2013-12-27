@@ -15,7 +15,7 @@ GLuint Textures::get_id(std::string label)
     if (texture_ids.count(label)) {
         return texture_ids[label];
     } else {
-        std::cout << "Texture '" << label << "' not found. Using texture '" << DEFAULT_TEXTURE_LABEL << "' instead." << std::endl;
+//         std::cout << "Texture '" << label << "' not found. Using texture '" << DEFAULT_TEXTURE_LABEL << "' instead." << std::endl;
         return texture_ids[DEFAULT_TEXTURE_LABEL];
     }
 }

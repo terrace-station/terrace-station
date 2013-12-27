@@ -53,7 +53,7 @@ district.o: district.cpp district.hh deck.o mausobjekt.o
 deck.o: deck.cpp deck.hh room.o
 	$(CPP) $(CPPFLAGS) -c deck.cpp
 
-room.o: room.cpp room.hh door.o rect.o lamp.o
+room.o: room.cpp room.hh door.o rect.o lamp.o tile.o
 	$(CPP) $(CPPFLAGS) -c room.cpp
 
 door.o: door.cpp door.hh rect.o

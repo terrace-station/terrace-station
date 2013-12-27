@@ -280,50 +280,77 @@ void Openglwidget::zeichne_deck(Deck& deck)
          //~ lights->set_warn1_pos(room->get_wall_tiles().front().v1x, room->get_wall_tiles().front().v1y, room->get_wall_tiles().front().v1z);
          
          // draw floor:
-         glBindTexture(GL_TEXTURE_2D, textures->get_id(room->get_floor_texture_label()));
-         glColor3f(1.0, 1.0, 1.0);
+         bindTextures(room->get_floor_texture_label());
          set_material_ambi(0.2, 0.2, 0.2, 1.0);
          set_material_diff(0.8, 0.8, 0.8, 1.0);
          set_material_spec(0.0, 0.0, 0.0, 1.0);
          for (std::vector<Tile>::iterator tile_it = room->get_floor_tiles().begin(); tile_it != room->get_floor_tiles().end(); tile_it++)
          {
                tile = &(*tile_it);
+//                tile->setLightColor(room->get_lamps().front().position[0], room->get_lamps().front().position[1], room->get_lamps().front().position[2]);
+               tile->setLightColor(10000*cos(laufzeit*100),10000*sin(laufzeit*100),0);
                
                glBegin(GL_QUADS);
+                  glColor3f(tile->c1r, tile->c1g, tile->c1b);
                   glNormal3f(tile->nx, tile->ny, tile->nz);
-                  glTexCoord2f(0e0, 1e0);
+                  glMultiTexCoord2f(GL_TEXTURE0, 0.0, 1.0);
+                  glMultiTexCoord2f(GL_TEXTURE1, 0.0, 1.0);
+//                   glTexCoord2f(0e0, 1e0);
                   glVertex3f(tile->v1x, tile->v1y, tile->v1z);
-                  glTexCoord2f(1e0, 1e0);
+                  glColor3f(tile->c2r, tile->c2g, tile->c2b);
+                  glMultiTexCoord2f(GL_TEXTURE0, 1.0, 1.0);
+                  glMultiTexCoord2f(GL_TEXTURE1, 1.0, 1.0);
+//                   glTexCoord2f(1e0, 1e0);
                   glVertex3f(tile->v2x, tile->v2y, tile->v2z);
-                  glTexCoord2f(1e0, 0e0);
+                  glColor3f(tile->c3r, tile->c3g, tile->c3b);
+                  glMultiTexCoord2f(GL_TEXTURE0, 1.0, 0.0);
+                  glMultiTexCoord2f(GL_TEXTURE1, 1.0, 0.0);
+//                   glTexCoord2f(1e0, 0e0);
                   glVertex3f(tile->v3x, tile->v3y, tile->v3z);
-                  glTexCoord2f(0e0, 0e0);
+                  glColor3f(tile->c4r, tile->c4g, tile->c4b);
+                  glMultiTexCoord2f(GL_TEXTURE0, 0.0, 0.0);
+                  glMultiTexCoord2f(GL_TEXTURE1, 0.0, 0.0);
+//                   glTexCoord2f(0e0, 0e0);
                   glVertex3f(tile->v4x, tile->v4y, tile->v4z);
                glEnd();
          }
          
          // draw walls:
-         glBindTexture(GL_TEXTURE_2D, textures->get_id(room->get_wall_texture_label()));
-         glColor3f(1.0, 1.0, 1.0);
+         bindTextures(room->get_wall_texture_label());
          set_material_ambi(0.01, 0.01, 0.01, 1.0);
          set_material_diff(0.8, 0.8, 0.8, 1.0);
          set_material_spec(0.0, 0.0, 0.0, 1.0);
          for (std::vector<Tile>::iterator tile_it = room->get_wall_tiles().begin(); tile_it != room->get_wall_tiles().end(); tile_it++)
          {
                tile = &(*tile_it);
+               tile->setLightColor(room->get_lamps().front().position[0], room->get_lamps().front().position[1], room->get_lamps().front().position[2]);
                
                glBegin(GL_QUADS);
                   glNormal3f(tile->nx, tile->ny, tile->nz);
-                  glTexCoord2f(0e0, 1e0);
+                  glMultiTexCoord2f(GL_TEXTURE0, 0.0, 1.0);
+                  glMultiTexCoord2f(GL_TEXTURE1, 0.0, 1.0);
+//                   glTexCoord2f(0e0, 1e0);
+                  glColor3f(tile->c1r, tile->c1g, tile->c1b);
                   glVertex3f(tile->v1x, tile->v1y, tile->v1z);
-                  glTexCoord2f(1e0, 1e0);
+                  glMultiTexCoord2f(GL_TEXTURE0, 1.0, 1.0);
+                  glMultiTexCoord2f(GL_TEXTURE1, 1.0, 1.0);
+//                   glTexCoord2f(1e0, 1e0);
+                  glColor3f(tile->c2r, tile->c2g, tile->c2b);
                   glVertex3f(tile->v2x, tile->v2y, tile->v2z);
-                  glTexCoord2f(1e0, 0e0);
+                  glMultiTexCoord2f(GL_TEXTURE0, 1.0, 0.0);
+                  glMultiTexCoord2f(GL_TEXTURE1, 1.0, 0.0);
+//                   glTexCoord2f(1e0, 0e0);
+                  glColor3f(tile->c3r, tile->c3g, tile->c3b);
                   glVertex3f(tile->v3x, tile->v3y, tile->v3z);
-                  glTexCoord2f(0e0, 0e0);
+                  glMultiTexCoord2f(GL_TEXTURE0, 0.0, 0.0);
+                  glMultiTexCoord2f(GL_TEXTURE1, 0.0, 0.0);
+//                   glTexCoord2f(0e0, 0e0);
+                  glColor3f(tile->c4r, tile->c4g, tile->c4b);
                   glVertex3f(tile->v4x, tile->v4y, tile->v4z);
                glEnd();
          }
+         
+         unbindTextures();
          
          // draw wall-tops:
          glColor3f(0.0, 0.0, 0.0);
@@ -382,21 +409,50 @@ void setLightColor(float tang1_x,  float tang1_y,  float tang1_z,
    quelle_x = position_x - quelle_x;  // vec position - vec quelle - vektor vom licht zur aktuellen position zeigt
    quelle_y = position_y - quelle_y;
    quelle_z = position_z - quelle_z;
+   hilf::normieren(quelle_x, quelle_y, quelle_z);
    
    GLfloat licht_x = quelle_x*tang1_x  + quelle_y*tang1_y  + quelle_z*tang1_z;
    GLfloat licht_y = quelle_x*tang2_x  + quelle_y*tang2_y  + quelle_z*tang2_z;
    GLfloat licht_z = quelle_x*normal_x + quelle_y*normal_y + quelle_z*normal_z;
 
-   hilf::normieren(licht_x, licht_y, licht_z);
 
    licht_x *= 0.5; licht_x += 0.5;
    licht_y *= 0.5; licht_y += 0.5;
-   licht_z *= 0.5; licht_z += 0.5;
-//    licht_z *= 0.25; licht_z += 0.75;
+//    licht_z *= 0.5; licht_z += 0.5;
+   licht_z *= 0.25; licht_z += 0.75;
 
    glColor3f(licht_x, licht_y, licht_z);
 //    std::cout << "licht:  " << licht_x << ",  " << licht_y << ",  " << licht_z << std::endl;
 }
+
+
+void Openglwidget::bindTextures(std::string label)
+{
+   glActiveTexture(GL_TEXTURE0);
+   glEnable(GL_TEXTURE_2D);
+   glBindTexture(GL_TEXTURE_2D, normalmaps->get_id(label));
+   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+   glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_DOT3_RGB);
+   glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PRIMARY_COLOR);
+   glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE);
+
+   glActiveTexture(GL_TEXTURE1);
+   glEnable(GL_TEXTURE_2D);
+   glBindTexture(GL_TEXTURE_2D, textures->get_id(label));
+   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+}
+
+
+void Openglwidget::unbindTextures()
+{
+   glActiveTextureARB(GL_TEXTURE1);
+   glBindTexture(GL_TEXTURE_2D, 0);
+   glActiveTexture(GL_TEXTURE0);
+   glBindTexture(GL_TEXTURE_2D, 0);
+   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+}
+
+
 
 void Openglwidget::zeichne_district_outside(District& district)
 {
@@ -406,7 +462,7 @@ void Openglwidget::zeichne_district_outside(District& district)
    lights->kamera_on();
    lights->sonne_on();
    
-   set_material_ambi(0.00, 0.00, 0.00, 1.0);
+   set_material_ambi(0.10, 0.10, 0.10, 1.0);
    set_material_diff(0.30, 0.30, 0.50, 1.0);
    set_material_spec(0.70, 0.70, 1.00, 1.0);
    set_material_shin(90.0);
@@ -448,20 +504,22 @@ void Openglwidget::zeichne_district_outside(District& district)
    
 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
    
-   glDisable(GL_BLEND);
-      
-   glActiveTexture(GL_TEXTURE0);
-   glEnable(GL_TEXTURE_2D);
-   glBindTexture(GL_TEXTURE_2D, normalmaps->get_id("district-hull"));
-   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-   glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_DOT3_RGB) ;
-   glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PRIMARY_COLOR) ;
-   glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE) ;
+//    glDisable(GL_BLEND);
 
-   glActiveTexture(GL_TEXTURE1);
-   glEnable(GL_TEXTURE_2D);
-   glBindTexture(GL_TEXTURE_2D, textures->get_id("district-hull"));
-   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+   bindTextures("district-hull");
+   
+//    glActiveTexture(GL_TEXTURE0);
+//    glEnable(GL_TEXTURE_2D);
+//    glBindTexture(GL_TEXTURE_2D, normalmaps->get_id("district-hull"));
+//    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+//    glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_DOT3_RGB) ;
+//    glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PRIMARY_COLOR) ;
+//    glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_TEXTURE) ;
+// 
+//    glActiveTexture(GL_TEXTURE1);
+//    glEnable(GL_TEXTURE_2D);
+//    glBindTexture(GL_TEXTURE_2D, textures->get_id("district-hull"));
+//    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // // 
 
@@ -519,28 +577,32 @@ void Openglwidget::zeichne_district_outside(District& district)
          // district outer hull:
 setLightColor(0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,    cosp1, sinp1, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x4, y4, z_min);
             glNormal3f(cosp1, sinp1, 0.0);
-         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x1, texcoord_y2);
-         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x1, texcoord_y2);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x1, texcoord_y2);
+         glMultiTexCoord2f(GL_TEXTURE1, texcoord_x1, texcoord_y2);
+//          glMultiTexCoord2f(GL_TEXTURE2, texcoord_x1, texcoord_y2);
 //          glTexCoord2f(texcoord_x1, texcoord_y1);
             glVertex3f(x4, y4, z_min);
             
 setLightColor(0.0, 0.0, 1.0,    sinp2, -cosp2, 0.0,    cosp2, sinp2, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x2, y2, z_min);
             glNormal3f(cosp2, sinp2, 0.0);
-         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x1, texcoord_y1);
-         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x1, texcoord_y1);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x1, texcoord_y1);
+         glMultiTexCoord2f(GL_TEXTURE1, texcoord_x1, texcoord_y1);
+//          glMultiTexCoord2f(GL_TEXTURE2, texcoord_x1, texcoord_y1);
 //          glTexCoord2f(texcoord_x1, texcoord_y2);
             glVertex3f(x2, y2, z_min);
             
 setLightColor(0.0, 0.0, 1.0,    sinp2, -cosp2, 0.0,    cosp2, sinp2, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x2, y2, z_max);
-         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x2, texcoord_y1);
-         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x2, texcoord_y1);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x2, texcoord_y1);
+         glMultiTexCoord2f(GL_TEXTURE1, texcoord_x2, texcoord_y1);
+//          glMultiTexCoord2f(GL_TEXTURE2, texcoord_x2, texcoord_y1);
 //          glTexCoord2f(texcoord_x2, texcoord_y2);   
             glVertex3f(x2, y2, z_max);
             
 setLightColor(0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,    cosp1, sinp1, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x4, y4, z_max);
             glNormal3f(cosp1, sinp1, 0.0);
-         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x2, texcoord_y2);
-         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x2, texcoord_y2);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x2, texcoord_y2);
+         glMultiTexCoord2f(GL_TEXTURE1, texcoord_x2, texcoord_y2);
+//          glMultiTexCoord2f(GL_TEXTURE2, texcoord_x2, texcoord_y2);
 //          glTexCoord2f(texcoord_x2, texcoord_y1);   
             glVertex3f(x4, y4, z_max);
          
@@ -557,27 +619,31 @@ setLightColor(0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,    cosp1, sinp1, 0.0,   1000
             
 setLightColor(0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,    -cosp1, -sinp1, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x3, y3, z_max);
                 glNormal3f(-cosp1, -sinp1, 0.0);
-         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x1, texcoord_y1);
-         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x1, texcoord_y1);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x1, texcoord_y1);
+         glMultiTexCoord2f(GL_TEXTURE1, texcoord_x1, texcoord_y1);
+//          glMultiTexCoord2f(GL_TEXTURE2, texcoord_x1, texcoord_y1);
 //              glTexCoord2f(texcoord_x1, texcoord_y1);   
                 glVertex3f(x3, y3, z_max);
                 
 setLightColor(0.0, 0.0, 1.0,    sinp2, -cosp2, 0.0,    -cosp2, -sinp2, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x1, y1, z_max);
                 glNormal3f(-cosp2, -sinp2, 0.0);
-         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x1, texcoord_y2);
-         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x1, texcoord_y2);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x1, texcoord_y2);
+         glMultiTexCoord2f(GL_TEXTURE1, texcoord_x1, texcoord_y2);
+//          glMultiTexCoord2f(GL_TEXTURE2, texcoord_x1, texcoord_y2);
 //              glTexCoord2f(texcoord_x1, texcoord_y2);
                 glVertex3f(x1, y1, z_max);
                 
-         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x2, texcoord_y2);
-         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x2, texcoord_y2);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x2, texcoord_y2);
+         glMultiTexCoord2f(GL_TEXTURE1, texcoord_x2, texcoord_y2);
+//          glMultiTexCoord2f(GL_TEXTURE2, texcoord_x2, texcoord_y2);
 //              glTexCoord2f(texcoord_x2, texcoord_y2);   
                 glVertex3f(x1, y1, z_min);
                 
 setLightColor(0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,    -cosp1, -sinp1, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x3, y3, z_min);
                 glNormal3f(-cosp1, -sinp1, 0.0);
-         glMultiTexCoord2fARB(GL_TEXTURE0, texcoord_x2, texcoord_y1);
-         glMultiTexCoord2fARB(GL_TEXTURE1, texcoord_x2, texcoord_y1);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x2, texcoord_y1);
+         glMultiTexCoord2f(GL_TEXTURE1, texcoord_x2, texcoord_y1);
+//          glMultiTexCoord2f(GL_TEXTURE2, texcoord_x2, texcoord_y1);
 //              glTexCoord2f(texcoord_x2, texcoord_y1);   
                 glVertex3f(x3, y3, z_min);
          }
@@ -612,13 +678,8 @@ setLightColor(0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,    -cosp1, -sinp1, 0.0,   10
    
 // // // // // // // // // // // // // // // // // // // //    
    
-//    glDisable(GL_REGISTER_COMBINERS_NV);
-   glActiveTextureARB(GL_TEXTURE1); // Texturen leeren
-   glBindTexture(GL_TEXTURE_2D, 0);
-   glActiveTexture(GL_TEXTURE0);
-   glBindTexture(GL_TEXTURE_2D, 0);
-   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-   glEnable(GL_BLEND);
+   unbindTextures();
+   
    set_material_std();
 }
 
