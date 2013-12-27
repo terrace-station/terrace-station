@@ -3,7 +3,7 @@ CPP      = g++-4.7
 CPPFLAGS = -std=c++11 -O2 -g
 
 main: main.cpp $(OBJEKTE)
-	$(CPP) $(CPPFLAGS) -o main main.cpp $(OBJEKTE) -lGL -lGLU -lSDL -lSDL_image -lSDL_ttf
+	$(CPP) $(CPPFLAGS) -o main main.cpp $(OBJEKTE) -lGL -lGLU -lSDL -lSDL_image -lSDL_ttf -lSDL_mixer
 
 dis: dis.cpp station.o
 	$(CPP) $(CPPFLAGS) -o dis dis.cpp station.o zone.o district.o deck.o room.o door.o rect.o tile.o
@@ -11,7 +11,7 @@ dis: dis.cpp station.o
 system.o: system.hh system.cpp glhilf.h
 	$(CPP) $(CPPFLAGS) -c system.cpp
 
-openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h zeit.h station.o mausobjekt.o openglwidget_material.h openglwidget_events.h openglwidget_zeichne.h openglbutton.o openglmenu.o modell.o fonttextures.o textures.o tile.o callback_funktionen.h models.o lights.o lamp.o
+openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h zeit.h station.o mausobjekt.o sdl_audio.h openglwidget_material.h openglwidget_events.h openglwidget_zeichne.h openglbutton.o openglmenu.o modell.o fonttextures.o textures.o tile.o callback_funktionen.h models.o lights.o lamp.o
 	$(CPP) $(CPPFLAGS) -c openglwidget.cpp
 
 openglbutton.o: openglbutton.cpp openglbutton.hh

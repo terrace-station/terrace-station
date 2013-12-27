@@ -11,6 +11,8 @@
 #include "rect.hh"
 #include "tile.hh"
 
+#include "sdl_audio.h"
+
 #include "openglwidget_material.h"
 #include "openglwidget_events.h"
 #include "openglwidget_zeichne.h"
@@ -22,6 +24,8 @@
 
 Openglwidget::Openglwidget(int breite_, int hoehe_)
 {
+    audio_init();
+    
    gettimeofday(&zeit, 0);
    models   = new Models(MODELS_DIR);
    lights   = new Lights(laufzeit);
@@ -352,6 +356,8 @@ void Openglwidget::initialisiere_gl()
    lights->set_sonne_pos(sys.position[0], 0.0, 0.0, 1.0);
    
    breite_zu_hoehe = float(fenster_breite) / float(fenster_hoehe);
+   
+   music_start();
 }
 
 

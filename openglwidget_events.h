@@ -1,3 +1,5 @@
+void music_start();
+
 void Openglwidget::events()
 {
    while(SDL_PollEvent(&event)) 
@@ -145,15 +147,23 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
          }
          break;
          
-      case SDLK_F1 :
-         toggle_antialiasing();
-         break;
+        case SDLK_F1 :
+            toggle_antialiasing();
+            break;
 
-      case SDLK_F3:
-         if (station->get_active_district() != NULL) {
-            station->get_active_district()->set_alarm(!station->get_active_district()->get_alarm());
-         }
-         break;
+        case SDLK_F3:
+            if (station->get_active_district() != NULL) {
+                station->get_active_district()->set_alarm(!station->get_active_district()->get_alarm());
+            }
+            break;
+
+        case SDLK_m:
+            if (music == NULL) {
+                music_start();
+            } else {
+                music_stop();
+            }
+            break;
 
    }
 }

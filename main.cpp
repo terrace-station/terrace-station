@@ -1,5 +1,6 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_ttf.h>
+#include <SDL/SDL_mixer.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
@@ -17,13 +18,13 @@
 #include "zone.hh"
 #include "station.hh"
 
-
+//~ #include "sdl_audio.h"
 
 int main(int argc, char* argv[])
 {
    srand (2);
    //~ srand (time(NULL));
-   SDL_Init(SDL_INIT_VIDEO);
+   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
    TTF_Init();
    
    Openglwidget glwidget(800, 600);
@@ -32,7 +33,7 @@ int main(int argc, char* argv[])
    std::cout << station1.str();
    glwidget.set_station(&station1);
    
-   SDL_Init(SDL_INIT_VIDEO);
+   //~ SDL_Init(SDL_INIT_VIDEO);
 
    const SDL_VideoInfo* info = SDL_GetVideoInfo();
    
@@ -44,12 +45,12 @@ int main(int argc, char* argv[])
    
    SDL_EnableKeyRepeat(20, 20);
    glwidget.initialisiere_gl();
-
+   
    while(glwidget.running)
    {
       glwidget.events();
       glwidget.draw();
    }
-
+   
    return 0;
 }
