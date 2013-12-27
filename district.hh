@@ -20,6 +20,7 @@ class District: public Mausobjekt
     bool circular;
     Zone* zone;
     std::vector<Deck> decks;
+    bool alarm;
     
 public:
     District(int x, int y, int size_x, int size_y,
@@ -41,6 +42,8 @@ public:
     bool is_circular();
     std::vector<Deck>& get_decks();
     Zone* get_zone();
+    bool get_alarm();
+    void set_alarm(bool new_value);
     
     std::string str();
 };

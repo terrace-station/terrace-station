@@ -277,7 +277,7 @@ void Openglwidget::zeichne_deck(Deck& deck)
             if (room_it->is_light_on()) {
                 for (std::list<Lamp>::iterator lamp_it = room_it->get_lamps().begin(); lamp_it != room_it->get_lamps().end(); lamp_it++)
                 {
-                    lamp_it->lampbegin();
+                    lamp_it->lampbegin(deck.get_district()->get_alarm());
                 }
             }
             

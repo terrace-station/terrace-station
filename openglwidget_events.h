@@ -145,10 +145,16 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
          }
          break;
          
-         
       case SDLK_F1 :
          toggle_antialiasing();
          break;
+
+      case SDLK_F3:
+         if (station->get_active_district() != NULL) {
+            station->get_active_district()->set_alarm(!station->get_active_district()->get_alarm());
+         }
+         break;
+
    }
 }
 

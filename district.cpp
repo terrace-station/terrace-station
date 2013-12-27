@@ -32,6 +32,7 @@ District::District(int x, int y, int size_x, int size_y,
         decks.emplace_back(radius_offset, this);
     }
     
+    alarm = false;
     objekt_typ = "District";
 }
 
@@ -59,6 +60,9 @@ bool District::is_circular() { return circular; }
 std::vector<Deck>& District::get_decks() { return decks; }
 
 Zone* District::get_zone() { return zone; }
+
+bool District::get_alarm() { return alarm; }
+void District::set_alarm(bool new_value) { alarm = new_value; }
 
 std::string District::str()
 {

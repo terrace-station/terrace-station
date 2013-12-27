@@ -6,25 +6,22 @@ Lamp::Lamp()
 {
    working = true;
    enabled = true;
-   set_std();
 }
 
 Lamp::Lamp(LAMPTYPE type): type(type)
 {
    working = true;
    enabled = true;
-   set_std();
 }
 
 Lamp::Lamp(LAMPTYPE type, GLfloat position_x, GLfloat position_y, GLfloat position_z): type(type)
 {
    working = true;
    enabled = true;
-   set_std();
    set_position(position_x, position_y, position_z);
 }
 
-void Lamp::lampbegin()
+void Lamp::lampbegin(bool alarm)
 {
    lightinuse = GL_LIGHT7;
 
@@ -43,7 +40,14 @@ void Lamp::lampbegin()
    
    glEnable(lightinuse);
    
-   switch(type)
+   LAMPTYPE current_type;
+   if (alarm) {
+      current_type = LAMP_PULS;
+   } else {
+      current_type = type;
+   }
+   
+   switch(current_type)
    {
       case LAMP_STATIC:
          glLightfv(lightinuse, GL_POSITION, position);
@@ -54,6 +58,9 @@ void Lamp::lampbegin()
          glLightf(lightinuse, GL_CONSTANT_ATTENUATION,  constant_attenuation);
          glLightf(lightinuse, GL_LINEAR_ATTENUATION,    linear_attenuation);
          glLightf(lightinuse, GL_QUADRATIC_ATTENUATION, quadratic_attenuation);
+         
+         set_lightcolor(1.0, 1.0, 1.0);
+         set_attenuation(0.5, 0.1, 0.0);
          break;
    
       case LAMP_PULS:
@@ -71,6 +78,9 @@ void Lamp::lampbegin()
          glLightf(lightinuse, GL_CONSTANT_ATTENUATION,  constant_attenuation);
          glLightf(lightinuse, GL_LINEAR_ATTENUATION,    linear_attenuation);
          glLightf(lightinuse, GL_QUADRATIC_ATTENUATION, quadratic_attenuation);
+         
+         set_lightcolor(1.0, 0.0, 0.0);
+         set_attenuation(0.3, 0.3, 0.0);
          break;
    
       case LAMP_FLICKER:
@@ -107,10 +117,15 @@ void Lamp::lampbegin()
          glLightf(lightinuse, GL_CONSTANT_ATTENUATION,  constant_attenuation);
          glLightf(lightinuse, GL_LINEAR_ATTENUATION,    linear_attenuation);
          glLightf(lightinuse, GL_QUADRATIC_ATTENUATION, quadratic_attenuation);
+         
+         set_lightcolor(0.8, 0.8, 1.0);
+         set_attenuation(0.3, 0.3, 0.0);
          break;
          
       case LAMP_SPOT:
             // TODO
+         set_lightcolor(1.0, 1.0, 1.0);
+         set_attenuation(0.5, 0.5, 0.0);
          break;
    
    }
@@ -121,42 +136,10 @@ void Lamp::lampend()
    glDisable(lightinuse);
 }
 
-void Lamp::set_std()
-{
-   
-   switch(type)
-   {
-      case LAMP_STATIC:
-         set_position(0.0, 0.0, 0.0);
-         set_lightcolor(1.0, 1.0, 1.0);
-         set_attenuation(0.5, 0.1, 0.0);
-         break;
-      case LAMP_PULS:
-         set_position(0.0, 0.0, 0.0);
-         set_lightcolor(1.0, 0.0, 0.0);
-         set_attenuation(0.3, 0.3, 0.0);
-         break;
-      case LAMP_FLICKER:
-         set_position(0.0, 0.0, 0.0);
-         set_lightcolor(0.8, 0.8, 1.0);
-         set_attenuation(0.3, 0.3, 0.0);
-         break;
-      case LAMP_SPOT:    // TODO
-         set_position(0.0, 0.0, 0.0);
-         set_lightcolor(1.0, 1.0, 1.0);
-         set_attenuation(0.5, 0.5, 0.0);
-         break;
-      default:
-         set_position(0.0, 0.0, 0.0);
-         set_lightcolor(1.0, 1.0, 1.0);
-         set_attenuation(0.5, 0.5, 0.0);
-   }
-}
-
 void Lamp::set_lamptype(LAMPTYPE type_)
 {
    type = type_;
-   set_std();
+   set_position(0.0, 0.0, 0.0);
 }
 
 void Lamp::set_position(GLfloat position_x, GLfloat position_y, GLfloat position_z, GLfloat position_w)

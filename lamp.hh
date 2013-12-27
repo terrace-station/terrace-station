@@ -34,7 +34,7 @@ public:
    GLfloat linear_attenuation;
    GLfloat quadratic_attenuation;
    
-   void lampbegin();
+   void lampbegin(bool alarm=false);
    void lampend();
    
    void set_lamptype(LAMPTYPE type_);
