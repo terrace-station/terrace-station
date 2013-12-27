@@ -42,6 +42,22 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius)
     nx = cos(phi);
     ny = sin(phi);
     nz = 0.0;
+    
+    tx = (v3x - v4x);
+    ty = (v3y - v4y);
+    tz = (v3z - v4z);
+    
+    bx = (v1x - v4x);
+    by = (v1y - v4y);
+    bz = (v1z - v4z);
+    
+    hilf::normieren(tx, ty, tz);
+    hilf::normieren(bx, by, bz);
+    
+//     std::cout << "Tangent:    " << tx << ", " << ty << ", " << tz << std::endl;
+//     std::cout << "Bitangent:  " << bx << ", " << by << ", " << bz << std::endl;
+//     std::cout << "Normal:     " << nx << ", " << ny << ", " << nz << std::endl;
+//     std::cout << std::endl;
 }
 
 /**
@@ -283,8 +299,81 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, int orientati
             v3y = y1;
             v3z = y - HALF_WALL_THICKNESS;
         }
-    }    
+    }
+    
+    tx = v3x - v4x;
+    ty = v3y - v4y;
+    tz = v3z - v4z;
+    
+    bx = v1x - v4x;
+    by = v1y - v4y;
+    bz = v1z - v4z;
+    
+    hilf::normieren(tx, ty, tz);
+    hilf::normieren(bx, by, bz);
 }
+
+
+void Tile::setLightColor(float quelle_x, float quelle_y, float quelle_z)
+{
+   float tmp_x = v1x - quelle_x;  // vec position - vec quelle - vektor vom licht zur aktuellen position zeigt
+   float tmp_y = v1y - quelle_y;
+   float tmp_z = v1z - quelle_z;
+   hilf::normieren(tmp_x, tmp_y, tmp_z);
+   
+   c1r = tmp_x*tx  + tmp_y*ty  + tmp_z*tz;
+   c1g = tmp_x*bx  + tmp_y*by  + tmp_z*bz;
+   c1b = tmp_x*nx  + tmp_y*ny  + tmp_z*nz;
+
+   c1r *= 0.5; c1r += 0.5;
+   c1g *= 0.5; c1g += 0.5;
+   c1b *= 0.5; c1b += 0.5;
+//    c1b *= 0.25; c1b += 0.75;
+
+   tmp_x = v2x - quelle_x;  // vec position - vec quelle - vektor vom licht zur aktuellen position zeigt
+   tmp_y = v2y - quelle_y;
+   tmp_z = v2z - quelle_z;
+   hilf::normieren(tmp_x, tmp_y, tmp_z);
+   
+   c2r = tmp_x*tx  + tmp_y*ty  + tmp_z*tz;
+   c2g = tmp_x*bx  + tmp_y*by  + tmp_z*bz;
+   c2b = tmp_x*nx  + tmp_y*ny  + tmp_z*nz;
+
+   c2r *= 0.5; c2r += 0.5;
+   c2g *= 0.5; c2g += 0.5;
+   c2b *= 0.5; c2b += 0.5;
+//    c2b *= 0.25; c2b += 0.75;
+
+   tmp_x = v3x - quelle_x;  // vec position - vec quelle - vektor vom licht zur aktuellen position zeigt
+   tmp_y = v3y - quelle_y;
+   tmp_z = v3z - quelle_z;
+   hilf::normieren(tmp_x, tmp_y, tmp_z);
+   
+   c3r = tmp_x*tx  + tmp_y*ty  + tmp_z*tz;
+   c3g = tmp_x*bx  + tmp_y*by  + tmp_z*bz;
+   c3b = tmp_x*nx  + tmp_y*ny  + tmp_z*nz;
+
+   c3r *= 0.5; c3r += 0.5;
+   c3g *= 0.5; c3g += 0.5;
+   c3b *= 0.5; c3b += 0.5;
+//    c3b *= 0.25; c3b += 0.75;
+
+   tmp_x = v4x - quelle_x;  // vec position - vec quelle - vektor vom licht zur aktuellen position zeigt
+   tmp_y = v4y - quelle_y;
+   tmp_z = v4z - quelle_z;
+   hilf::normieren(tmp_x, tmp_y, tmp_z);
+   
+   c4r = tmp_x*tx  + tmp_y*ty  + tmp_z*tz;
+   c4g = tmp_x*bx  + tmp_y*by  + tmp_z*bz;
+   c4b = tmp_x*nx  + tmp_y*ny  + tmp_z*nz;
+
+   c4r *= 0.5; c4r += 0.5;
+   c4g *= 0.5; c4g += 0.5;
+   c4b *= 0.5; c4b += 0.5;
+//    c4b *= 0.25; c4b += 0.75;
+
+}
+
 
 std::string Tile::str()
 {
