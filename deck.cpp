@@ -602,9 +602,21 @@ void Deck::init()
     
     // Set some rooms visible:
     for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
-        if (rand() % 5 == 0) { room_it->set_visible(true); }
+        if (rand() % 50 == 0) {
+            room_it->set_visible(true);
+            std::list<Room*> neighbours = room_it->get_neighbours();
+            for (std::list<Room*>::iterator nroom_it = neighbours.begin(); nroom_it != neighbours.end(); nroom_it++)
+            {
+                (*nroom_it)->set_visible(true);
+                std::list<Room*> nneighbours = (*nroom_it)->get_neighbours();
+                for (std::list<Room*>::iterator nnroom_it = nneighbours.begin(); nnroom_it != nneighbours.end(); nnroom_it++)
+                {
+                    (*nnroom_it)->set_visible(true);
+                    
+                }
+            }
+        }
     }
-    //~ rooms.front().set_visible(true);
     
     // Switch off the light in some random rooms:
     for (std::list<Room>::iterator room_it = rooms.begin(); room_it != rooms.end(); room_it++) {
