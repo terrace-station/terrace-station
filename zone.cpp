@@ -23,7 +23,7 @@
 Zone::Zone(int circumference, std::string style, Station* station) :
     circumference(circumference), station(station)
 {
-    int nr_of_decks = rand() % 4 + 1;
+    int nr_of_decks = 1; // + rand() % 4
     int nr_of_districts, x, y, width, height;
     int z_offset = MIN_RANDOM_Z_OFFSET + rand() % (MAX_RANDOM_Z_OFFSET - MIN_RANDOM_Z_OFFSET + 1);
     if (style == "rings") {
