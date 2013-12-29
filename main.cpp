@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "log.hh"
 #include "openglwidget.hh"
 #include "tile.hh"
 #include "rect.hh"
@@ -18,10 +19,11 @@
 #include "zone.hh"
 #include "station.hh"
 
-//~ #include "sdl_audio.h"
-
 int main(int argc, char* argv[])
 {
+    Log::init(Log::DEBUG, "dis.log");
+    Log::debug("Program start.");
+    
    srand (2);
    //~ srand (time(NULL));
    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
@@ -33,8 +35,6 @@ int main(int argc, char* argv[])
    std::cout << station1.str();
    glwidget.set_station(&station1);
    
-   //~ SDL_Init(SDL_INIT_VIDEO);
-
    const SDL_VideoInfo* info = SDL_GetVideoInfo();
    
    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);

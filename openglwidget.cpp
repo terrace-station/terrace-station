@@ -11,8 +11,7 @@
 #include "rect.hh"
 #include "tile.hh"
 
-#include "sdl_audio.h"
-
+#include "openglwidget_audio.h"
 #include "openglwidget_material.h"
 #include "openglwidget_events.h"
 #include "openglwidget_zeichne.h"
