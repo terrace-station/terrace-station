@@ -135,7 +135,7 @@ void lese_material(std::string dateiname, Modell* modell)
 
   if (!eingang)
   {
-    std::cout << "Fehler beim Laden der Datei!" << std::endl;
+    LOG(ERROR) << "Fehler beim Laden der Datei!";
     return;
   }
   
@@ -156,11 +156,11 @@ void lese_material(std::string dateiname, Modell* modell)
   modell->materialien = new Material[n_zaehler];
   modell->anzahl_materialien = n_zaehler;
   
-  std::cout << "\n Materialien n: " << n_zaehler;
+  LOG(DEBUG) << "Materialien n: " << n_zaehler;
   
   for (int i=0; i<n_zaehler; i++)
   {
-    std::cout << "\nMaterial " << i; 
+    LOG(DEBUG) << "Material " << i; 
     
     eingang.close();
     eingang.open((dateiname+".mtl").c_str(), std::ios::in);
@@ -194,7 +194,7 @@ void lese_material(std::string dateiname, Modell* modell)
     
     eingang >> modell->materialien[i].name;
     
-    std::cout << " Name: " << modell->materialien[i].name; 
+    LOG(DEBUG) << "Name: " << modell->materialien[i].name; 
     
     eingang.getline(buffer,256);
     hc = eingang.get();
@@ -207,17 +207,17 @@ void lese_material(std::string dateiname, Modell* modell)
         if (hc == 'a')
         {
           eingang >> modell->materialien[i].Kar >> modell->materialien[i].Kag >> modell->materialien[i].Kab;
-          std::cout << "\nSetze ambient-Parameter : " << modell->materialien[i].Kar << "\t" << modell->materialien[i].Kag << "\t"  <<  modell->materialien[i].Kab;
+          LOG(DEBUG) << "Setze ambient-Parameter : " << modell->materialien[i].Kar << "\t" << modell->materialien[i].Kag << "\t"  <<  modell->materialien[i].Kab;
         }
         else if (hc == 'd')
         {
           eingang >> modell->materialien[i].Kdr >> modell->materialien[i].Kdg >> modell->materialien[i].Kdb;
-          std::cout << "\nSetze diffuse-Parameter : " << modell->materialien[i].Kdr << "\t" << modell->materialien[i].Kdg << "\t"  <<  modell->materialien[i].Kdb;
+          LOG(DEBUG) << "Setze diffuse-Parameter : " << modell->materialien[i].Kdr << "\t" << modell->materialien[i].Kdg << "\t"  <<  modell->materialien[i].Kdb;
         }
         else if (hc == 's')
         {
           eingang >> modell->materialien[i].Ksr >> modell->materialien[i].Ksg >> modell->materialien[i].Ksb;
-          std::cout << "\nSetze specular-Parameter: " << modell->materialien[i].Ksr << "\t" << modell->materialien[i].Ksg << "\t"  <<  modell->materialien[i].Ksb;
+          LOG(DEBUG) << "Setze specular-Parameter: " << modell->materialien[i].Ksr << "\t" << modell->materialien[i].Ksg << "\t"  <<  modell->materialien[i].Ksb;
         }        
       }
       
@@ -237,7 +237,7 @@ void lese_material(std::string dateiname, Modell* modell)
       else if (hc == 'd')
       {
         eingang >> modell->materialien[i].alpha;
-        std::cout << "\nSetze alpha-Wert: " << modell->materialien[i].alpha;
+        LOG(DEBUG) << "Setze alpha-Wert: " << modell->materialien[i].alpha;
       }
       
       else if (hc == 'i')
@@ -285,7 +285,7 @@ void Modell::lade(std::string dateiname)
 
   if (!eingang)
   {
-    std::cout << "Fehler beim Laden der Datei!" << std::endl;
+    LOG(ERROR) << "Fehler beim Laden der Datei!" << std::endl;
     return;
     valid_modell = false;
   }
@@ -321,7 +321,7 @@ void Modell::lade(std::string dateiname)
   eingang.open((dateiname+".obj").c_str(), std::ios::in);
 //   eingang.seekg(0, std::ios::beg);
   
-  std::cout << "\n Anzahl Objekte o: " << o_zaehler << "\t Anzahl Knoten v:" << v_zaehler << "\t Anzahl Texturkooridanten t:" << t_zaehler;
+  LOG(DEBUG) << "Anzahl Objekte o: " << o_zaehler << "\t Anzahl Knoten v:" << v_zaehler << "\t Anzahl Texturkooridanten t:" << t_zaehler;
   
   
   this->anzahl_knoten    = v_zaehler;
@@ -369,11 +369,11 @@ void Modell::lade(std::string dateiname)
   
   if (v_zaehler != this->anzahl_knoten)
   {
-    std::cout << "Fehler beim Auslesen der Knoten!" << std::endl;
+    LOG(ERROR) << "Fehler beim Auslesen der Knoten!";
   }
   if (t_zaehler != this->anzahl_texkoords)
   {
-    std::cout << "Fehler beim Auslesen der Texturkoordinaten!" << std::endl;
+    LOG(ERROR)  << "Fehler beim Auslesen der Texturkoordinaten!";
   }
   
   eingang.close();
@@ -402,7 +402,7 @@ void Modell::lade(std::string dateiname)
     }
     while (eingang.getline(buffer,256));
 
-    std::cout << "\n\nObjekt " << i << ": Anzahl Flaechen f:" << f_zaehler;
+    LOG(DEBUG) << "Objekt " << i << ": Anzahl Flaechen f:" << f_zaehler;
     
     this->objekte[i].dreiecke = new Dreieck[f_zaehler];
     this->objekte[i].anzahl_dreiecke = f_zaehler;
@@ -486,7 +486,6 @@ void Modell::lade(std::string dateiname)
             }
          }
         
-        
 //         std::cout << this->objekte[i].dreiecke[f_zaehler].ecke[0] << "\tx" 
 //                   << this->objekte[i].dreiecke[f_zaehler].ecke[1] << "\tx" 
 //                   << this->objekte[i].dreiecke[f_zaehler].ecke[2] << "\nx";
@@ -527,14 +526,14 @@ void Modell::lade(std::string dateiname)
         
         std::string materialname;
         eingang >> materialname;
-        std::cout << "\nSuche Material für " << materialname;
+        LOG(DEBUG) << "Suche Material für " << materialname;
         
         for (int l=0; l<this->anzahl_materialien; l++)
         {
           if (materialname == this->materialien[l].name)
           {
             this->objekte[i].material = &(this->materialien[l]);
-            std::cout << "\nWeise Objekt " << i << " das Material " << this->materialien[l].name << " zu";
+            LOG(DEBUG) << "Weise Objekt " << i << " das Material " << this->materialien[l].name << " zu";
 //             break;
           }
         }
@@ -550,12 +549,13 @@ void Modell::lade(std::string dateiname)
     eingang.open((dateiname+".obj").c_str(), std::ios::in);
     
   }
+  std::cout << std::endl;
   
   float norm_x;
   float norm_y;
   float norm_z;
   
-  std::cout << "Normalen berechnen" << std::endl;
+  LOG(DEBUG) << "Normalen berechnen";
   
   for (int j=0; j<this->anzahl_knoten; j++)
   {
@@ -642,7 +642,7 @@ Modell* lade_modell(std::string dateiname, bool flat_shading_)
   eingang.open((dateiname+".obj").c_str(), std::ios::in);
 //   eingang.seekg(0, std::ios::beg);
   
-  std::cout << "\n Anzahl Objekte o: " << o_zaehler << "\t Anzahl Knoten v:" << v_zaehler << "\t Anzahl Texturkooridanten t:" << t_zaehler;
+  LOG(DEBUG) << "Anzahl Objekte o: " << o_zaehler << "\t Anzahl Knoten v:" << v_zaehler << "\t Anzahl Texturkooridanten t:" << t_zaehler;
   
   
   modell->anzahl_knoten    = v_zaehler;
@@ -723,7 +723,7 @@ Modell* lade_modell(std::string dateiname, bool flat_shading_)
     }
     while (eingang.getline(buffer,256));
 
-    std::cout << "\n\nObjekt " << i << ": Anzahl Flaechen f:" << f_zaehler;
+    LOG(DEBUG) << "Objekt " << i << ": Anzahl Flaechen f:" << f_zaehler;
     
     modell->objekte[i].dreiecke = new Dreieck[f_zaehler];
     modell->objekte[i].anzahl_dreiecke = f_zaehler;
@@ -848,14 +848,14 @@ Modell* lade_modell(std::string dateiname, bool flat_shading_)
         
         std::string materialname;
         eingang >> materialname;
-        std::cout << "\nSuche Material für " << materialname;
+        LOG(DEBUG) << "Suche Material für " << materialname;
         
         for (int l=0; l<modell->anzahl_materialien; l++)
         {
           if (materialname == modell->materialien[l].name)
           {
             modell->objekte[i].material = &(modell->materialien[l]);
-            std::cout << "\nWeise Objekt " << i << " das Material " << modell->materialien[l].name << " zu";
+            LOG(DEBUG) << "Weise Objekt " << i << " das Material " << modell->materialien[l].name << " zu";
 //             break;
           }
         }
@@ -876,7 +876,7 @@ Modell* lade_modell(std::string dateiname, bool flat_shading_)
   float norm_y;
   float norm_z;
   
-  std::cout << "\nNormalen berechnen" << std::endl;
+  LOG(DEBUG) << "Normalen berechnen";
   
   for (int j=0; j<modell->anzahl_knoten; j++)
   {

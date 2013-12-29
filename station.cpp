@@ -16,7 +16,7 @@
 
 Station::Station()
 {
-    std::cout << "Building station..." << std::endl;
+    LOG(DEBUG) << "Building station...";
     zones.reserve(NR_OF_ZONES);
     int ring_zone = rand() % NR_OF_ZONES;
     for (int i = 0; i < NR_OF_ZONES; ++i)

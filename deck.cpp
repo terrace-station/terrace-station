@@ -33,6 +33,7 @@
 Deck::Deck(float radius_offset, District* district) :
     radius_offset(radius_offset), district(district)
 {
+    LOG(DEBUG) << "Building deck...";
     //tic
     Deck::init();
     //toc
@@ -40,7 +41,6 @@ Deck::Deck(float radius_offset, District* district) :
 
 void Deck::init()
 {
-    std::cout << "Building deck..." << std::endl;
     // preparations:
     int x = district->get_x();              // left coordinate of deck
     int y = district->get_y();              // left coordinate of deck

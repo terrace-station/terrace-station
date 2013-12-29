@@ -7,6 +7,7 @@
 #include "district.hh"
 #include "zone.hh"
 #include "station.hh"
+#include "log.hh"
 
 #define PI  3.14159265358979323846
 #define MIN_RANDOM_Z_OFFSET -100
@@ -23,6 +24,7 @@
 Zone::Zone(int circumference, std::string style, Station* station) :
     circumference(circumference), station(station)
 {
+    LOG(DEBUG) << "Building zone...";
     int nr_of_decks = 1; // + rand() % 4
     int nr_of_districts, x, y, width, height;
     int z_offset = MIN_RANDOM_Z_OFFSET + rand() % (MAX_RANDOM_Z_OFFSET - MIN_RANDOM_Z_OFFSET + 1);

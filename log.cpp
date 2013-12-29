@@ -7,7 +7,7 @@ bool Log::replace_logfile;
 
 std::ostringstream& Log::log(LogLevel level)
 {
-    logstream << get_timestamp(level) << "\t";
+    logstream << get_timestamp(level) << '\t' << std::string(level >= WARNING ? 0 : 2 * (WARNING - level), ' ');
     message_level = level;
     return logstream;
 }

@@ -7,6 +7,7 @@
 #include "district.hh"
 #include "zone.hh"
 #include "station.hh"
+#include "log.hh"
 
 #define DECK_DISTANCE 3
 
@@ -25,6 +26,7 @@ District::District(int x, int y, int size_x, int size_y,
                    int nr_of_decks, bool circular, Zone* zone) :
     x(x), y(y), size_x(size_x), size_y(size_y), circular(circular), zone(zone)
 {
+    LOG(DEBUG) << "Building district...";
     decks.reserve(nr_of_decks);
     for (int i = 0; i < nr_of_decks; ++i)
     {

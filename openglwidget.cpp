@@ -10,6 +10,7 @@
 #include "room.hh"
 #include "rect.hh"
 #include "tile.hh"
+#include "log.hh"
 
 #include "openglwidget_audio.h"
 #include "openglwidget_material.h"
@@ -197,11 +198,11 @@ void Openglwidget::interact_with(Mausobjekt& mo_, SDL_MouseButtonEvent& button)
             (*room_it)->set_visible(true);
         }
     } else if (mo_.objekt_typ == "Openglbutton" && button.button == SDL_BUTTON_LEFT) {
-        std::cout << "Openglbutton gedrückt" << std::endl;
+        LOG(DEBUG) << "Openglbutton gedrückt";
         Openglbutton& but = (Openglbutton&) mo_;
         but.callback_fkt(*this);
     } else if (mo_.objekt_typ == "Opengltogglebutton" && button.button == SDL_BUTTON_LEFT) {
-        std::cout << "Opengltogglebutton gedrückt" << std::endl;
+        LOG(DEBUG) << "Opengltogglebutton gedrückt";
         Opengltogglebutton& but = (Opengltogglebutton&) mo_;
         but.callback_fkt(*this);
     }
@@ -253,8 +254,6 @@ void Openglwidget::selektiere_id()
    float maus_x = event.button.x;
    float maus_y = fenster_hoehe-event.button.y;
    
-   std::cout << "x: " << event.button.x << ", y:" << event.button.y << std::endl;
-   
    GLuint sel_buffer[256];
    glSelectBuffer (256, sel_buffer);
    GLint hits = 0;
@@ -272,7 +271,8 @@ void Openglwidget::selektiere_id()
    zeichne_szene();
 // // // // // // // // //
    hits = glRenderMode(GL_RENDER);
-   std::cout << hits << " Objekte getroffen" << std::endl;
+   
+   LOG(DEBUG) << "x: " << event.button.x << ", y:" << event.button.y << " - " <<  hits << " Objekte getroffen";
 
    if (hits) // wenn was angeklickt wurde, soll das "vorderste" gewählt werden
    {
@@ -535,13 +535,13 @@ void Openglwidget::toggle_antialiasing()
 {
          if(!antialiasing)
          {
-            std::cout << "Aktiviere AA" << std::endl;
+            LOG(DEBUG) << "Aktiviere AA";
             glEnable(GL_MULTISAMPLE);
             antialiasing = true;
          }
          else
          {
-            std::cout << "Deaktiviere AA" << std::endl;
+            LOG(DEBUG) << "Deaktiviere AA";
             glDisable(GL_MULTISAMPLE);
             antialiasing = false;
          }

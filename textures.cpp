@@ -1,4 +1,5 @@
 #include "textures.hh"
+#include "log.hh"
 
 #define DEFAULT_TEXTURE_LABEL "error"
 
@@ -15,14 +16,14 @@ GLuint Textures::get_id(std::string label)
     if (texture_ids.count(label)) {
         return texture_ids[label];
     } else {
-        std::cout << "Texture '" << label << "' not found. Using texture '" << DEFAULT_TEXTURE_LABEL << "' instead." << std::endl;
+        LOG(WARNING) << "Texture '" << label << "' not found. Using texture '" << DEFAULT_TEXTURE_LABEL << "' instead.";
         return texture_ids[DEFAULT_TEXTURE_LABEL];
     }
 }
 
 void Textures::load()
 {
-    //~ std::cout << std::endl << "Loading Textures ..." << std::endl;
+    LOG(INFO) << "Loading textures ...";
     std::string label, filepath, ext;
     int delim;
     DIR *dir;
@@ -37,7 +38,7 @@ void Textures::load()
         ext = label.substr(delim + 1);
         label = label.substr(0, delim);
         if (valid_extensions.count(ext) == 1) {
-            //~ std::cout << "Loading texture '" << label << "' from file '" << filepath << "' ...";
+            LOG(DEBUG) << "Loading texture '" << label << "' from file '" << filepath << "' ...";
             GLuint texture_id;
             SDL_Surface* surface = IMG_Load(filepath.c_str());
             int mode, source_mode;
@@ -47,7 +48,7 @@ void Textures::load()
                 mode = GL_RGBA;
             } else {
                 SDL_FreeSurface(surface);
-                std::cout << "Skipping '" << filepath << "' (unknown mode)" << std::endl;
+                LOG(INFO) << "Skipping '" << filepath << "' (unknown mode)";
             }
             glGenTextures(1, &texture_id);
             glBindTexture(GL_TEXTURE_2D, texture_id);
@@ -60,9 +61,8 @@ void Textures::load()
             glBindTexture(GL_TEXTURE_2D, 0);
             SDL_FreeSurface(surface);
             texture_ids[label] = texture_id;
-            //~ std::cout << " done." << std::endl;
         } else {
-            std::cout << "Skipping '" << filepath << "'" << std::endl;
+            LOG(DEBUG) << "Skipping '" << filepath << "'";
         }
     }
     closedir (dir);

@@ -22,40 +22,37 @@
 int main(int argc, char* argv[])
 {
     // initialize logging:
-    Log::init(INFO, "dis.log", DEBUG);
+    Log::init(DEBUG, "dis.log", DEBUG);
     
     LOG(INFO) << "Starting program.";
-    LOG(DEBUG) << "Second log message.";
     
-    exit(0);
-    
-   srand (2);
-   //~ srand (time(NULL));
-   SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-   TTF_Init();
-   
-   Openglwidget glwidget(800, 600);
-   
-   Station station1;
-   //~ Log::debug(station1.str().c_str());
-   glwidget.set_station(&station1);
-   
-   const SDL_VideoInfo* info = SDL_GetVideoInfo();
-   
-   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-//    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-//    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
-   
-   SDL_SetVideoMode(glwidget.fenster_breite, glwidget.fenster_hoehe, glwidget.bpp, SDL_OPENGL);
-   
-   SDL_EnableKeyRepeat(20, 20);
-   glwidget.initialisiere_gl();
-   
-   while(glwidget.running)
-   {
-      glwidget.events();
-      glwidget.draw();
-   }
-   
-   return 0;
+    srand (2);
+    //~ srand (time(NULL));
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+    TTF_Init();
+
+    Openglwidget glwidget(800, 600);
+
+    Station station1;
+    glwidget.set_station(&station1);
+
+    const SDL_VideoInfo* info = SDL_GetVideoInfo();
+
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    //    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    //    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+
+    SDL_SetVideoMode(glwidget.fenster_breite, glwidget.fenster_hoehe, glwidget.bpp, SDL_OPENGL);
+
+    SDL_EnableKeyRepeat(20, 20);
+    glwidget.initialisiere_gl();
+
+    while(glwidget.running)
+    {
+        glwidget.events();
+        glwidget.draw();
+    }
+
+    LOG(INFO) << "Quitting program.";
+    return 0;
 }

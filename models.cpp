@@ -15,14 +15,14 @@ Modell* Models::get(std::string label)
     if (models.count(label)) {
         return models[label];
     } else {
-        std::cout << "Model '" << label << "' not found. Using model '" << DEFAULT_MODEL_LABEL << "' instead." << std::endl;
+        LOG(WARNING) << "Model '" << label << "' not found. Using model '" << DEFAULT_MODEL_LABEL << "' instead." << std::endl;
         return models[DEFAULT_MODEL_LABEL];
     }
 }
 
 void Models::load()
 {
-    //~ std::cout << std::endl << "Loading Textures ..." << std::endl;
+    LOG(INFO) << "Loading models ...";
     std::string label, filepath, ext;
     int delim;
     DIR *dir;
@@ -37,13 +37,12 @@ void Models::load()
         ext = label.substr(delim + 1);
         label = label.substr(0, delim);
         if (valid_extensions.count(ext) == 1) {
-            std::cout << "Loading model '" << label << "' from file '" << filepath << "' ...";
+            LOG(DEBUG) << "Loading model '" << label << "' from file '" << filepath << "' ...";
             Modell* modell = new Modell(pfad + "/" + label, false);
             
             models[label] = modell;
-            std::cout << " done." << std::endl;
         } else {
-            std::cout << "Skipping " << filepath << std::endl;
+            LOG(DEBUG) << "Skipping " << filepath;
         }
     }
     closedir (dir);

@@ -36,13 +36,12 @@ public:
      */
     static void init(LogLevel stdout_level=WARNING, std::string log_file="", LogLevel file_level=WARNING, bool replace_logfile=true);
     
+    /** the log-level for logging to stdout */
     static LogLevel stdout_level;
+    
+    /** the log-level for logging to the logfile */
     static LogLevel file_level;
     
-//~ private:
-   //~ Log(const Log&);
-   //~ Log& operator =(const Log&);
-   
 protected:
     std::ostringstream logstream;
     

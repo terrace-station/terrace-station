@@ -1,4 +1,5 @@
 #include "lamp.hh"
+#include "log.hh"
 
 #include "openglwidget.hh"
 
@@ -29,7 +30,7 @@ void Lamp::lampbegin(bool alarm)
    {
       if (lightinuse == GL_LIGHT4)
       {
-         std::cout << "Mehr als 4 Lichter in Benutzung!" << std::endl;
+         LOG(WARNING) << "Mehr als 4 Lichter in Benutzung!";
          break;
       }
       lightinuse = lightinuse-1;

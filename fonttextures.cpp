@@ -1,4 +1,5 @@
 #include "fonttextures.hh"
+#include "log.hh"
 
 #define FONTS_DIR "fonts"
 #define DEFAULT_FONT_LABEL "Overhaul"
@@ -44,14 +45,14 @@ TTF_Font* Fonttextures::get_font(std::string label)
       return font_ids[label];
    } else 
    {
-      std::cout << "Font '" << label << "' not found. Using font '" << DEFAULT_FONT_LABEL << "' instead." << std::endl;
+      LOG(WARNING)  << "Font '" << label << "' not found. Using font '" << DEFAULT_FONT_LABEL << "' instead.";
       return font_ids[DEFAULT_FONT_LABEL];
    }
 }
 
 void Fonttextures::load_fonts()
 {
-//     std::cout << std::endl << "Loading Fonts ..." << std::endl;
+    LOG(INFO) << "Loading fonts ...";
     std::string label, filepath, ext;
     int delim;
     DIR *dir;
@@ -67,13 +68,12 @@ void Fonttextures::load_fonts()
         label = label.substr(0, delim);
         if (valid_extensions.count(ext) == 1) 
         {
-            std::cout << "Loading Font '" << label << "' from file '" << filepath << "' ...";
+            LOG(DEBUG) << "Loading font '" << label << "' from file '" << filepath << "' ...";
             TTF_Font* font = TTF_OpenFont(filepath.c_str(), 100);
             font_ids[label] = font;
-            std::cout << " done." << std::endl;
         } else 
         {
-            std::cout << "Skipping '" << filepath << "'" << std::endl;
+            LOG(DEBUG) << "Skipping '" << filepath << "'";
         }
     }
     closedir (dir);

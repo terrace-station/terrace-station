@@ -225,7 +225,7 @@ void Openglwidget::handle_mousebuttondown(SDL_MouseButtonEvent& button)
       case SDL_BUTTON_RIGHT:
          selektiere_id();
          selektiere_pos();
-         std::cout << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")" << std::endl;
+         LOG(DEBUG) << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")";
          interact_with(get_target(), button);
          break;
          
@@ -255,7 +255,7 @@ void Openglwidget::handle_mousebuttondown_menu(SDL_MouseButtonEvent& button)
       case SDL_BUTTON_LEFT:
          selektiere_id();
          selektiere_pos();
-         std::cout << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")" << std::endl;
+         LOG(DEBUG) << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")";
          interact_with(get_target(), button);
          break;
          
