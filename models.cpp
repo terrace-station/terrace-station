@@ -1,4 +1,5 @@
 #include "models.hh"
+#include "log.hh"
 
 #define DEFAULT_MODEL_LABEL "error"
 
@@ -42,7 +43,7 @@ void Models::load()
             models[label] = modell;
             std::cout << " done." << std::endl;
         } else {
-            std::cout << "Skipping '" << filepath << "'" << std::endl;
+            std::cout << "Skipping " << filepath << std::endl;
         }
     }
     closedir (dir);

@@ -8,6 +8,8 @@
 #include "zone.hh"
 #include "station.hh"
 
+#include "log.hh"
+
 #define DECK_HEIGHT 2
 #define ROOM_MAX_ASPECT_RATIO 4
 #define ROOM_MAX_AREA 100
@@ -38,6 +40,7 @@ Deck::Deck(float radius_offset, District* district) :
 
 void Deck::init()
 {
+    std::cout << "Building deck..." << std::endl;
     // preparations:
     int x = district->get_x();              // left coordinate of deck
     int y = district->get_y();              // left coordinate of deck

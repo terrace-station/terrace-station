@@ -21,8 +21,13 @@
 
 int main(int argc, char* argv[])
 {
-    Log::init(Log::DEBUG, "dis.log");
-    Log::debug("Program start.");
+    // initialize logging:
+    Log::init(INFO, "dis.log", DEBUG);
+    
+    LOG(INFO) << "Starting program.";
+    LOG(DEBUG) << "Second log message.";
+    
+    exit(0);
     
    srand (2);
    //~ srand (time(NULL));
@@ -32,7 +37,7 @@ int main(int argc, char* argv[])
    Openglwidget glwidget(800, 600);
    
    Station station1;
-   std::cout << station1.str();
+   //~ Log::debug(station1.str().c_str());
    glwidget.set_station(&station1);
    
    const SDL_VideoInfo* info = SDL_GetVideoInfo();

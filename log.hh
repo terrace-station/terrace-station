@@ -1,38 +1,30 @@
 #ifndef LOG_HH
 #define LOG_HH
 
-#include <cstdio>
-#include <cstdarg>
+#define LOG(level) \
+if (level < Log::stdout_level && level < Log::file_level) ; \
+else Log().log(level)
+
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <time.h>
+
+enum LogLevel {ALL=0, DEBUG, INFO, WARNING, ERROR, CRITICAL, NONE, SIZE_OF_ENUM};
+static const char* LogLevelNames[LogLevel::SIZE_OF_ENUM] = { "ALL", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "NONE" };
 
 class Log
 {
 public:
-    enum {ALL=0, DEBUG, INFO, WARNING, ERROR, CRITICAL, NONE};
+    Log();
+    virtual ~Log();
     
     /**
      * Log to an arbitrary log-level
      * 
      * \param   level   the desired log-level
-     * \param   fmt     format-string to be passed to vprintf
      */
-    static void log(int level, const char *fmt, ...);
-    
-    /** Log to an the DEBUG log-level */
-    static void debug(const char *fmt, ...);
-    
-    /** Log to an the INFO log-level */
-    static void info(const char *fmt, ...);
-    
-    /** Log to an the WARNING log-level */
-    static void warning(const char *fmt, ...);
-    
-    /** Log to an the ERROR log-level */
-    static void error(const char *fmt, ...);
-    
-    /** Log to an the CRITICAL log-level */
-    static void critical(const char *fmt, ...);
+    std::ostringstream& log(LogLevel level);
     
     /**
      * Initialize the logger
@@ -40,17 +32,26 @@ public:
      * \param   stdout_level    log-level for logging to standard output
      * \param   log_file        path to logfile ("" means no logging to file)
      * \param   file_level      log-level for logging to logfile
+     * \param   replace_logfile overwrite old logfile
      */
-    static void init(int stdout_level=INFO, std::string log_file="", int file_level=DEBUG);
-
-private:
-    static void do_log(int level, const char *fmt, va_list args);
-    static std::string get_timestamp(int level);
-    static std::string get_level_name(int level);
+    static void init(LogLevel stdout_level=WARNING, std::string log_file="", LogLevel file_level=WARNING, bool replace_logfile=true);
     
-    static int stdout_level;
+    static LogLevel stdout_level;
+    static LogLevel file_level;
+    
+//~ private:
+   //~ Log(const Log&);
+   //~ Log& operator =(const Log&);
+   
+protected:
+    std::ostringstream logstream;
+    
+private:
+    static std::string get_timestamp(LogLevel level);
+    
+    LogLevel message_level;
     static std::string log_file;
-    static int file_level;
+    static bool replace_logfile;
 };
 
 #endif

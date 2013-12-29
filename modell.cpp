@@ -1,4 +1,5 @@
 #include "modell.hh"
+#include "log.hh"
 
 #define MODELTEXTURES_DIR "models/textures"
 Textures* Modell::textures = NULL;
@@ -368,11 +369,11 @@ void Modell::lade(std::string dateiname)
   
   if (v_zaehler != this->anzahl_knoten)
   {
-    std::cout << "\nFehler beim Auslesen der Knoten!";
+    std::cout << "Fehler beim Auslesen der Knoten!" << std::endl;
   }
   if (t_zaehler != this->anzahl_texkoords)
   {
-    std::cout << "\nFehler beim Auslesen der Texturkooridanten!";
+    std::cout << "Fehler beim Auslesen der Texturkoordinaten!" << std::endl;
   }
   
   eingang.close();
@@ -554,7 +555,7 @@ void Modell::lade(std::string dateiname)
   float norm_y;
   float norm_z;
   
-  std::cout << "\nNormalen berechnen" << std::endl;
+  std::cout << "Normalen berechnen" << std::endl;
   
   for (int j=0; j<this->anzahl_knoten; j++)
   {

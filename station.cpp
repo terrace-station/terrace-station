@@ -7,6 +7,7 @@
 #include "district.hh"
 #include "zone.hh"
 #include "station.hh"
+#include "log.hh"
 
 #define PI    3.14159265358979323846
 #define CF_MIN      400     // Minimum circumference
@@ -15,7 +16,7 @@
 
 Station::Station()
 {
-    std::cout << "Building station...";
+    std::cout << "Building station..." << std::endl;
     zones.reserve(NR_OF_ZONES);
     int ring_zone = rand() % NR_OF_ZONES;
     for (int i = 0; i < NR_OF_ZONES; ++i)
