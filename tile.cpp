@@ -140,7 +140,7 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, TileType type
 }
 
 
-void Tile::setLightColor(float quelle_x, float quelle_y, float quelle_z)
+void Tile::setLightDirection(float quelle_x, float quelle_y, float quelle_z)
 {
    float tmp_x = 0.5*(v1x + v3x) - quelle_x;  // vec position - vec quelle - vektor vom licht zur aktuellen position zeigt
    float tmp_y = 0.5*(v1y + v3y) - quelle_y;
@@ -159,6 +159,23 @@ void Tile::setLightColor(float quelle_x, float quelle_y, float quelle_z)
    Openglwidget::light_inc[0] = cr;
    Openglwidget::light_inc[1] = cg;
    Openglwidget::light_inc[2] = cb;
+}
+
+
+void Tile::setLightDirection(bool lighted)
+{
+    if (lighted)
+    {
+        Openglwidget::light_inc[0] = 0.5;
+        Openglwidget::light_inc[1] = 0.5;
+        Openglwidget::light_inc[2] = 1.0;
+    }
+    else
+    {
+        Openglwidget::light_inc[0] = 0.5;
+        Openglwidget::light_inc[1] = 0.5;
+        Openglwidget::light_inc[2] = 0.515;
+    }
 }
 
 

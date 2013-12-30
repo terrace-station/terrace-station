@@ -283,12 +283,15 @@ void Openglwidget::zeichne_deck(Deck& deck)
             
             // draw floor tiles:
             glColor3f(1.0, 1.0, 1.0);
-            set_material_ambi(0.2, 0.2, 0.2, 1.0);
+            set_material_ambi(0.0, 0.0, 0.0, 1.0);
             set_material_diff(0.8, 0.8, 0.8, 1.0);
             set_material_spec(0.0, 0.0, 0.0, 1.0);
             for (std::vector<Tile>::iterator tile_it = room_it->get_floor_tiles().begin(); tile_it != room_it->get_floor_tiles().end(); tile_it++)
             {
-               tile_it->setLightColor(room_it->get_lamps().front().position[0], room_it->get_lamps().front().position[1], room_it->get_lamps().front().position[2]);
+               if (room_it->is_light_on())
+                  tile_it->setLightDirection(room_it->get_lamps().front().position[0], room_it->get_lamps().front().position[1], room_it->get_lamps().front().position[2]);
+               else
+                  tile_it->setLightDirection(false);
                
                bindTextures(room_it->get_floor_texture_label());
                glBegin(GL_QUADS);
@@ -316,7 +319,10 @@ void Openglwidget::zeichne_deck(Deck& deck)
             set_material_spec(0.0, 0.0, 0.0, 1.0);
             for (std::vector<Tile>::iterator tile_it = room_it->get_wall_tiles().begin(); tile_it != room_it->get_wall_tiles().end(); tile_it++)
             {
-               tile_it->setLightColor(room_it->get_lamps().front().position[0], room_it->get_lamps().front().position[1], room_it->get_lamps().front().position[2]);
+               if (room_it->is_light_on())
+                  tile_it->setLightDirection(room_it->get_lamps().front().position[0], room_it->get_lamps().front().position[1], room_it->get_lamps().front().position[2]);
+               else
+                  tile_it->setLightDirection(false);
                
                bindTextures(room_it->get_wall_texture_label());
                glBegin(GL_QUADS);
@@ -398,7 +404,7 @@ void Openglwidget::zeichne_deck(Deck& deck)
     }
 }
 
-void setLightColor(float tang1_x,  float tang1_y,  float tang1_z,
+void setLightDirection(float tang1_x,  float tang1_y,  float tang1_z,
                    float tang2_x,  float tang2_y,  float tang2_z,
                    float normal_x, float normal_y, float normal_z,
                    float position_x, float position_y, float position_z,
@@ -572,7 +578,7 @@ void Openglwidget::zeichne_district_outside(District& district)
       glEnd();
          
          // district outer hull:
-      setLightColor(0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,    cosp1, sinp1, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x4, y4, z_min);
+      setLightDirection(0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,    cosp1, sinp1, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x4, y4, z_min);
       bindTextures("district-hull");
       glBegin(GL_QUADS);
             glNormal3f(cosp1, sinp1, 0.0);
@@ -608,7 +614,7 @@ void Openglwidget::zeichne_district_outside(District& district)
          // do not draw, if district is active:
          if (station->get_active_district() == NULL || &district != &active_district) 
          {
-            setLightColor(0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,    -cosp1, -sinp1, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x3, y3, z_max);
+            setLightDirection(0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,    -cosp1, -sinp1, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x3, y3, z_max);
             bindTextures("district-hull");
             glBegin(GL_QUADS);
                glNormal3f(-cosp1, -sinp1, 0.0);
