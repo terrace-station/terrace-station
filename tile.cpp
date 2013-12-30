@@ -1,6 +1,8 @@
 #include "tile.hh"
 #include "hilfsfunktionen.h"
 
+#include "openglwidget.hh"
+
 #define DECK_HEIGHT 2
 #define HALF_WALL_THICKNESS 0.1
 
@@ -123,8 +125,42 @@ Tile::Tile(int x, int y, float district_radius, float deck_radius, TileType type
             nx = cos(phi);
             ny = sin(phi);
             nz = 0.0;
-    }    
+    }
+    tx = (v3x - v4x);
+    ty = (v3y - v4y);
+    tz = (v3z - v4z);
+    
+    bx = (v1x - v4x);
+    by = (v1y - v4y);
+    bz = (v1z - v4z);
+    
+    hilf::normieren(tx, ty, tz);
+    hilf::normieren(bx, by, bz);
+    
 }
+
+
+void Tile::setLightColor(float quelle_x, float quelle_y, float quelle_z)
+{
+   float tmp_x = 0.5*(v1x + v3x) - quelle_x;  // vec position - vec quelle - vektor vom licht zur aktuellen position zeigt
+   float tmp_y = 0.5*(v1y + v3y) - quelle_y;
+   float tmp_z = 0.5*(v1z + v1z) - quelle_z;
+   hilf::normieren(tmp_x, tmp_y, tmp_z);
+   
+   cr = tmp_x*tx  + tmp_y*ty  + tmp_z*tz;
+   cg = tmp_x*bx  + tmp_y*by  + tmp_z*bz;
+   cb = tmp_x*nx  + tmp_y*ny  + tmp_z*nz;
+
+   cr *= 0.5; cr += 0.5;
+   cg *= 0.5; cg += 0.5;
+   cb *= 0.5; cb += 0.5;
+//    c1b *= 0.25; c1b += 0.75;
+   
+   Openglwidget::light_inc[0] = cr;
+   Openglwidget::light_inc[1] = cg;
+   Openglwidget::light_inc[2] = cb;
+}
+
 
 std::string Tile::str()
 {

@@ -3,10 +3,10 @@
 
 #include <string>
 #include <vector>
-#include <FL/glu.h>
-#include <FL/gl.h>
 #include <stdlib.h>
 
+#include <GL/glu.h>
+#include <GL/gl.h>
 
 #include "glhilf.h"
 

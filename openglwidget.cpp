@@ -2,6 +2,7 @@
 
    float Openglwidget::laufzeit = 0.0;
    float Openglwidget::fps_average = 0.0;
+   float Openglwidget::light_inc[3] = {0.5, 0.5, 1.0};
    
 #include "station.hh"
 #include "zone.hh"
@@ -20,6 +21,7 @@
 #include "callback_funktionen.h"
 
 #define TEXTURES_DIR "textures"
+#define NORMALMAPS_DIR "textures/normalmaps"
 #define MODELS_DIR   "models"
 
 Openglwidget::Openglwidget(int breite_, int hoehe_)
@@ -325,6 +327,7 @@ void Openglwidget::selektiere_pos()
 void Openglwidget::initialisiere_gl()
 {
    textures = new Textures(TEXTURES_DIR);
+   normalmaps = new Textures(NORMALMAPS_DIR);
    fonttextures = new Fonttextures;
    
    glLineWidth(2);

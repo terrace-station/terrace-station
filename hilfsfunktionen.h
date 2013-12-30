@@ -2,13 +2,13 @@
 #define HILF_H
 
 #include <math.h>
+#include <GL/gl.h>
 
 #define PI    3.14159265358979323846
 #define RAD 0.01745329252
 
 namespace hilf
 {
-
     static void normieren(double& normal_x_, double& normal_y_, double& normal_z_)
     {
         double laenge = sqrt((normal_x_)*(normal_x_)
@@ -47,6 +47,9 @@ namespace hilf
         station_y = deck_radius * sin(phi);
         station_z = deck_y;
     }
+
+
+
 
 }
 

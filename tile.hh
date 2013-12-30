@@ -1,6 +1,9 @@
 #ifndef TILE_HH
 #define TILE_HH
 
+#include "hilfsfunktionen.h"
+
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -23,7 +26,7 @@ enum TileType {
 class Tile
 {
 public:
-    GLfloat v1x;
+    GLfloat v1x; // Vertexkoordinaten zu jedem Eckpunkt
     GLfloat v1y;
     GLfloat v1z;
     GLfloat v2x;
@@ -35,12 +38,26 @@ public:
     GLfloat v4x;
     GLfloat v4y;
     GLfloat v4z;
-    GLfloat nx;
+    
+    GLfloat tx; // tangent
+    GLfloat ty;
+    GLfloat tz;
+    
+    GLfloat bx; // bitangent
+    GLfloat by;
+    GLfloat bz;
+    
+    GLfloat nx; // normal
     GLfloat ny;
     GLfloat nz;
     
+    GLfloat cr; // Lichteinfallsrichtung
+    GLfloat cg;
+    GLfloat cb;
+    
     Tile(int x, int y, float district_radius, float deck_radius, TileType type);
     
+    void setLightColor(float quelle_x, float quelle_y, float quelle_z);
     std::string str();
 };
 
