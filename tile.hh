@@ -38,18 +38,9 @@ public:
     GLfloat ny;
     GLfloat nz;
     
-    GLfloat c1r; // Farbinformationen zu jedem Eckpunkt
-    GLfloat c1g;
-    GLfloat c1b;
-    GLfloat c2r;
-    GLfloat c2g;
-    GLfloat c2b;
-    GLfloat c3r;
-    GLfloat c3g;
-    GLfloat c3b;
-    GLfloat c4r;
-    GLfloat c4g;
-    GLfloat c4b;
+    GLfloat cr; // Lichteinfallsrichtung
+    GLfloat cg;
+    GLfloat cb;
     
     Tile(int x, int y, float district_radius, float deck_radius);
     Tile(int x, int y, float district_radius, float deck_radius, int orientation, bool top);

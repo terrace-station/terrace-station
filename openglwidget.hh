@@ -120,7 +120,7 @@ public:
    
    static float fps_average;
    static float laufzeit;
-
+   static float light_inc[3];
    
    Textures* textures;
    Textures* normalmaps;

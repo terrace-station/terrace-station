@@ -22,7 +22,7 @@ void Lights::init_lights()
 void Lights::init_sonne()
 {
    sonne_pos[0]  = 100000; sonne_pos[1]= 0  ;sonne_pos[2]  = 0  ; sonne_pos[3]  = 1.0;
-   sonne_ambi[0] = 0.0; sonne_ambi[1] = 0.0; sonne_ambi[2] = 0.0; sonne_ambi[3] = 1.0;
+   sonne_ambi[0] = 0.1; sonne_ambi[1] = 0.1; sonne_ambi[2] = 0.1; sonne_ambi[3] = 1.0;
    sonne_diff[0] = 1.0; sonne_diff[1] = 1.0; sonne_diff[2] = 1.0; sonne_diff[3] = 1.0;
    sonne_spec[0] = 1.0; sonne_spec[1] = 1.0; sonne_spec[2] = 1.0; sonne_spec[3] = 1.0;
    
