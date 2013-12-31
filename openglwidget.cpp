@@ -13,20 +13,19 @@
 #include "tile.hh"
 #include "log.hh"
 
-#include "openglwidget_audio.h"
 #include "openglwidget_material.h"
 #include "openglwidget_events.h"
 #include "openglwidget_zeichne.h"
 
 #include "callback_funktionen.h"
 
-#define TEXTURES_DIR "textures"
-#define NORMALMAPS_DIR "textures/normalmaps"
-#define MODELS_DIR   "models"
+#define TEXTURES_DIR    "textures"
+#define NORMALMAPS_DIR  "textures/normalmaps"
+#define MODELS_DIR      "models"
 
 Openglwidget::Openglwidget(int breite_, int hoehe_)
 {
-    audio_init();
+    //~ audio_init();
     
    gettimeofday(&zeit, 0);
    models   = new Models(MODELS_DIR);
@@ -326,40 +325,40 @@ void Openglwidget::selektiere_pos()
 
 void Openglwidget::initialisiere_gl()
 {
-   textures = new Textures(TEXTURES_DIR);
-   normalmaps = new Textures(NORMALMAPS_DIR);
-   fonttextures = new Fonttextures;
-   
-   glLineWidth(2);
-   glPolygonOffset(1.0,1.0);
-   glEnable(GL_POLYGON_OFFSET_FILL);
-   glClearColor(0.0, 0.0, 0.0, 1.0);
+    textures = new Textures(TEXTURES_DIR);
+    normalmaps = new Textures(NORMALMAPS_DIR);
+    fonttextures = new Fonttextures;
+    audio = new Audio;
+    audio->set_music_playlist("default");
 
-   glEnable(GL_DEPTH_TEST);
-   glDepthFunc(GL_LESS);
+    glLineWidth(2);
+    glPolygonOffset(1.0,1.0);
+    glEnable(GL_POLYGON_OFFSET_FILL);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
 
-   glEnable(GL_COLOR_MATERIAL);
-   glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-   glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-   glFrontFace(GL_CW);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
 
-   glShadeModel(GL_SMOOTH); // glShadeModel(GL_SMOOTH) oder  glShadeModel(GL_FLAT)
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+    glFrontFace(GL_CW);
 
-   glEnable(GL_TEXTURE_2D);
-   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glShadeModel(GL_SMOOTH); // glShadeModel(GL_SMOOTH) oder  glShadeModel(GL_FLAT)
 
-   glEnable(GL_BLEND);
-   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//     glBlendFunc(GL_SRC_ALPHA,GL_ONE);
-//     glBlendFunc(GL_ONE, GL_ONE);
-   
-   set_material_std();
-   lights->init_lights();
-   lights->set_sonne_pos(sys.position[0], 0.0, 0.0, 1.0);
-   
-   breite_zu_hoehe = float(fenster_breite) / float(fenster_hoehe);
-   
-   music_start();
+    glEnable(GL_TEXTURE_2D);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //     glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+    //     glBlendFunc(GL_ONE, GL_ONE);
+
+    set_material_std();
+    lights->init_lights();
+    lights->set_sonne_pos(sys.position[0], 0.0, 0.0, 1.0);
+
+    breite_zu_hoehe = float(fenster_breite) / float(fenster_hoehe);
 }
 
 

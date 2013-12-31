@@ -158,11 +158,7 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
             break;
 
         case SDLK_m:
-            if (music == NULL) {
-                music_start();
-            } else {
-                music_stop();
-            }
+            audio->music_toggle_mute();
             break;
 
    }

@@ -13,6 +13,7 @@
 #include "mausobjekt.hh"
 #include "textures.hh"
 #include "fonttextures.hh"
+#include "audio.hh"
 #include "modell.hh"
 #include "models.hh"
 #include "system.hh"
@@ -121,6 +122,7 @@ public:
    Textures* textures;
    Textures* normalmaps;
    Fonttextures* fonttextures;
+   Audio* audio;
    Models* models;
    Lights* lights;
    
