@@ -57,7 +57,8 @@ public:
     
     Tile(int x, int y, float district_radius, float deck_radius, TileType type);
     
-    void setLightColor(float quelle_x, float quelle_y, float quelle_z);
+    void setLightDirection(float quelle_x, float quelle_y, float quelle_z);
+    void setLightDirection(bool lighted);
     std::string str();
 };
 
