@@ -63,6 +63,13 @@ void Openglwidget::draw()
    
 // // // // // // // // // // // // // // // // // // // // // // // //    
    
+   for (int i=station->get_zones().size()-1; i >= 0; i--) // Winkelpositionen aller Zonen aktualisieren
+   {
+      float winkel = laufzeit*station->get_zones()[i].get_omega()/RAD;
+      if(i%2==0) winkel*=-1;
+      station->get_zones()[i].set_angle(winkel);
+   }
+   
    if (station->active_district != NULL) glRotatef(-station->active_district->get_angle(), 0.0, 0.0, 1.0); // sorgt dafür, dass die Kamera ausgewählten Distrikten folgt
 
    lights->set_sonne_pos();
@@ -207,10 +214,6 @@ void Openglwidget::zeichne_station()
          zeichne_zone(station->get_zones()[i]);
       glPopMatrix();
       
-      float winkel = laufzeit*station->get_zones()[i].get_omega()/RAD;
-      if(i%2==0) winkel*=-1;
-      station->get_zones()[i].set_angle(winkel);
-      
       // do not draw inner zones, if a district is activated:
       if (station->get_active_district() != NULL) {
          Zone& current_zone = station->get_zones()[i];
@@ -284,12 +287,12 @@ void Openglwidget::zeichne_deck(Deck& deck)
             // draw floor tiles:
             glColor3f(1.0, 1.0, 1.0);
             set_material_ambi(0.0, 0.0, 0.0, 1.0);
-            set_material_diff(0.8, 0.8, 0.8, 1.0);
+            set_material_diff(1.0, 1.0, 1.0, 1.0);
             set_material_spec(0.0, 0.0, 0.0, 1.0);
             for (std::vector<Tile>::iterator tile_it = room_it->get_floor_tiles().begin(); tile_it != room_it->get_floor_tiles().end(); tile_it++)
             {
                if (room_it->is_light_on())
-                  tile_it->setLightDirection(room_it->get_lamps().front().position[0], room_it->get_lamps().front().position[1], room_it->get_lamps().front().position[2]);
+                  tile_it->setLightDirection(room_it->get_lamps());
                else
                   tile_it->setLightDirection(false);
                
@@ -314,13 +317,13 @@ void Openglwidget::zeichne_deck(Deck& deck)
 
             // draw wall tiles:
             glColor3f(1.0, 1.0, 1.0);
-            set_material_ambi(0.01, 0.01, 0.01, 1.0);
-            set_material_diff(0.8, 0.8, 0.8, 1.0);
+            set_material_ambi(0.0, 0.0, 0.0, 1.0);
+            set_material_diff(1.0, 1.0, 1.0, 1.0);
             set_material_spec(0.0, 0.0, 0.0, 1.0);
             for (std::vector<Tile>::iterator tile_it = room_it->get_wall_tiles().begin(); tile_it != room_it->get_wall_tiles().end(); tile_it++)
             {
                if (room_it->is_light_on())
-                  tile_it->setLightDirection(room_it->get_lamps().front().position[0], room_it->get_lamps().front().position[1], room_it->get_lamps().front().position[2]);
+                  tile_it->setLightDirection(room_it->get_lamps());
                else
                   tile_it->setLightDirection(false);
                
@@ -381,6 +384,7 @@ void Openglwidget::zeichne_deck(Deck& deck)
                 lamp_it->lampend();
             }
         } else { // room is not visible:
+            glLoadName(0);
             // draw roof:
             glColor3f(0.0, 0.0, 0.0);
             set_material_ambi(0.0, 0.0, 0.0, 1.0);
@@ -421,7 +425,8 @@ void setLightDirection(float tang1_x,  float tang1_y,  float tang1_z,
 
    Openglwidget::light_inc[0] *= 0.5; Openglwidget::light_inc[0] += 0.5;
    Openglwidget::light_inc[1] *= 0.5; Openglwidget::light_inc[1] += 0.5;
-   Openglwidget::light_inc[2] *= 0.2; Openglwidget::light_inc[2] += 0.5;
+   Openglwidget::light_inc[2] *= 0.5; Openglwidget::light_inc[2] += 0.5;
+   if (Openglwidget::light_inc[2] < 0.6) Openglwidget::light_inc[2] = 0.6;
 //    Openglwidget::light_inc[2] *= 0.25; Openglwidget::light_inc[2] += 0.75;
 //    Openglwidget::light_inc[2] *= 0.33; Openglwidget::light_inc[2] += 0.66;
    
@@ -449,9 +454,10 @@ void Openglwidget::bindTextures(std::string label)
    glEnable(GL_TEXTURE_2D);
    glBindTexture(GL_TEXTURE_2D, textures->get_id(label));
    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-   glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_ADD);
+   glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
    glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_PREVIOUS);
    glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
+//    glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE2_RGB, GL_PREVIOUS);
 // // // // // // // // // // // // // // // // // // // // // // 
    glActiveTexture(GL_TEXTURE2);
    glEnable(GL_TEXTURE_2D);
@@ -484,7 +490,7 @@ void Openglwidget::zeichne_district_outside(District& district)
    lights->kamera_off();
    lights->sonne_on();
    
-   glColor3f(0.3, 0.3, 0.3);
+   glColor3f(1.0, 1.0, 1.0);
    set_material_ambi(0.01, 0.01, 0.01, 1.0);
    set_material_diff(0.30, 0.30, 0.60, 1.0);
    set_material_spec(0.60, 0.60, 1.00, 1.0);

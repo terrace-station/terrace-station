@@ -6,9 +6,12 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <list>
 #include <vector>
 #include <math.h>
 #include <GL/gl.h>
+
+class Lamp;
 
 enum TileType {
                 WALL_EAST       = 0,
@@ -57,6 +60,7 @@ public:
     
     Tile(int x, int y, float district_radius, float deck_radius, TileType type);
     
+    void setLightDirection(std::list<Lamp>& lamp_list);
     void setLightDirection(float quelle_x, float quelle_y, float quelle_z);
     void setLightDirection(bool lighted);
     std::string str();

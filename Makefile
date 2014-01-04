@@ -65,7 +65,7 @@ door.o: door.cpp door.hh rect.o
 rect.o: rect.cpp rect.hh
 	$(CPP) $(CPPFLAGS) -c rect.cpp
 
-tile.o: tile.cpp tile.hh
+tile.o: tile.cpp tile.hh lamp.hh
 	$(CPP) $(CPPFLAGS) -c tile.cpp
 
 log.o: log.cpp log.hh

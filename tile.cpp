@@ -2,9 +2,10 @@
 #include "hilfsfunktionen.h"
 
 #include "openglwidget.hh"
+#include "lamp.hh"
 
 #define DECK_HEIGHT 2
-#define HALF_WALL_THICKNESS 0.1
+#define HALF_WALL_THICKNESS 0.12
 
 /**
  * Creates a new tile
@@ -153,12 +154,47 @@ void Tile::setLightDirection(float quelle_x, float quelle_y, float quelle_z)
 
    cr *= 0.5; cr += 0.5;
    cg *= 0.5; cg += 0.5;
-   cb *= 0.5; cb += 0.5;
+   cb *= 0.5; cb += 0.6;
 //    c1b *= 0.25; c1b += 0.75;
    
    Openglwidget::light_inc[0] = cr;
    Openglwidget::light_inc[1] = cg;
    Openglwidget::light_inc[2] = cb;
+}
+
+
+void Tile::setLightDirection(std::list<Lamp>& lamp_list)
+{
+    float tmp_x;
+    float tmp_y;
+    float tmp_z;
+    
+    Openglwidget::light_inc[0] = 0;
+    Openglwidget::light_inc[1] = 0;
+    Openglwidget::light_inc[2] = 0;
+        
+    for (std::list<Lamp>::iterator lamp_it = lamp_list.begin(); lamp_it != lamp_list.end(); lamp_it++)
+    {
+        tmp_x = 0.5*(v1x + v3x) - lamp_it->position[0];  // vec position - vec quelle - vektor vom licht zur aktuellen position zeigt
+        tmp_y = 0.5*(v1y + v3y) - lamp_it->position[1];
+        tmp_z = 0.5*(v1z + v1z) - lamp_it->position[2];
+        
+        hilf::normieren(tmp_x, tmp_y, tmp_z);
+        
+        cr = tmp_x*tx  + tmp_y*ty  + tmp_z*tz;
+        cg = tmp_x*bx  + tmp_y*by  + tmp_z*bz;
+        cb = tmp_x*nx  + tmp_y*ny  + tmp_z*nz;
+        cr *= 0.5; cr += 0.5;
+        cg *= 0.5; cg += 0.5;
+        cb *= 0.5; cb += 0.6;
+        
+        Openglwidget::light_inc[0] += cr;
+        Openglwidget::light_inc[1] += cg;
+        Openglwidget::light_inc[2] += cb;
+    }
+    Openglwidget::light_inc[0] /= lamp_list.size();
+    Openglwidget::light_inc[1] /= lamp_list.size();
+    Openglwidget::light_inc[2] /= lamp_list.size();
 }
 
 
@@ -174,7 +210,7 @@ void Tile::setLightDirection(bool lighted)
     {
         Openglwidget::light_inc[0] = 0.5;
         Openglwidget::light_inc[1] = 0.5;
-        Openglwidget::light_inc[2] = 0.515;
+        Openglwidget::light_inc[2] = 0.517;
     }
 }
 

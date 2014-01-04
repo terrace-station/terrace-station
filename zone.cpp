@@ -20,6 +20,7 @@
 #define MAX_NR_OF_DISTRICTS 4
 #define MIN_DISTRICT_HEIGHT 150
 #define MAX_DISTRICT_HEIGHT 300
+#define ANGULAR_VELOCITY_MOD 0.5
 
 Zone::Zone(int circumference, std::string style, Station* station) :
     circumference(circumference), station(station)
@@ -56,7 +57,7 @@ Zone::Zone(int circumference, std::string style, Station* station) :
         }
     }
     
-    omega = sqrt(9.81/(this->get_radius())) * 0.5;
+    omega = sqrt(9.81/(this->get_radius())) * ANGULAR_VELOCITY_MOD;
 }
 
 float Zone::get_radius() {
