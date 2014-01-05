@@ -4,6 +4,11 @@
    float Openglwidget::fps_average = 0.0;
    float Openglwidget::light_inc[3] = {0.5, 0.5, 1.0};
    
+   Textures* Openglwidget::textures = NULL;
+   Textures* Openglwidget::normalmaps = NULL;
+   Models* Openglwidget::models = NULL;
+   Fonttextures* Openglwidget::fonttextures = NULL;
+   
 #include "station.hh"
 #include "zone.hh"
 #include "district.hh"

@@ -119,11 +119,11 @@ public:
    static float laufzeit;
    static float light_inc[3];
    
-   Textures* textures;
-   Textures* normalmaps;
-   Fonttextures* fonttextures;
+   static Textures* textures;
+   static Textures* normalmaps;
+   static Models* models;
+   static Fonttextures* fonttextures;
    Audio* audio;
-   Models* models;
    Lights* lights;
    
    int fenster_breite;

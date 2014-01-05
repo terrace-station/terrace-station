@@ -288,7 +288,7 @@ void Openglwidget::zeichne_deck(Deck& deck)
             glColor3f(1.0, 1.0, 1.0);
             set_material_ambi(0.0, 0.0, 0.0, 1.0);
             set_material_diff(1.0, 1.0, 1.0, 1.0);
-            set_material_spec(0.0, 0.0, 0.0, 1.0);
+            set_material_spec(0.5, 0.5, 0.5, 1.0);
             for (std::vector<Tile>::iterator tile_it = room_it->get_floor_tiles().begin(); tile_it != room_it->get_floor_tiles().end(); tile_it++)
             {
                if (room_it->is_light_on())
@@ -322,28 +322,29 @@ void Openglwidget::zeichne_deck(Deck& deck)
             set_material_spec(0.0, 0.0, 0.0, 1.0);
             for (std::vector<Tile>::iterator tile_it = room_it->get_wall_tiles().begin(); tile_it != room_it->get_wall_tiles().end(); tile_it++)
             {
-               if (room_it->is_light_on())
-                  tile_it->setLightDirection(room_it->get_lamps());
-               else
-                  tile_it->setLightDirection(false);
-               
-               bindTextures(room_it->get_wall_texture_label());
-               glBegin(GL_QUADS);
-                  glNormal3f(tile_it->nx, tile_it->ny, tile_it->nz);
-                  glMultiTexCoord2f(GL_TEXTURE0, 0.0, 1.0);
-                  glMultiTexCoord2f(GL_TEXTURE2, 0.0, 1.0);
-                  glVertex3f(tile_it->v1x, tile_it->v1y, tile_it->v1z);
-                  glMultiTexCoord2f(GL_TEXTURE0, 1.0, 1.0);
-                  glMultiTexCoord2f(GL_TEXTURE2, 1.0, 1.0);
-                  glVertex3f(tile_it->v2x, tile_it->v2y, tile_it->v2z);
-                  glMultiTexCoord2f(GL_TEXTURE0, 1.0, 0.0);
-                  glMultiTexCoord2f(GL_TEXTURE2, 1.0, 0.0);
-                  glVertex3f(tile_it->v3x, tile_it->v3y, tile_it->v3z);
-                  glMultiTexCoord2f(GL_TEXTURE0, 0.0, 0.0);
-                  glMultiTexCoord2f(GL_TEXTURE2, 0.0, 0.0);
-                  glVertex3f(tile_it->v4x, tile_it->v4y, tile_it->v4z);
-               glEnd();
-               unbindTextures();
+                if (room_it->is_light_on())
+                    tile_it->setLightDirection(room_it->get_lamps());
+                else
+                    tile_it->setLightDirection(false);
+                
+                bindTextures(room_it->get_wall_texture_label());
+                    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 4 );
+                    glBegin(GL_QUADS);
+                    glNormal3f(tile_it->nx, tile_it->ny, tile_it->nz);
+                    glMultiTexCoord2f(GL_TEXTURE0, 0.0, 1.0);
+                    glMultiTexCoord2f(GL_TEXTURE2, 0.0, 1.0);
+                    glVertex3f(tile_it->v1x, tile_it->v1y, tile_it->v1z);
+                    glMultiTexCoord2f(GL_TEXTURE0, 1.0, 1.0);
+                    glMultiTexCoord2f(GL_TEXTURE2, 1.0, 1.0);
+                    glVertex3f(tile_it->v2x, tile_it->v2y, tile_it->v2z);
+                    glMultiTexCoord2f(GL_TEXTURE0, 1.0, 0.0);
+                    glMultiTexCoord2f(GL_TEXTURE2, 1.0, 0.0);
+                    glVertex3f(tile_it->v3x, tile_it->v3y, tile_it->v3z);
+                    glMultiTexCoord2f(GL_TEXTURE0, 0.0, 0.0);
+                    glMultiTexCoord2f(GL_TEXTURE2, 0.0, 0.0);
+                    glVertex3f(tile_it->v4x, tile_it->v4y, tile_it->v4z);
+                glEnd();
+                unbindTextures();
             }
 
             // draw wall roof tiles:
