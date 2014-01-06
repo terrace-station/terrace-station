@@ -188,10 +188,17 @@ void Tile::setLightDirection(std::list<Lamp>& lamp_list)
         cg *= 0.5; cg += 0.5;
         cb *= 0.5; cb += 0.6;
         
+        if (cb < 0.6)
+        {
+            cr = 0.5;
+            cg = 0.5;
+            cb = 0.6;
+        }
         Openglwidget::light_inc[0] += cr;
         Openglwidget::light_inc[1] += cg;
         Openglwidget::light_inc[2] += cb;
     }
+    
     Openglwidget::light_inc[0] /= lamp_list.size();
     Openglwidget::light_inc[1] /= lamp_list.size();
     Openglwidget::light_inc[2] /= lamp_list.size();

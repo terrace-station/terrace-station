@@ -635,6 +635,9 @@ std::list<Room>& Deck::get_rooms() {
     return rooms;
 }
 
+std::list<Door>& Deck::get_doors() {
+    return doors;
+}
 District* Deck::get_district() {
     return district;
 }

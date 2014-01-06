@@ -284,6 +284,25 @@ void Openglwidget::zeichne_deck(Deck& deck)
                 }
             }
             
+            for (std::list<Door*>::iterator door_it = room_it->get_doors().begin(); door_it != room_it->get_doors().end(); door_it++)
+            {
+                int tmp_d     = (*door_it)->get_orientation();
+                float tmp_r   = deck.district->get_radius();
+                float tmp_phi =((*door_it)->get_x()+(tmp_d%2?0.5:0.0)) / tmp_r;
+                float tmp_z   = (*door_it)->get_y()+(tmp_d%2?0.0:0.5);
+                tmp_r   = deck.get_radius();
+                
+                glPushMatrix();
+                glRotatef(-90, 1.0, 0.0, 0.0);
+                glRotatef(-90-tmp_phi/RAD, 0.0, 1.0, 0.0);
+                glTranslatef(0.0, 0.0, -tmp_r);
+                glTranslatef(0.0, -tmp_z, 0.0);
+                if(!(tmp_d%2)) glRotatef(90, 0.0, 0.0, 1.0);
+                glScalef(1.0, 1.0, 1.33);
+                models->get("door1frame")->zeichne();
+                glPopMatrix();
+            }
+        
             // draw floor tiles:
             glColor3f(1.0, 1.0, 1.0);
             set_material_ambi(0.0, 0.0, 0.0, 1.0);
@@ -328,8 +347,7 @@ void Openglwidget::zeichne_deck(Deck& deck)
                     tile_it->setLightDirection(false);
                 
                 bindTextures(room_it->get_wall_texture_label());
-                    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 4 );
-                    glBegin(GL_QUADS);
+                glBegin(GL_QUADS);
                     glNormal3f(tile_it->nx, tile_it->ny, tile_it->nz);
                     glMultiTexCoord2f(GL_TEXTURE0, 0.0, 1.0);
                     glMultiTexCoord2f(GL_TEXTURE2, 0.0, 1.0);

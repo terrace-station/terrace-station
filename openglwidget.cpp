@@ -13,6 +13,7 @@
 #include "zone.hh"
 #include "district.hh"
 #include "deck.hh"
+#include "door.hh"
 #include "room.hh"
 #include "rect.hh"
 #include "tile.hh"

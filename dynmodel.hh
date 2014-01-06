@@ -75,7 +75,6 @@ class Animation
 
 class State
 {
-   list<std::string> models;
    
    list<Transformation> transformations;
    
@@ -87,7 +86,9 @@ class State
 
 class Dynmodel
 {
-   vector<State> states;
-
+    list<std::string> models;
+    vector<State> states;
+   
+    Dynmodel()
    
 };
