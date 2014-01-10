@@ -292,14 +292,18 @@ void Openglwidget::zeichne_deck(Deck& deck)
                 float tmp_z   = (*door_it)->get_y()+(tmp_d%2?0.0:0.5);
                 tmp_r   = deck.get_radius();
                 
+                if (&(*room_it) == (*door_it)->room2) 
+                {   tmp_d += 2; tmp_d %= 4;}
+                
                 glPushMatrix();
                 glRotatef(-90, 1.0, 0.0, 0.0);
                 glRotatef(-90-tmp_phi/RAD, 0.0, 1.0, 0.0);
                 glTranslatef(0.0, 0.0, -tmp_r);
                 glTranslatef(0.0, -tmp_z, 0.0);
-                if(!(tmp_d%2)) glRotatef(90, 0.0, 0.0, 1.0);
-                glScalef(1.0, 1.0, 1.33);
+                glRotatef(tmp_d*90, 0.0, 0.0, 1.0);
+                
                 models->get("door1frame")->zeichne();
+                
                 glPopMatrix();
             }
         
