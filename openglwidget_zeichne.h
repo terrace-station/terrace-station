@@ -557,11 +557,21 @@ void Openglwidget::zeichne_district_outside(District& district)
    // phi_min:
    // do not draw, if district is circular:
    if (!district.is_circular()) {
+      setLightDirection(cosp1, sinp1, 0.0,    0.0, 0.0, 1.0,    sinp1, -cosp1, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x4, y4, z_min);
+      bindTextures("district-hull");
       glBegin(GL_QUADS);
             glNormal3f(sinp1, -cosp1, 0.0);
+         glMultiTexCoord2f(GL_TEXTURE0, 0.0, 0.0);
+         glMultiTexCoord2f(GL_TEXTURE2, 0.0, 0.0);
          glVertex3f(x1, y1, z_min);
+         glMultiTexCoord2f(GL_TEXTURE0, 0.0, 1.0);
+         glMultiTexCoord2f(GL_TEXTURE2, 0.0, 1.0);
          glVertex3f(x1, y1, z_max);
+         glMultiTexCoord2f(GL_TEXTURE0, 0.1, 1.0);
+         glMultiTexCoord2f(GL_TEXTURE2, 0.1, 1.0);
          glVertex3f(x2, y2, z_max);
+         glMultiTexCoord2f(GL_TEXTURE0, 0.1, 0);
+         glMultiTexCoord2f(GL_TEXTURE2, 0.1, 0);
          glVertex3f(x2, y2, z_min);
       glEnd();
       
@@ -598,11 +608,21 @@ void Openglwidget::zeichne_district_outside(District& district)
       y4 = r_max * sinp1;
       
          // z_min:
+      setLightDirection(cosp1, sinp1, 0.0,    sinp1, -cosp1, 0.0,    0.0, 0.0, 1.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x4, y4, z_min);
+      bindTextures("district-hull");
       glBegin(GL_QUADS);
             glNormal3f(0.0, 0.0, -1.0);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x1, texcoord_y2);
+         glMultiTexCoord2f(GL_TEXTURE2, texcoord_x1, texcoord_y2);
          glVertex3f(x3, y3, z_min);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x1, texcoord_y1);
+         glMultiTexCoord2f(GL_TEXTURE2, texcoord_x1, texcoord_y1);
          glVertex3f(x1, y1, z_min);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x2, texcoord_y1);
+         glMultiTexCoord2f(GL_TEXTURE2, texcoord_x2, texcoord_y1);
          glVertex3f(x2, y2, z_min);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x2, texcoord_y2);
+         glMultiTexCoord2f(GL_TEXTURE2, texcoord_x2, texcoord_y2);
          glVertex3f(x4, y4, z_min);
       glEnd();
          
@@ -629,13 +649,22 @@ void Openglwidget::zeichne_district_outside(District& district)
          glMultiTexCoord2f(GL_TEXTURE2, texcoord_x2, texcoord_y2);
             glVertex3f(x4, y4, z_max);
       glEnd();
-         unbindTextures();
             
+      setLightDirection(cosp1, sinp1, 0.0,    sinp1, -cosp1, 0.0,    0.0, 0.0, 1.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x4, y4, z_min);
+      bindTextures("district-hull");
       glBegin(GL_QUADS);
             glNormal3f(0.0, 0.0, 1.0);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x1, texcoord_y2);
+         glMultiTexCoord2f(GL_TEXTURE2, texcoord_x1, texcoord_y2);
          glVertex3f(x4, y4, z_max);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x1, texcoord_y1);
+         glMultiTexCoord2f(GL_TEXTURE2, texcoord_x1, texcoord_y1);
          glVertex3f(x2, y2, z_max);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x2, texcoord_y1);
+         glMultiTexCoord2f(GL_TEXTURE2, texcoord_x2, texcoord_y1);
          glVertex3f(x1, y1, z_max);
+         glMultiTexCoord2f(GL_TEXTURE0, texcoord_x2, texcoord_y2);
+         glMultiTexCoord2f(GL_TEXTURE2, texcoord_x2, texcoord_y2);
          glVertex3f(x3, y3, z_max);
       glEnd();
          
@@ -665,7 +694,6 @@ void Openglwidget::zeichne_district_outside(District& district)
                glMultiTexCoord2f(GL_TEXTURE2, texcoord_x2, texcoord_y1);
                glVertex3f(x3, y3, z_min);
             glEnd();
-            unbindTextures();
          }
       
       x1 = x3; y1 = y3;
@@ -686,15 +714,26 @@ void Openglwidget::zeichne_district_outside(District& district)
          //~ glVertex3f(x2, y2, z_min);
       //~ glEnd();
       
+      setLightDirection(cosp1, sinp1, 0.0,    0.0, 0.0, 1.0,    -sinp1, cosp1, 0.0,   10000*cos(-district.get_angle()*RAD), 10000*sin(-district.get_angle()*RAD), 0, x4, y4, z_min);
+      bindTextures("district-hull");
       glBegin(GL_QUADS);
             glNormal3f(-sinp1, cosp1, 0.0);
+         glMultiTexCoord2f(GL_TEXTURE0, 0.0, 0.0);
+         glMultiTexCoord2f(GL_TEXTURE2, 0.0, 0.0);
          glVertex3f(x2, y2, z_min);
+         glMultiTexCoord2f(GL_TEXTURE0, 0.0, 1.0);
+         glMultiTexCoord2f(GL_TEXTURE2, 0.0, 1.0);
          glVertex3f(x2, y2, z_max);
+         glMultiTexCoord2f(GL_TEXTURE0, 0.1, 1.0);
+         glMultiTexCoord2f(GL_TEXTURE2, 0.1, 1.0);
          glVertex3f(x1, y1, z_max);
+         glMultiTexCoord2f(GL_TEXTURE0, 0.1, 0.0);
+         glMultiTexCoord2f(GL_TEXTURE2, 0.1, 0.0);
          glVertex3f(x1, y1, z_min);
       glEnd();
    }
    
+   unbindTextures();
    set_material_std();
 }
 
