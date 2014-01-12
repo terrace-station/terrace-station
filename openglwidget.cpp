@@ -208,17 +208,18 @@ void Openglwidget::interact_with(Mausobjekt& mo_, SDL_MouseButtonEvent& button)
 //         }
 //     } 
     else if (mo_.objekt_typ == "Door" && button.button == SDL_BUTTON_LEFT) {
-        LOG(DEBUG) << "Tür gedrückt";
         Door& door = (Door&) mo_;
-        if(door.state == 0)
+        if(door.get_state() == "closed")
         {
+            LOG(DEBUG) << "Tür geöffnet";
             door.room1->set_visible(true);
             door.room2->set_visible(true);
-            door.state=1;
+            door.set_state("open");
         }
-        else if (door.state == 1)
+        else if (door.get_state() == "open")
         {
-            door.state=0;
+            LOG(DEBUG) << "Tür geschlossen";
+            door.set_state("closed");
         }
     } 
     else if (mo_.objekt_typ == "Openglbutton" && button.button == SDL_BUTTON_LEFT) {
@@ -296,7 +297,6 @@ void Openglwidget::selektiere_id()
    gluPerspective(view_angle,breite_zu_hoehe,NEAR_CLIP,FAR_CLIP);
 // // // // // // // // // render
    glMatrixMode(GL_MODELVIEW);
-   glLoadIdentity;
    zeichne_szene();
 // // // // // // // // //
    hits = glRenderMode(GL_RENDER);
@@ -360,8 +360,8 @@ void Openglwidget::initialisiere_gl()
     audio->set_music_playlist("default");
 
     glLineWidth(2);
-    glPolygonOffset(1.0,1.0);
-    glEnable(GL_POLYGON_OFFSET_FILL);
+//     glPolygonOffset(1.0,1.0);
+//     glEnable(GL_POLYGON_OFFSET_FILL);
     glClearColor(0.0, 0.0, 0.0, 1.0);
 
     glEnable(GL_DEPTH_TEST);
@@ -369,7 +369,7 @@ void Openglwidget::initialisiere_gl()
 
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+//     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
     glFrontFace(GL_CW);
 
     glShadeModel(GL_SMOOTH); // glShadeModel(GL_SMOOTH) oder  glShadeModel(GL_FLAT)
