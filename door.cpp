@@ -9,9 +9,24 @@
 #include "station.hh"
 
 Door::Door(std::string style, int x, int y, int orientation, int width) :
-    style(style), x(x), y(y), orientation(orientation), Dynmodel(DYN_door1)
+    style(style), x(x), y(y), orientation(orientation)
 {
     objekt_typ = "Door";
+    switch(rand()%2)
+//     switch(1)
+    {
+        case 0:
+            set_dynmodel(DYN_door1);
+            break;
+        
+        case 1:
+            set_dynmodel(DYN_door2);
+            break;
+            
+        default:
+            set_dynmodel(DYN_door1);
+            break;
+    }
 }
 
 int Door::get_x() { return x; }

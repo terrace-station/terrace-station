@@ -56,7 +56,8 @@ public:
 
 
 enum DYNMODELNAME {
-                DYN_door1 = 0
+                DYN_door1 = 0,
+                DYN_door2
               };
 
 
@@ -75,7 +76,9 @@ public:
     void zeichne();
     void add_state(std::string);
     void add_model(std::string);
+    void set_dynmodel(DYNMODELNAME modelltyp);
     Dynmodel(DYNMODELNAME modelltyp);
+    Dynmodel();
 };
 
 
