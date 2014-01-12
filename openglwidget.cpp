@@ -359,7 +359,7 @@ void Openglwidget::initialisiere_gl()
     audio = new Audio;
     audio->set_music_playlist("default");
 
-    glLineWidth(2);
+//     glLineWidth(2);
 //     glPolygonOffset(1.0,1.0);
 //     glEnable(GL_POLYGON_OFFSET_FILL);
     glClearColor(0.0, 0.0, 0.0, 1.0);
