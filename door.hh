@@ -8,9 +8,11 @@
 #include <set>
 
 #include "room.hh"
+#include "mausobjekt.hh"
+#include "dynmodel.hh"
 
 
-class Door
+class Door: public Mausobjekt, public Dynmodel
 {
     std::string style;
     int x;

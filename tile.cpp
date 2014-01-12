@@ -4,7 +4,7 @@
 #include "openglwidget.hh"
 #include "lamp.hh"
 
-#define DECK_HEIGHT 2
+#define DECK_HEIGHT 1
 #define HALF_WALL_THICKNESS 0.12
 
 /**

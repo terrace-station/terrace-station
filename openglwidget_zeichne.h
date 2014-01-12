@@ -276,7 +276,6 @@ void Openglwidget::zeichne_deck(Deck& deck)
         
         if (room_it->is_visible())
         {
-            glLoadName(room_it->objekt_id);
             if (room_it->is_light_on()) {
                 for (std::list<Lamp>::iterator lamp_it = room_it->get_lamps().begin(); lamp_it != room_it->get_lamps().end(); lamp_it++)
                 {
@@ -286,6 +285,7 @@ void Openglwidget::zeichne_deck(Deck& deck)
             
             for (std::list<Door*>::iterator door_it = room_it->get_doors().begin(); door_it != room_it->get_doors().end(); door_it++)
             {
+                glLoadName((*door_it)->objekt_id);
                 int tmp_d     = (*door_it)->get_orientation();
                 float tmp_r   = deck.district->get_radius();
                 float tmp_phi =((*door_it)->get_x()+(tmp_d%2?0.5:0.0)) / tmp_r;
@@ -302,10 +302,12 @@ void Openglwidget::zeichne_deck(Deck& deck)
                 glTranslatef(0.0, -tmp_z, 0.0);
                 glRotatef(tmp_d*90, 0.0, 0.0, 1.0);
                 
-                models->get("door1frame")->zeichne();
+                (*door_it)->zeichne();
+//                 models->get("door1frame")->zeichne();
                 
                 glPopMatrix();
             }
+            glLoadName(room_it->objekt_id);
         
             // draw floor tiles:
             glColor3f(1.0, 1.0, 1.0);
@@ -386,20 +388,20 @@ void Openglwidget::zeichne_deck(Deck& deck)
             }
 
             // draw door roof tiles:
-            glColor3f(1.0, 0.0, 0.0);
-            set_material_ambi(1.0, 0.0, 0.0, 1.0);
-            set_material_diff(1.0, 0.0, 0.0, 1.0);
-            set_material_spec(0.0, 0.0, 0.0, 1.0);
-            for (std::vector<Tile>::iterator tile_it = room_it->get_door_top_tiles().begin(); tile_it != room_it->get_door_top_tiles().end(); tile_it++)
-            {
-                glBegin(GL_QUADS);
-                    glNormal3f(tile_it->nx, tile_it->ny, tile_it->nz);
-                    glVertex3f(tile_it->v1x, tile_it->v1y, tile_it->v1z);
-                    glVertex3f(tile_it->v2x, tile_it->v2y, tile_it->v2z);
-                    glVertex3f(tile_it->v3x, tile_it->v3y, tile_it->v3z);
-                    glVertex3f(tile_it->v4x, tile_it->v4y, tile_it->v4z);
-                glEnd();
-            }
+//             glColor3f(1.0, 0.0, 0.0);
+//             set_material_ambi(1.0, 0.0, 0.0, 1.0);
+//             set_material_diff(1.0, 0.0, 0.0, 1.0);
+//             set_material_spec(0.0, 0.0, 0.0, 1.0);
+//             for (std::vector<Tile>::iterator tile_it = room_it->get_door_top_tiles().begin(); tile_it != room_it->get_door_top_tiles().end(); tile_it++)
+//             {
+//                 glBegin(GL_QUADS);
+//                     glNormal3f(tile_it->nx, tile_it->ny, tile_it->nz);
+//                     glVertex3f(tile_it->v1x, tile_it->v1y, tile_it->v1z);
+//                     glVertex3f(tile_it->v2x, tile_it->v2y, tile_it->v2z);
+//                     glVertex3f(tile_it->v3x, tile_it->v3y, tile_it->v3z);
+//                     glVertex3f(tile_it->v4x, tile_it->v4y, tile_it->v4z);
+//                 glEnd();
+//             }
 
             set_material_std();
             for (std::list<Lamp>::iterator lamp_it = room_it->get_lamps().begin(); lamp_it != room_it->get_lamps().end(); lamp_it++)

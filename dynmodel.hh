@@ -1,94 +1,76 @@
+#ifndef DYNMODEL_HH
+#define DYNMODEL_HH
 
+#include<vector>
+#include<string>
+#include <GL/gl.h>
+// #include <GL/glu.h>
 
 enum TRANSFORM {
-                  TRA_TRANSLATION=0,
-                  TRA_ROTATION,
-                  TRA_SCALING
+                  TRA_TRANSLATE=0,
+                  TRA_ROTATE,
+                  TRA_SCALE,
+                  TRA_VANISH
                };
 
 class Transformation
 {
-   TRANSFORM type;
-   
-   GLfloat arg1;
-   GLfloat arg2;
-   GLfloat arg3;
-   GLfloat arg4;
-   
-   Transformation(TRANSFORM type) : type(type)
-   {}
-   
-   void set_type(TRANSFORM type_)
-   {
-      type = type_;
-   }
-   
-   void set_arguments(GLfloat arg1, GLfloat arg2, GLfloat arg3, GLfloat arg4=1.0){}
-   
-   void transform()
-   {
-      switch(type)
-      {
-         case TRA_TRANSLATION:
-            glTranslatef(arg1, arg2, arg3);
-            break;
-            
-         case TRA_ROTATION:
-            glTranslatef(arg1, arg2, arg3, arg4);
-            break;
-            
-         case TRA_SCALING:
-            glScalef(arg1, arg2, arg3);
-            break;
-            
-         default: 
-            ;
-      }
-   }
-   
-   void transform(GLfloat arg1_, GLfloat arg2_, GLfloat arg3_, GLfloat arg4_=1.0)
-   {
-      switch(type)
-      {
-         case TRA_TRANSLATION:
-            glTranslatef(arg1_, arg2_, arg3_);
-            break;
-            
-         case TRA_ROTATION:
-            glTranslatef(arg1_, arg2_, arg3_, arg4_);
-            break;
-            
-         case TRA_SCALING:
-            glScalef(arg1_, arg2_, arg3_);
-            break;
-            
-         default: 
-            ;
-      }
-   }
+public:
+    TRANSFORM type;
+    
+    GLfloat arg1;
+    GLfloat arg2;
+    GLfloat arg3;
+    GLfloat arg4;
+    
+    int target;
+    float timedelay;
+    
+    //    void set_type(TRANSFORM type_);
+    void set_arguments(GLfloat arg1_, GLfloat arg2_, GLfloat arg3_, GLfloat arg4_=0.0);
+    void transform();
+    //    void transform(GLfloat arg1_, GLfloat arg2_, GLfloat arg3_, GLfloat arg4_=0.0);
+    
+    //    Transformation(TRANSFORM type);
+    Transformation(int target, TRANSFORM type, float timedelay, GLfloat arg1_, GLfloat arg2_, GLfloat arg3_, GLfloat arg4_=0.0);
 };
 
-class Animation
-{
-   
-};
+// class Animation
+// {
+//    
+// };
 
 class State
 {
-   
-   list<Transformation> transformations;
-   
-   bool animated;
-   
-   
+public:
+    std::vector<Transformation> transformations;
+    std::string name;
+    
+    void add_transformation(int target, TRANSFORM type, float timedelay, GLfloat arg1_, GLfloat arg2_, GLfloat arg3_, GLfloat arg4_=0.0);
+    
+    State(std::string name);
 };
+
+
+enum DYNMODELNAME {
+                DYN_door1 = 0
+              };
 
 
 class Dynmodel
 {
-    list<std::string> models;
-    vector<State> states;
+public:
+    std::vector<std::string> models;
+    std::vector<State> states;
+    
+    int state;
    
-    Dynmodel()
-   
+    void zeichne();
+    void add_state(std::string);
+    void add_model(std::string);
+    Dynmodel(DYNMODELNAME modelltyp);
 };
+
+
+
+#endif

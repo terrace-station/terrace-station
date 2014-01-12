@@ -1,0 +1,14 @@
+# Blender v2.62 (sub 0) OBJ File: 'door1leaf.blend'
+# www.blender.org
+mtllib door1leaf.mtl
+o Plane
+v 0.050000 0.000000 0.350000
+v 0.050000 1.800000 0.350000
+v 0.050000 1.800000 -0.350000
+v 0.050000 -0.000000 -0.350000
+v -0.000000 1.800000 -0.350000
+v -0.000000 1.800000 0.350000
+usemtl Material
+s off
+f 1 4 3 2
+f 2 3 5 6

@@ -194,21 +194,39 @@ void Openglwidget::interact_with(Mausobjekt& mo_, SDL_MouseButtonEvent& button)
             phi_soll = dis.get_phi_min()<dis.get_phi_max()?(dis.get_phi_min()+dis.get_phi_max())*0.5/RAD:(dis.get_phi_min()+dis.get_phi_max()+2*PI)*0.5/RAD;
             zoom_soll = 0.4;
         }
-    } else if (mo_.objekt_typ == "Room" && button.button == SDL_BUTTON_RIGHT) {
+    } 
+    else if (mo_.objekt_typ == "Room" && button.button == SDL_BUTTON_RIGHT) {
         Room& room = (Room&) mo_;
         room.set_light_on(!room.is_light_on());
-    } else if (mo_.objekt_typ == "Room" && button.button == SDL_BUTTON_MIDDLE) {
-        Room& room = (Room&) mo_;
-        std::list<Room*> neighbours = room.get_neighbours();
-        for (std::list<Room*>::iterator room_it = neighbours.begin(); room_it != neighbours.end(); room_it++)
+    } 
+//     else if (mo_.objekt_typ == "Room" && button.button == SDL_BUTTON_MIDDLE) {
+//         Room& room = (Room&) mo_;
+//         std::list<Room*> neighbours = room.get_neighbours();
+//         for (std::list<Room*>::iterator room_it = neighbours.begin(); room_it != neighbours.end(); room_it++)
+//         {
+//             (*room_it)->set_visible(true);
+//         }
+//     } 
+    else if (mo_.objekt_typ == "Door" && button.button == SDL_BUTTON_LEFT) {
+        LOG(DEBUG) << "Tür gedrückt";
+        Door& door = (Door&) mo_;
+        if(door.state == 0)
         {
-            (*room_it)->set_visible(true);
+            door.room1->set_visible(true);
+            door.room2->set_visible(true);
+            door.state=1;
         }
-    } else if (mo_.objekt_typ == "Openglbutton" && button.button == SDL_BUTTON_LEFT) {
+        else if (door.state == 1)
+        {
+            door.state=0;
+        }
+    } 
+    else if (mo_.objekt_typ == "Openglbutton" && button.button == SDL_BUTTON_LEFT) {
         LOG(DEBUG) << "Openglbutton gedrückt";
         Openglbutton& but = (Openglbutton&) mo_;
         but.callback_fkt(*this);
-    } else if (mo_.objekt_typ == "Opengltogglebutton" && button.button == SDL_BUTTON_LEFT) {
+    } 
+    else if (mo_.objekt_typ == "Opengltogglebutton" && button.button == SDL_BUTTON_LEFT) {
         LOG(DEBUG) << "Opengltogglebutton gedrückt";
         Opengltogglebutton& but = (Opengltogglebutton&) mo_;
         but.callback_fkt(*this);
@@ -232,6 +250,10 @@ Mausobjekt& Openglwidget::get_target()
                 for (std::list<Room>::iterator room_it = deck_it->get_rooms().begin(); room_it != deck_it->get_rooms().end(); room_it++)
                 {
                     if (room_it->objekt_id == target_id) { return (Mausobjekt&) (*room_it); }
+                }
+                for (std::list<Door>::iterator door_it = deck_it->get_doors().begin(); door_it != deck_it->get_doors().end(); door_it++)
+                {
+                    if (door_it->objekt_id == target_id) { return (Mausobjekt&) (*door_it); }
                 }
             }
         }
@@ -270,7 +292,7 @@ void Openglwidget::selektiere_id()
    glMatrixMode(GL_PROJECTION);
    glRenderMode(GL_SELECT);
    glLoadIdentity();
-   gluPickMatrix(maus_x, maus_y, 1, 1, viewport); // nur an der Mausposition gucken
+   gluPickMatrix(maus_x, maus_y, 5, 5, viewport); // nur an der Mausposition gucken
    gluPerspective(view_angle,breite_zu_hoehe,NEAR_CLIP,FAR_CLIP);
 // // // // // // // // // render
    glMatrixMode(GL_MODELVIEW);
