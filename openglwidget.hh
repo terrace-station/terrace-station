@@ -9,6 +9,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include "glcam.hh"
 #include "glhilf.h"
 #include "mausobjekt.hh"
 #include "textures.hh"
@@ -50,6 +51,8 @@ public:
    bool fullscreen;
    bool idle_redraw;
    bool antialiasing;
+   
+   bool picking;
    
    float menu_bg;
    float menu_bg_soll;
@@ -141,13 +144,15 @@ public:
    float pos_z_soll;
    float pos_radius_soll;
    
+   Glcam* active_cam;
+   Glcam std_cam;
    float kamera_x, kamera_y, kamera_z;
    float kamera_radius, kamera_phi;
    
    float oben_x, oben_y, oben_z;
    
-   float theta, phi;
-   float theta_soll, phi_soll;
+   float theta, phi, psi;
+   float theta_soll, phi_soll, psi_soll;
    
    float zoom;
    float zoom_soll;

@@ -42,6 +42,8 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    fullscreen = false;
    gamemenu = false;
    
+   picking = false;
+   
    info = SDL_GetVideoInfo();
    
    fenster_modus = SDL_OPENGL;
@@ -81,6 +83,7 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    pos_radius_soll = 95;
    pos_phi = 0;
    
+   psi   = 0;
    phi   = 0;
    phi_soll = 0;
    theta = 45;
@@ -127,10 +130,19 @@ void Openglwidget::set_station(Station* station_)
    station = station_;
 }
 
+void regelung(float& ist_wert, float& soll_wert, float& zeit_faktor, float geschwindigkeit, float toleranz)
+{
+    if (fabs(soll_wert-ist_wert) > toleranz)
+    {
+        ist_wert += 0.9*(soll_wert - ist_wert)*zeit_faktor*geschwindigkeit;
+    }
+    else if (soll_wert != ist_wert)
+        ist_wert = soll_wert;
+}
 
 void Openglwidget::parameter_regelung()
 {
-   if (phi != phi_soll || pos_z != pos_z_soll || theta != theta_soll || zoom != zoom_soll || pos_radius != pos_radius_soll || menu_bg != menu_bg_soll)
+//    if (phi != phi_soll || pos_z != pos_z_soll || theta != theta_soll || zoom != zoom_soll || pos_radius != pos_radius_soll || menu_bg != menu_bg_soll)
    {
       float zeit_faktor;
       if (zeit_frame > 0.1)
@@ -138,47 +150,13 @@ void Openglwidget::parameter_regelung()
       else
          zeit_faktor = zeit_frame;
       
-      if (fabs(phi_soll-phi) > 0.01)
-      {
-         phi += 0.9*(phi_soll - phi)*zeit_faktor*8;
-      }
-      else
-         phi = phi_soll;
-      
-      if (fabs(pos_z_soll - pos_z) > 0.001)
-      {
-         pos_z += 0.9*(pos_z_soll - pos_z)*zeit_faktor*8;
-      }
-      else
-         pos_z = pos_z_soll;
-      
-      if (fabs(theta_soll - theta) > 0.01)
-      {
-         theta += 0.9*(theta_soll - theta)*zeit_faktor*8;
-      }
-      else
-         theta = theta_soll;
-      
-      if (fabs(zoom_soll - zoom) > 0.0001)
-      {
-         zoom += 0.9*(zoom_soll - zoom)*zeit_faktor*8;
-      }
-      else
-         zoom = zoom_soll;
-      
-      if (fabs(pos_radius_soll - pos_radius) > 0.001)
-      {
-         pos_radius += 0.9*(pos_radius_soll - pos_radius)*zeit_faktor*8;
-      }
-      else
-         pos_radius = pos_radius_soll;
-      
-      if (fabs(menu_bg_soll - menu_bg) > 0.001)
-      {
-         menu_bg += 0.9*(menu_bg_soll - menu_bg)*zeit_faktor*5;
-      }
-      else
-         menu_bg = menu_bg_soll;
+      regelung(phi, phi_soll, zeit_faktor, 8, 0.01);
+      regelung(psi, psi_soll, zeit_faktor, 8, 0.01);
+      regelung(pos_z, pos_z_soll, zeit_faktor, 8, 0.001);
+      regelung(theta, theta_soll, zeit_faktor, 8, 0.01);
+      regelung(zoom, zoom_soll, zeit_faktor, 8, 0.0001);
+      regelung(pos_radius, pos_radius_soll, zeit_faktor, 8, 0.001);
+      regelung(menu_bg, menu_bg_soll, zeit_faktor, 5, 0.001);
    }
 }
 
@@ -293,11 +271,13 @@ void Openglwidget::selektiere_id()
    glMatrixMode(GL_PROJECTION);
    glRenderMode(GL_SELECT);
    glLoadIdentity();
-   gluPickMatrix(maus_x, maus_y, 5, 5, viewport); // nur an der Mausposition gucken
+   gluPickMatrix(maus_x, maus_y, 2, 2, viewport); // nur an der Mausposition gucken
    gluPerspective(view_angle,breite_zu_hoehe,NEAR_CLIP,FAR_CLIP);
 // // // // // // // // // render
    glMatrixMode(GL_MODELVIEW);
+   picking = true;
    zeichne_szene();
+   picking = false;
 // // // // // // // // //
    hits = glRenderMode(GL_RENDER);
    
@@ -310,12 +290,20 @@ void Openglwidget::selektiere_id()
    //     Kleinster Abstand
    //     Größter Abstand
    //     Objektname
+      if (sel_buffer[0] != 1)
+         LOG(WARNING) << "Achtung, mehr als eine Objekt_id geladen.";
+      LOG(DEBUG) << "1: ID:" << sel_buffer[3] << ", Abstand:" << sel_buffer[1];
 
       target_id = sel_buffer[3];
       int abstand = sel_buffer[1];
       
       for (int i = 1; i <hits; i++)
       {
+         if (sel_buffer[i*4] != 1)
+            LOG(WARNING) << "Achtung, mehr als eine Objekt_id geladen.";
+         
+         LOG(DEBUG) << i+1 << ": ID:" << sel_buffer[i*4+3] << ", Abstand:" << sel_buffer[i*4+1];
+         
          if (sel_buffer[(i*4)+1] < abstand)
          {
             target_id = sel_buffer[(i*4)+3];

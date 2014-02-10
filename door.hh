@@ -31,6 +31,8 @@ public:
     int get_orientation();
     int get_width();
     
+    void set_dynmodel();
+    
     std::string str();
 };
 

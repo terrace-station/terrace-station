@@ -9,7 +9,6 @@
 #include "station.hh"
 #include "log.hh"
 
-#define PI  3.14159265358979323846
 #define MIN_RANDOM_Z_OFFSET -100
 #define MAX_RANDOM_Z_OFFSET 100
 #define MIN_RING_DISTRICT_HEIGHT 50

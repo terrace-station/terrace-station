@@ -12,17 +12,27 @@ void Openglwidget::draw()
    gluPerspective(view_angle,breite_zu_hoehe,NEAR_CLIP,FAR_CLIP);
 // // // // // // // // // // // // // // // // // // // // // // // //    
 
-   kamera_x = (1.0-zoom)*pos_radius*cos(phi*RAD)          +x_offset;
-   kamera_y = (1.0-zoom)*pos_radius*sin(phi*RAD)          +y_offset;
-   kamera_z = pos_z-pow(zoom,1.3)*pos_radius/tan(theta*RAD);// +z_offset;
+//    kamera_x = (1.0-zoom)*pos_radius*cos(phi*RAD)          +x_offset;
+//    kamera_y = (1.0-zoom)*pos_radius*sin(phi*RAD)          +y_offset;
+//    kamera_z = pos_z-pow(zoom,1.3)*pos_radius/tan(theta*RAD);// +z_offset;
+// 
+   float kug_radius = 5*zoom;
    
-   pos_x = pos_radius*cos(phi*RAD) +x_offset;
-   pos_y = pos_radius*sin(phi*RAD) +y_offset;
+   kamera_x = (pos_radius - kug_radius*cos(theta*RAD)) * cos(phi*RAD + kug_radius/pos_radius*sin(theta*RAD)*cos(psi*RAD));
+   kamera_y = (pos_radius - kug_radius*cos(theta*RAD)) * sin(phi*RAD + kug_radius/pos_radius*sin(theta*RAD)*cos(psi*RAD));
+   kamera_z = pos_z + kug_radius*sin(theta*RAD)*sin(psi*RAD);// +z_offset;
+   
+   pos_x = pos_radius*cos(phi*RAD);
+   pos_y = pos_radius*sin(phi*RAD);
 //    pos_z = pos_z                   +z_offset;
    
-   oben_x = 0;//cos(phi*RAD)*sin(theta*RAD);
-   oben_y = 0;//sin(phi*RAD)*sin(theta*RAD);
-   oben_z = 1;//cos(theta*RAD);
+//    oben_x = 0;//cos(phi*RAD)*sin(theta*RAD);
+//    oben_y = 0;//sin(phi*RAD)*sin(theta*RAD);
+//    oben_z = 1;//cos(theta*RAD);
+   
+   oben_x =  -cos(phi*RAD);
+   oben_y =  -sin(phi*RAD);
+   oben_z =  0;
    
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
@@ -259,7 +269,6 @@ void Openglwidget::zeichne_deck(Deck& deck)
      
     for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
     {
-        
         // Check if this room is inside the current viewport (i.e. if it should be drawn):
         gluProject(room_it->get_bounding_box()[0][0], room_it->get_bounding_box()[0][1], room_it->get_bounding_box()[0][2], model_matrix_system, project_matrix_system, viewport_system, &fenster_x, &fenster_y, &fenster_z);
         float x_min = fenster_x, x_max = fenster_x, y_min = fenster_y, y_max = fenster_y;
@@ -274,9 +283,9 @@ void Openglwidget::zeichne_deck(Deck& deck)
         if ( x_max < -VIEWPORT_PADDING || x_min > fenster_breite+VIEWPORT_PADDING ||
              y_max < -VIEWPORT_PADDING || y_min > fenster_hoehe+VIEWPORT_PADDING ) { continue; }
         
-        if (room_it->is_visible())
+        if (room_it->is_visible() || picking)
         {
-            if (room_it->is_light_on()) {
+            if (!picking && room_it->is_light_on()) {
                 for (std::list<Lamp>::iterator lamp_it = room_it->get_lamps().begin(); lamp_it != room_it->get_lamps().end(); lamp_it++)
                 {
                     lamp_it->lampbegin(deck.get_district()->get_alarm());
@@ -294,13 +303,10 @@ void Openglwidget::zeichne_deck(Deck& deck)
                 
                 if (&(*room_it) == (*door_it)->room2) 
                 {   tmp_d += 2; tmp_d %= 4;}
-                
-                glPushMatrix();
-                glRotatef(-90, 1.0, 0.0, 0.0);
-                glRotatef(-90-tmp_phi/RAD, 0.0, 1.0, 0.0);
-                glTranslatef(0.0, 0.0, -tmp_r);
-                glTranslatef(0.0, -tmp_z, 0.0);
-                glRotatef(tmp_d*90, 0.0, 0.0, 1.0);
+                    
+                    glPushMatrix();
+                    hilf::transform_to_station(tmp_r, tmp_phi, tmp_z);
+                    glRotatef(tmp_d*90, 0.0, 0.0, 1.0);
                 
                 (*door_it)->zeichne();
 //                 models->get("door1frame")->zeichne();
@@ -316,13 +322,15 @@ void Openglwidget::zeichne_deck(Deck& deck)
             set_material_spec(0.5, 0.5, 0.5, 1.0);
             for (std::vector<Tile>::iterator tile_it = room_it->get_floor_tiles().begin(); tile_it != room_it->get_floor_tiles().end(); tile_it++)
             {
-               if (room_it->is_light_on())
-                  tile_it->setLightDirection(room_it->get_lamps());
-               else
-                  tile_it->setLightDirection(false);
-               
-               bindTextures(room_it->get_floor_texture_label());
-               glBegin(GL_QUADS);
+                if (!picking)
+                {
+                    if (room_it->is_light_on())
+                        tile_it->setLightDirection(room_it->get_lamps());
+                    else
+                        tile_it->setLightDirection(false);
+                }
+                bindTextures(room_it->get_floor_texture_label());
+                glBegin(GL_QUADS);
                   glNormal3f(tile_it->nx, tile_it->ny, tile_it->nz);
                   glMultiTexCoord2f(GL_TEXTURE0, 0.0, 1.0);
                   glMultiTexCoord2f(GL_TEXTURE2, 0.0, 1.0);
@@ -336,8 +344,8 @@ void Openglwidget::zeichne_deck(Deck& deck)
                   glMultiTexCoord2f(GL_TEXTURE0, 0.0, 0.0);
                   glMultiTexCoord2f(GL_TEXTURE2, 0.0, 0.0);
                   glVertex3f(tile_it->v4x, tile_it->v4y, tile_it->v4z);
-               glEnd();
-               unbindTextures();
+                glEnd();
+                unbindTextures();
             }
 
             // draw wall tiles:
@@ -347,10 +355,13 @@ void Openglwidget::zeichne_deck(Deck& deck)
             set_material_spec(0.0, 0.0, 0.0, 1.0);
             for (std::vector<Tile>::iterator tile_it = room_it->get_wall_tiles().begin(); tile_it != room_it->get_wall_tiles().end(); tile_it++)
             {
-                if (room_it->is_light_on())
-                    tile_it->setLightDirection(room_it->get_lamps());
-                else
-                    tile_it->setLightDirection(false);
+                if (!picking)
+                {
+                    if (room_it->is_light_on())
+                        tile_it->setLightDirection(room_it->get_lamps());
+                    else
+                        tile_it->setLightDirection(false);
+                }
                 
                 bindTextures(room_it->get_wall_texture_label());
                 glBegin(GL_QUADS);
@@ -408,26 +419,31 @@ void Openglwidget::zeichne_deck(Deck& deck)
             {
                 lamp_it->lampend();
             }
-        } else { // room is not visible:
-            glLoadName(0);
-            // draw roof:
-            glColor3f(0.0, 0.0, 0.0);
-            set_material_ambi(0.0, 0.0, 0.0, 1.0);
-            set_material_diff(0.0, 0.0, 0.0, 1.0);
-            set_material_spec(0.0, 0.0, 0.0, 1.0);
-            for (std::vector<Tile>::iterator tile_it = room_it->get_roof_tiles().begin(); tile_it != room_it->get_roof_tiles().end(); tile_it++)
+        } 
+        else 
+        { // room is not visible:
+            if (!picking)
             {
-                glBegin(GL_QUADS);
-                    glNormal3f(tile_it->nx, tile_it->ny, tile_it->nz);
-                    glTexCoord2f(0e0, 1e0);
-                    glVertex3f(tile_it->v1x, tile_it->v1y, tile_it->v1z);
-                    glTexCoord2f(1e0, 1e0);
-                    glVertex3f(tile_it->v2x, tile_it->v2y, tile_it->v2z);
-                    glTexCoord2f(1e0, 0e0);
-                    glVertex3f(tile_it->v3x, tile_it->v3y, tile_it->v3z);
-                    glTexCoord2f(0e0, 0e0);
-                    glVertex3f(tile_it->v4x, tile_it->v4y, tile_it->v4z);
-                glEnd();
+               glLoadName(0);
+               // draw roof:
+               glColor3f(0.0, 0.0, 0.0);
+               set_material_ambi(0.0, 0.0, 0.0, 1.0);
+               set_material_diff(0.0, 0.0, 0.0, 1.0);
+               set_material_spec(0.0, 0.0, 0.0, 1.0);
+               for (std::vector<Tile>::iterator tile_it = room_it->get_roof_tiles().begin(); tile_it != room_it->get_roof_tiles().end(); tile_it++)
+               {
+                  glBegin(GL_QUADS);
+                     glNormal3f(tile_it->nx, tile_it->ny, tile_it->nz);
+                     glTexCoord2f(0e0, 1e0);
+                     glVertex3f(tile_it->v1x, tile_it->v1y, tile_it->v1z);
+                     glTexCoord2f(1e0, 1e0);
+                     glVertex3f(tile_it->v2x, tile_it->v2y, tile_it->v2z);
+                     glTexCoord2f(1e0, 0e0);
+                     glVertex3f(tile_it->v3x, tile_it->v3y, tile_it->v3z);
+                     glTexCoord2f(0e0, 0e0);
+                     glVertex3f(tile_it->v4x, tile_it->v4y, tile_it->v4z);
+                  glEnd();
+               }
             }
         }
     }

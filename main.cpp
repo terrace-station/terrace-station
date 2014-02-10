@@ -3,6 +3,7 @@
 #include <SDL/SDL_mixer.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include <omp.h>
 
 #include <iostream>
 #include <stdio.h>
@@ -46,11 +47,22 @@ int main(int argc, char* argv[])
 
     SDL_EnableKeyRepeat(20, 20);
     glwidget.initialisiere_gl();
-
-    while(glwidget.running)
+    
+    omp_set_num_threads(2);
+//     #pragma omp parallel
     {
-        glwidget.events();
-        glwidget.draw();
+        while(glwidget.running)
+        {
+//             #pragma omp master
+//             {
+               glwidget.events();
+               glwidget.draw();
+//             }
+//             #pragma omp single nowait
+//             {
+               // Hier kommt dann anderer Kram rein, der nichts mit der Oberfläche zu tun hat
+//             }
+        }
     }
 
     LOG(INFO) << "Quitting program.";

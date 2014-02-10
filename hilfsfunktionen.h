@@ -4,8 +4,9 @@
 #include <math.h>
 #include <GL/gl.h>
 
-#define PI    3.14159265358979323846
-#define RAD 0.01745329252
+#define PI   3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211
+#define RAD  0.0174532930056254069010416666666666677
+#define GRAD 57.2957779186820467344297304465919085
 
 namespace hilf
 {
@@ -49,7 +50,13 @@ namespace hilf
     }
 
 
-
+    static void transform_to_station(GLfloat& tmp_r, GLfloat& tmp_phi, GLfloat& tmp_z)
+    {
+        glRotatef(-90, 1.0, 0.0, 0.0);
+        glRotatef(-90-tmp_phi/RAD, 0.0, 1.0, 0.0);
+        glTranslatef(0.0, 0.0, -tmp_r);
+        glTranslatef(0.0, -tmp_z, 0.0);
+    }
 
 }
 

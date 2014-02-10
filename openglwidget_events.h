@@ -61,7 +61,7 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
          break;
          
 #define ZOOM_CAP_MIN 0.001
-#define ZOOM_CAP_MAX 10
+#define ZOOM_CAP_MAX 20
          
       case SDLK_PLUS:
          zoom_soll = zoom_soll*0.98;
@@ -73,20 +73,44 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
          if (zoom_soll > ZOOM_CAP_MAX) zoom_soll = ZOOM_CAP_MAX;
          break;
          
-      case 'a' : // Die Kamera bewegt sich "nach links" (An der Blickrichtung orientiert)
-         y_offset -= 0.25;
+      case 'a' :
+         phi_soll   -= sin(psi*RAD)*0.5/pos_radius*GRAD;
+         pos_z_soll += cos(psi*RAD)*0.5;
+         if (phi_soll > 360)
+         {
+            phi -= 360; 
+            phi_soll -= 360; 
+         }
          break;
 
       case 'd' : // ...nach rechts...
-         y_offset += 0.25;
+         phi_soll   += sin(psi*RAD)*0.5/pos_radius*GRAD;
+         pos_z_soll -= cos(psi*RAD)*0.5;
+         if (phi_soll < 0)
+         {
+            phi += 360; 
+            phi_soll += 360; 
+         }
          break;
 
       case 'w' : // ...nach oben...
-         x_offset += 0.25;
+         phi_soll   -= cos(psi*RAD)*0.5/pos_radius*GRAD;
+         pos_z_soll -= sin(psi*RAD)*0.5;
+         if (phi_soll > 360)
+         {
+            phi -= 360; 
+            phi_soll -= 360; 
+         }
          break;
 
       case 's' : // ...nach unten
-         x_offset -= 0.25;
+         phi_soll   += cos(psi*RAD)*0.5/pos_radius*GRAD;
+         pos_z_soll += sin(psi*RAD)*0.5;
+         if (phi_soll > 360)
+         {
+            phi -= 360; 
+            phi_soll -= 360; 
+         }
          break;
 
       case 'q' : // ...nach unten...
@@ -106,28 +130,36 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
 #define Z_UNIT 1.5
          
       case SDLK_UP:
-         pos_z_soll += Z_UNIT;
+         theta_soll += 1.5;
+         if (theta_soll > 90)
+         {
+            theta_soll = 90;
+         }
          break;
 
       case SDLK_DOWN: // ...nach unten...
-         pos_z_soll -= Z_UNIT;
+         theta_soll -= 1.5;
+         if (theta_soll < 0)
+         {
+            theta_soll = 0.01;
+         }
          break;
 
       case SDLK_LEFT:
-         phi_soll += 1.5;
-         if (phi_soll > 360)
+         psi_soll -= 1.5;
+         if (psi_soll < 0)
          {
-            phi -= 360; 
-            phi_soll -= 360; 
+            psi_soll += 360;
+            psi += 360;
          }
          break;
 
       case SDLK_RIGHT:
-         phi_soll -= 1.5;
-         if (phi_soll < 0)
+         psi_soll += 1.5;
+         if (psi_soll > 360)
          {
-            phi += 360; 
-            phi_soll += 360; 
+            psi_soll -= 360;
+            psi -= 360;
          }
          break;
 
@@ -233,7 +265,7 @@ void Openglwidget::handle_mousebuttondown(SDL_MouseButtonEvent& button)
       case SDL_BUTTON_WHEELDOWN:
          zoom_soll += zoom_soll*0.15;
          if (zoom_soll > ZOOM_CAP_MAX) zoom_soll = ZOOM_CAP_MAX;
-         if (station->active_district != NULL && zoom_soll > 0.5*ZOOM_CAP_MAX)
+         if (station->active_district != NULL && zoom_soll > 0.8*ZOOM_CAP_MAX)
          {
             phi_soll += station->active_district->get_angle();
             phi = phi_soll;

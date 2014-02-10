@@ -9,7 +9,6 @@
 #include "station.hh"
 #include "log.hh"
 
-#define PI    3.14159265358979323846
 #define CF_MIN      400     // Minimum circumference
 #define CF_DELTA    110     // Difference in circumference
 #define NR_OF_ZONES 4

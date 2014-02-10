@@ -114,14 +114,15 @@ State::State(std::string name) : name(name)
 // // // // // // // // // // // // // // // // // // // // // // // // Dynmodel // // // // // // // // // // // // // // // //
 
 
-Dynmodel::Dynmodel(DYNMODELNAME modelltyp) : state(0)
-{
-    set_dynmodel(modelltyp);
-}
+// Dynmodel::Dynmodel(DYNMODELNAME modelltyp) : state(0)
+// {
+//     set_dynmodel(modelltyp);
+// }
 
 
 Dynmodel::Dynmodel() : state(0)
 {
+//     set_dynmodel();
 }
 
 
@@ -197,45 +198,45 @@ std::string Dynmodel::get_state()
 }
 
 
-void Dynmodel::set_dynmodel(DYNMODELNAME modelltyp)
-{
-    switch(modelltyp)
-    {
-        case DYN_door1:
-            add_model("door1frame");
-            add_model("door1leaf");
-            add_state("closed");
-                states[0].add_transformation(1, TRA_TRANSLATE, 0.0, 0.0, 0.0, -1.7);
-                states[0].add_transformation(1, TRA_TRANSLATE, 2.0, 0.0, 0.0, 1.7);
-            add_state("open");
-                states[1].add_transformation(1, TRA_TRANSLATE, 2.0, 0.0, 0.0, -1.7);  // target, type, timedelay, arg1, arg2, arg3
-                break;
-            
-        case DYN_door2:
-            add_model("door1frame");
-            add_model("door2leaf");
-            add_model("door2leaf");
-            add_state("closed");
-                states[0].add_transformation(1, TRA_TRANSLATE, 0.0, 0.0, 0.35, 0.0);
-                states[0].add_transformation(1, TRA_SCALE,     0.0, 1.0, 0.2, 1.0);
-                states[0].add_transformation(1, TRA_SCALE,     1.0, 1.0, 5.0, 1.0);
-                states[0].add_transformation(2, TRA_TRANSLATE, 0.0, 0.0,-0.35, 0.0);
-                states[0].add_transformation(2, TRA_SCALE,     0.0, 1.0,-1.0, 1.0);
-                states[0].add_transformation(2, TRA_SCALE,     0.0, 1.0, 0.2, 1.0);
-                states[0].add_transformation(2, TRA_SCALE,     1.0, 1.0, 5.0, 1.0);
-            add_state("open");
-                states[1].add_transformation(1, TRA_TRANSLATE, 0.0, 0.0, 0.35, 0.0);
-                states[1].add_transformation(1, TRA_SCALE,     1.0, 1.0, 0.2, 1.0);
-                states[1].add_transformation(2, TRA_TRANSLATE, 0.0, 0.0,-0.35, 0.0);
-                states[1].add_transformation(2, TRA_SCALE,     0.0, 1.0,-1.0, 1.0);
-                states[1].add_transformation(2, TRA_SCALE,     1.0, 1.0, 0.2, 1.0);
-                break;
-            
-        default:
-            break;
-        
-    }
-}
+// void Dynmodel::set_dynmodel()
+// {
+//     switch(modelltyp)
+//     {
+//         case DYN_door1:
+//             add_model("door1frame");
+//             add_model("door1leaf");
+//             add_state("closed");
+//                 states[0].add_transformation(1, TRA_TRANSLATE, 0.0, 0.0, 0.0, -1.7);
+//                 states[0].add_transformation(1, TRA_TRANSLATE, 2.0, 0.0, 0.0, 1.7);
+//             add_state("open");
+//                 states[1].add_transformation(1, TRA_TRANSLATE, 2.0, 0.0, 0.0, -1.7);  // target, type, timedelay, arg1, arg2, arg3
+//                 break;
+//             
+//         case DYN_door2:
+//             add_model("door1frame");
+//             add_model("door2leaf");
+//             add_model("door2leaf");
+//             add_state("closed");
+//                 states[0].add_transformation(1, TRA_TRANSLATE, 0.0, 0.0, 0.35, 0.0);
+//                 states[0].add_transformation(1, TRA_SCALE,     0.0, 1.0, 0.2, 1.0);
+//                 states[0].add_transformation(1, TRA_SCALE,     1.0, 1.0, 5.0, 1.0);
+//                 states[0].add_transformation(2, TRA_TRANSLATE, 0.0, 0.0,-0.35, 0.0);
+//                 states[0].add_transformation(2, TRA_SCALE,     0.0, 1.0,-1.0, 1.0);
+//                 states[0].add_transformation(2, TRA_SCALE,     0.0, 1.0, 0.2, 1.0);
+//                 states[0].add_transformation(2, TRA_SCALE,     1.0, 1.0, 5.0, 1.0);
+//             add_state("open");
+//                 states[1].add_transformation(1, TRA_TRANSLATE, 0.0, 0.0, 0.35, 0.0);
+//                 states[1].add_transformation(1, TRA_SCALE,     1.0, 1.0, 0.2, 1.0);
+//                 states[1].add_transformation(2, TRA_TRANSLATE, 0.0, 0.0,-0.35, 0.0);
+//                 states[1].add_transformation(2, TRA_SCALE,     0.0, 1.0,-1.0, 1.0);
+//                 states[1].add_transformation(2, TRA_SCALE,     1.0, 1.0, 0.2, 1.0);
+//                 break;
+//             
+//         default:
+//             break;
+//         
+//     }
+// }
 
 
 

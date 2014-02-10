@@ -55,10 +55,10 @@ public:
 };
 
 
-enum DYNMODELNAME {
-                DYN_door1 = 0,
-                DYN_door2
-              };
+// enum DYNMODELNAME {
+//                 DYN_door1 = 0,
+//                 DYN_door2
+//               };
 
 
 class Dynmodel
@@ -76,8 +76,8 @@ public:
     void zeichne();
     void add_state(std::string);
     void add_model(std::string);
-    void set_dynmodel(DYNMODELNAME modelltyp);
-    Dynmodel(DYNMODELNAME modelltyp);
+    virtual void set_dynmodel() = 0;
+//     Dynmodel(DYNMODELNAME modelltyp);
     Dynmodel();
 };
 
