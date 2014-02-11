@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     //    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-    //    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+//        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
     SDL_SetVideoMode(glwidget.fenster_breite, glwidget.fenster_hoehe, glwidget.bpp, SDL_OPENGL);
 

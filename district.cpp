@@ -36,6 +36,15 @@ District::District(int x, int y, int size_x, int size_y,
     
     alarm = false;
     objekt_typ = "District";
+    
+    camera.set_start(get_radius_min(), 0.5*(get_phi_min()*GRAD+get_phi_max()*GRAD), 0.5*(get_z_min()+get_z_max()), 10, 45, 10);
+    camera.set_boundaries(get_radius_min(),   get_radius_min(), 
+                          get_phi_min()*GRAD, get_phi_max()*GRAD, 
+                          get_z_min(),        get_z_max(), 
+                          1, 30,
+                          0, 90, 
+                          -1000, 1000);
+    camera.set_upside(-1);
 }
 
 int District::get_x() { return x; }

@@ -133,6 +133,23 @@ static void draw_cone(float bx, float by, float bz, float tx, float ty, float tz
 }
 
 
+static void draw_pickdummy()
+{
+    glBegin(GL_QUAD_STRIP);
+        glVertex3f(-0.5, -0.5, 1.0);
+        glVertex3f(-0.5, -0.5, 0.0);
+        glVertex3f( 0.5, -0.5, 1.0);
+        glVertex3f( 0.5, -0.5, 0.0);
+        glVertex3f( 0.5,  0.5, 1.0);
+        glVertex3f( 0.5,  0.5, 0.0);
+        glVertex3f(-0.5,  0.5, 1.0);
+        glVertex3f(-0.5,  0.5, 0.0);
+        glVertex3f(-0.5, -0.5, 1.0);
+        glVertex3f(-0.5, -0.5, 0.0);
+    glEnd();
+}
+
+
 static void draw_torus(float radiust, float radiusp, int detailt, int detailp)
 {
    float x1, x2, x3, x4;

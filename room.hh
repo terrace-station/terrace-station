@@ -40,6 +40,8 @@ class Room: public Mausobjekt
     std::vector<std::vector<GLfloat> > bounding_box;
     
 public:
+    bool inview;
+    
     Room(std::string style, Rect rect, Deck* deck);
     
     void update();

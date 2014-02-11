@@ -1,4 +1,4 @@
-OBJEKTE  = openglwidget.o openglbutton.o openglmenu.o mausobjekt.o system.o textures.o station.o zone.o district.o deck.o room.o door.o rect.o tile.o modell.o fonttextures.o models.o lights.o lamp.o log.o audio.o dynmodel.o
+OBJEKTE  = openglwidget.o openglbutton.o openglmenu.o mausobjekt.o system.o textures.o station.o zone.o district.o deck.o room.o door.o rect.o tile.o modell.o fonttextures.o models.o lights.o lamp.o log.o audio.o dynmodel.o glcam.o
 CPP      = g++-4.7
 CPPFLAGS = -std=c++11 -fopenmp -O2 -g
 

@@ -1,5 +1,25 @@
 void music_start();
 
+void limit_value(float& wert, float& wert_min, float& wert_max)
+{
+    if (wert > wert_max)
+        wert = wert_max;
+    else if (wert < wert_min)
+        wert = wert_min;
+}
+
+void limit_angle(float& wert, float& wert_min, float& wert_max)
+{
+    if (wert > wert_max)
+        wert = wert_max;
+    else if (wert > 360)
+        wert -= 360; 
+    else if (wert < wert_min)
+        wert = wert_min;
+    else if (wert < -360)
+        wert += 360;
+}
+
 void Openglwidget::events()
 {
    while(SDL_PollEvent(&event)) 
@@ -64,61 +84,53 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
 #define ZOOM_CAP_MAX 20
          
       case SDLK_PLUS:
-         zoom_soll = zoom_soll*0.98;
-         if (zoom_soll < ZOOM_CAP_MIN) zoom_soll = ZOOM_CAP_MIN;
-         break;
+        active_cam->zoom = active_cam->zoom*0.98;
+        limit_value(active_cam->zoom, active_cam->zoom_min, active_cam->zoom_max);
+        break;
 
       case '-' :
-         zoom_soll = zoom_soll*1.02;
-         if (zoom_soll > ZOOM_CAP_MAX) zoom_soll = ZOOM_CAP_MAX;
-         break;
+        active_cam->zoom = active_cam->zoom*1.02;
+        limit_value(active_cam->zoom, active_cam->zoom_min, active_cam->zoom_max);
+        break;
          
       case 'a' :
-         phi_soll   -= sin(psi*RAD)*0.5/pos_radius*GRAD;
-         pos_z_soll += cos(psi*RAD)*0.5;
-         if (phi_soll > 360)
-         {
-            phi -= 360; 
-            phi_soll -= 360; 
-         }
-         break;
+        active_cam->phi   -= sin(active_cam->psi*RAD)*0.5/active_cam->radius*GRAD;
+        active_cam->z     += cos(active_cam->psi*RAD)*0.5;
+        limit_angle(active_cam->phi, active_cam->phi_min, active_cam->phi_max);
+        limit_value(active_cam->z, active_cam->z_min, active_cam->z_max);
+        break;
 
       case 'd' : // ...nach rechts...
-         phi_soll   += sin(psi*RAD)*0.5/pos_radius*GRAD;
-         pos_z_soll -= cos(psi*RAD)*0.5;
-         if (phi_soll < 0)
-         {
-            phi += 360; 
-            phi_soll += 360; 
-         }
-         break;
+        active_cam->phi += sin(active_cam->psi*RAD)*0.5/active_cam->radius*GRAD;
+        active_cam->z   -= cos(active_cam->psi*RAD)*0.5;
+        limit_angle(active_cam->phi, active_cam->phi_min, active_cam->phi_max);
+        limit_value(active_cam->z, active_cam->z_min, active_cam->z_max);
+        break;
 
       case 'w' : // ...nach oben...
-         phi_soll   -= cos(psi*RAD)*0.5/pos_radius*GRAD;
-         pos_z_soll -= sin(psi*RAD)*0.5;
-         if (phi_soll > 360)
-         {
-            phi -= 360; 
-            phi_soll -= 360; 
-         }
-         break;
+        active_cam->phi -= cos(active_cam->psi*RAD)*0.5/active_cam->radius*GRAD;
+        active_cam->z   -= sin(active_cam->psi*RAD)*0.5;
+        limit_angle(active_cam->phi, active_cam->phi_min, active_cam->phi_max);
+        limit_value(active_cam->z, active_cam->z_min, active_cam->z_max);
+        break;
 
       case 's' : // ...nach unten
-         phi_soll   += cos(psi*RAD)*0.5/pos_radius*GRAD;
-         pos_z_soll += sin(psi*RAD)*0.5;
-         if (phi_soll > 360)
-         {
-            phi -= 360; 
-            phi_soll -= 360; 
-         }
-         break;
+        active_cam->phi += cos(active_cam->psi*RAD)*0.5/active_cam->radius*GRAD;
+        active_cam->z   += sin(active_cam->psi*RAD)*0.5;
+        limit_angle(active_cam->phi, active_cam->phi_min, active_cam->phi_max);
+        limit_value(active_cam->z, active_cam->z_min, active_cam->z_max);
+        break;
 
-      case 'q' : // ...nach unten...
-         z_offset -= 0.25;
-         break;
+      case 'q' : // district verlassen
+        if (station->active_district != NULL)
+        {
+            std_cam.phi = active_cam->phi + station->active_district->get_angle();
+            station->set_active_district(NULL);
+            active_cam  = &std_cam;
+        }
+        break;
 
       case 'e' : // ...nach oben
-         z_offset += 0.25;
          break;
          
       case 'f' : // fullscreen
@@ -129,69 +141,49 @@ void Openglwidget::handle_keydown(SDL_keysym& keysym)
 
 #define Z_UNIT 1.5
          
-      case SDLK_UP:
-         theta_soll += 1.5;
-         if (theta_soll > 90)
-         {
-            theta_soll = 90;
-         }
-         break;
+    case SDLK_UP:
+        active_cam->theta += 1.5;
+        limit_angle(active_cam->theta, active_cam->theta_min, active_cam->theta_max);
+        break;
 
-      case SDLK_DOWN: // ...nach unten...
-         theta_soll -= 1.5;
-         if (theta_soll < 0)
-         {
-            theta_soll = 0.01;
-         }
-         break;
+    case SDLK_DOWN: // ...nach unten...
+        active_cam->theta -= 1.5;
+        limit_angle(active_cam->theta, active_cam->theta_min, active_cam->theta_max);
+        break;
 
-      case SDLK_LEFT:
-         psi_soll -= 1.5;
-         if (psi_soll < 0)
-         {
-            psi_soll += 360;
-            psi += 360;
-         }
-         break;
+    case SDLK_LEFT:
+        active_cam->psi -= 1.5;
+        limit_angle(active_cam->psi, active_cam->psi_min, active_cam->psi_max);
+        break;
 
-      case SDLK_RIGHT:
-         psi_soll += 1.5;
-         if (psi_soll > 360)
-         {
-            psi_soll -= 360;
-            psi -= 360;
-         }
-         break;
+    case SDLK_RIGHT:
+        active_cam->psi += 1.5;
+        limit_angle(active_cam->psi, active_cam->psi_min, active_cam->psi_max);
+        break;
 
-      case SDLK_PAGEUP:
-         theta_soll += 1;
-         if (theta_soll > 90)
-         {
-            theta_soll = 90;
-         }
-         break;
+    case SDLK_PAGEUP:
+        active_cam->theta += 1;
+        limit_angle(active_cam->theta, active_cam->theta_min, active_cam->theta_max);
+        break;
 
-      case SDLK_PAGEDOWN:
-         theta_soll -= 1;
-         if (theta_soll < 10)
-         {
-            theta_soll = 10; 
-         }
-         break;
+    case SDLK_PAGEDOWN:
+        active_cam->theta -= 1;
+        limit_angle(active_cam->theta, active_cam->theta_min, active_cam->theta_max);
+        break;
          
-        case SDLK_F1 :
-            toggle_antialiasing();
-            break;
+    case SDLK_F1 :
+        toggle_antialiasing();
+        break;
 
-        case SDLK_F3:
-            if (station->get_active_district() != NULL) {
-                station->get_active_district()->set_alarm(!station->get_active_district()->get_alarm());
-            }
-            break;
+    case SDLK_F3:
+        if (station->get_active_district() != NULL) {
+            station->get_active_district()->set_alarm(!station->get_active_district()->get_alarm());
+        }
+        break;
 
-        case SDLK_m:
-            audio->music_toggle_mute();
-            break;
+    case SDLK_m:
+        audio->music_toggle_mute();
+        break;
 
    }
 }
@@ -248,30 +240,31 @@ void Openglwidget::handle_mousebuttondown(SDL_MouseButtonEvent& button)
 {
    switch(button.button)
    {
-      case SDL_BUTTON_LEFT:
-      case SDL_BUTTON_MIDDLE:
-      case SDL_BUTTON_RIGHT:
-         selektiere_id();
-         selektiere_pos();
-         LOG(DEBUG) << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")";
-         interact_with(get_target(), button);
-         break;
+    case SDL_BUTTON_LEFT:
+    case SDL_BUTTON_MIDDLE:
+    case SDL_BUTTON_RIGHT:
+        selektiere_id();
+        selektiere_pos();
+        LOG(DEBUG) << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")";
+        interact_with(get_target(), button);
+        break;
          
-      case SDL_BUTTON_WHEELUP:
-         zoom_soll -= zoom_soll*0.15;
-         if (zoom_soll < ZOOM_CAP_MIN) zoom_soll = ZOOM_CAP_MIN;
-         break;
+    case SDL_BUTTON_WHEELUP:
+        active_cam->zoom -= active_cam->zoom*0.15;
+        limit_value(active_cam->zoom, active_cam->zoom_min, active_cam->zoom_max);
+        break;
 
-      case SDL_BUTTON_WHEELDOWN:
-         zoom_soll += zoom_soll*0.15;
-         if (zoom_soll > ZOOM_CAP_MAX) zoom_soll = ZOOM_CAP_MAX;
-         if (station->active_district != NULL && zoom_soll > 0.8*ZOOM_CAP_MAX)
-         {
-            phi_soll += station->active_district->get_angle();
-            phi = phi_soll;
+    case SDL_BUTTON_WHEELDOWN:
+        active_cam->zoom += active_cam->zoom*0.15;
+        limit_value(active_cam->zoom, active_cam->zoom_min, active_cam->zoom_max);
+        if (station->active_district != NULL && active_cam->zoom > 0.9*active_cam->zoom_max)
+        {
+            active_cam->zoom = 0.9*active_cam->zoom_max;
+            std_cam.phi = active_cam->phi + station->active_district->get_angle();
             station->set_active_district(NULL);
-         }
-         break;
+            active_cam  = &std_cam;
+        }
+        break;
    }
 }
 

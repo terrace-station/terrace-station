@@ -41,6 +41,8 @@ private:
    float flare_theta;
    float flare_phi;
    
+   GLuint sel_buffer[128];
+   
 public:
    
 //    Lamp lamp; // TEST
@@ -138,26 +140,13 @@ public:
    double target_z;
 
    float breite_zu_hoehe;
-   float pos_x, pos_y, pos_z;
-   float pos_radius, pos_phi;
-   
-   float pos_z_soll;
-   float pos_radius_soll;
    
    Glcam* active_cam;
    Glcam std_cam;
+   
    float kamera_x, kamera_y, kamera_z;
-   float kamera_radius, kamera_phi;
-   
+   float pos_x, pos_y, pos_z;
    float oben_x, oben_y, oben_z;
-   
-   float theta, phi, psi;
-   float theta_soll, phi_soll, psi_soll;
-   
-   float zoom;
-   float zoom_soll;
-
-   float x_offset, y_offset, z_offset;
    
    int fenster1;
    

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "mausobjekt.hh"
+#include "glcam.hh"
 
 class Zone;
 class Deck;
@@ -25,6 +26,8 @@ class District: public Mausobjekt
 public:
     District(int x, int y, int size_x, int size_y,
              int nr_of_decks, bool circular, Zone* zone);
+    
+    Glcam camera;
              
     int get_x();
     int get_y();

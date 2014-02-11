@@ -67,29 +67,13 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    kamera_y = 0;
    kamera_z = 0;
    
-   x_offset = 0;
-   y_offset = 0;
-   z_offset = 0;
-   
-   kamera_radius = 0;
-   kamera_phi = 0;
+   oben_x = 0;
+   oben_y = 0;
+   oben_z = 0;
    
    pos_x = 0;
    pos_y = 0;
    pos_z = 0;
-   pos_z_soll = 0;
-   
-   pos_radius = 95;
-   pos_radius_soll = 95;
-   pos_phi = 0;
-   
-   psi   = 0;
-   phi   = 0;
-   phi_soll = 0;
-   theta = 45;
-   theta_soll = 45;
-   zoom  = 1.0;
-   zoom_soll  = 1.0;
    
    target_id = 0;
    target_x = 0;
@@ -99,7 +83,16 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
    menu_bg = 0;
    menu_bg_soll = 0;
 
-   station = NULL;
+    station = NULL;
+    active_cam = &std_cam;
+    std_cam.set_start(5, 250, 0, 600, -30, 90);
+    std_cam.set_boundaries(10, 10,
+                           -1000, 1000,
+                           -1000, 1000,
+                           10, 1000,
+                           -90, 90, 
+                           90, 90);
+    std_cam.set_upside(3);
    
    Openglbutton button_close;
    button_close.set_callback(close_callback);
@@ -130,6 +123,7 @@ void Openglwidget::set_station(Station* station_)
    station = station_;
 }
 
+
 void regelung(float& ist_wert, float& soll_wert, float& zeit_faktor, float geschwindigkeit, float toleranz)
 {
     if (fabs(soll_wert-ist_wert) > toleranz)
@@ -140,24 +134,28 @@ void regelung(float& ist_wert, float& soll_wert, float& zeit_faktor, float gesch
         ist_wert = soll_wert;
 }
 
+
 void Openglwidget::parameter_regelung()
 {
 //    if (phi != phi_soll || pos_z != pos_z_soll || theta != theta_soll || zoom != zoom_soll || pos_radius != pos_radius_soll || menu_bg != menu_bg_soll)
-   {
-      float zeit_faktor;
-      if (zeit_frame > 0.1)
-         zeit_faktor = 0.1;
-      else
-         zeit_faktor = zeit_frame;
-      
-      regelung(phi, phi_soll, zeit_faktor, 8, 0.01);
-      regelung(psi, psi_soll, zeit_faktor, 8, 0.01);
-      regelung(pos_z, pos_z_soll, zeit_faktor, 8, 0.001);
-      regelung(theta, theta_soll, zeit_faktor, 8, 0.01);
-      regelung(zoom, zoom_soll, zeit_faktor, 8, 0.0001);
-      regelung(pos_radius, pos_radius_soll, zeit_faktor, 8, 0.001);
-      regelung(menu_bg, menu_bg_soll, zeit_faktor, 5, 0.001);
-   }
+    {
+        float zeit_faktor;
+        if (zeit_frame > 0.1)
+            zeit_faktor = 0.1;
+        else
+            zeit_faktor = zeit_frame;
+        
+        regelung(kamera_x, active_cam->kamera_x, zeit_faktor, 4, 0.005);
+        regelung(kamera_y, active_cam->kamera_y, zeit_faktor, 4, 0.005);
+        regelung(kamera_z, active_cam->kamera_z, zeit_faktor, 4, 0.005);
+        regelung(pos_x, active_cam->pos_x, zeit_faktor, 4, 0.005);
+        regelung(pos_y, active_cam->pos_y, zeit_faktor, 4, 0.005);
+        regelung(pos_z, active_cam->pos_z, zeit_faktor, 4, 0.005);
+        regelung(oben_x, active_cam->oben_x, zeit_faktor, 2, 0.005);
+        regelung(oben_y, active_cam->oben_y, zeit_faktor, 2, 0.005);
+        regelung(oben_z, active_cam->oben_z, zeit_faktor, 2, 0.005);
+        regelung(menu_bg, menu_bg_soll, zeit_faktor, 5, 0.001);
+    }
 }
 
 
@@ -167,10 +165,7 @@ void Openglwidget::interact_with(Mausobjekt& mo_, SDL_MouseButtonEvent& button)
         District& dis = (District&) mo_;
         if ( &dis != station->get_active_district() ) {
             station->set_active_district(&dis);
-            pos_radius_soll = dis.get_radius_min();
-            pos_z_soll = (dis.get_z_min()+dis.get_z_max())*0.5;
-            phi_soll = dis.get_phi_min()<dis.get_phi_max()?(dis.get_phi_min()+dis.get_phi_max())*0.5/RAD:(dis.get_phi_min()+dis.get_phi_max()+2*PI)*0.5/RAD;
-            zoom_soll = 0.4;
+            active_cam = &(dis.camera);
         }
     } 
     else if (mo_.objekt_typ == "Room" && button.button == SDL_BUTTON_RIGHT) {
@@ -262,8 +257,7 @@ void Openglwidget::selektiere_id()
    float maus_x = event.button.x;
    float maus_y = fenster_hoehe-event.button.y;
    
-   GLuint sel_buffer[256];
-   glSelectBuffer (256, sel_buffer);
+   glSelectBuffer (128, sel_buffer);
    GLint hits = 0;
 
    glViewport(0, 0, fenster_breite, fenster_hoehe);
@@ -357,7 +351,7 @@ void Openglwidget::initialisiere_gl()
 
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
-//     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
     glFrontFace(GL_CW);
 
     glShadeModel(GL_SMOOTH); // glShadeModel(GL_SMOOTH) oder  glShadeModel(GL_FLAT)
@@ -516,7 +510,7 @@ void Openglwidget::zeichne_system(System& system_)
          glEnd();
          glTranslatef(-system_.position[0], 0.0, 0.0);
          glRotatef(-flare_theta*20, 0, 0, 1);
-         glRotatef(-phi*2, 0, 0, 1);
+         glRotatef(-active_cam->phi*2, 0, 0, 1);
          
          glRotatef(flare_theta*50, 0, 0, 1);
          glTranslatef(system_.position[0], 0.0, 0.0);
