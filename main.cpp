@@ -32,22 +32,27 @@ int main(int argc, char* argv[])
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     TTF_Init();
 
-    Openglwidget glwidget(800, 600);
-
-    Station station1;
-    glwidget.set_station(&station1);
-
     const SDL_VideoInfo* info = SDL_GetVideoInfo();
 
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     //    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 //        SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
-    SDL_SetVideoMode(glwidget.fenster_breite, glwidget.fenster_hoehe, glwidget.bpp, SDL_OPENGL);
-
-    SDL_EnableKeyRepeat(20, 20);
-    glwidget.initialisiere_gl();
+    int fullscreen_breite = info->current_w;
+    int fullscreen_hoehe  = info->current_h;
+    int fenster_breite = 800;
+    int fenster_hoehe  = 600;
+    int bpp = info->vfmt->BitsPerPixel;
     
+    SDL_SetVideoMode(fenster_breite, fenster_hoehe, bpp, SDL_OPENGL);
+    SDL_EnableKeyRepeat(20, 20);
+
+    Openglwidget glwidget(fenster_breite, fenster_hoehe);
+    Station station1;
+    glwidget.set_station(&station1);
+    glwidget.fullscreen_x = fullscreen_breite;
+    glwidget.fullscreen_y = fullscreen_hoehe;
+
     omp_set_num_threads(2);
 //     #pragma omp parallel
     {

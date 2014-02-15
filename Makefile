@@ -1,4 +1,4 @@
-OBJEKTE  = openglwidget.o openglbutton.o openglmenu.o mausobjekt.o system.o textures.o station.o zone.o district.o deck.o room.o door.o rect.o tile.o modell.o fonttextures.o models.o lights.o lamp.o log.o audio.o dynmodel.o glcam.o
+OBJEKTE  = openglwidget.o openglbutton.o openglmenu.o mausobjekt.o system.o textures.o station.o zone.o district.o deck.o room.o door.o rect.o tile.o modell.o fonttextures.o models.o lights.o lamp.o log.o audio.o dynmodel.o glcam.o callback_funktionen.o
 CPP      = g++-4.7
 CPPFLAGS = -std=c++11 -fopenmp -O2 -g
 
@@ -11,8 +11,11 @@ dis: dis.cpp station.o
 system.o: system.hh system.cpp glhilf.h
 	$(CPP) $(CPPFLAGS) -c system.cpp
 
-openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h zeit.h station.o mausobjekt.o openglwidget_audio.h openglwidget_material.h openglwidget_events.h openglwidget_zeichne.h openglbutton.o openglmenu.o modell.o audio.o fonttextures.o textures.o tile.o callback_funktionen.h models.o lights.o lamp.o glcam.o
+openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h zeit.h station.o mausobjekt.o openglwidget_audio.h openglwidget_material.h openglwidget_events.h openglwidget_zeichne.h openglbutton.o openglmenu.o modell.o audio.o fonttextures.o textures.o tile.o callback_funktionen.h models.o lights.o lamp.o glcam.o callback_funktionen.o
 	$(CPP) $(CPPFLAGS) -c openglwidget.cpp
+
+callback_funktionen.o: callback_funktionen.hh callback_funktionen.cpp
+	$(CPP) $(CPPFLAGS) -c callback_funktionen.cpp
 
 glcam.o: glcam.cpp glcam.hh
 	$(CPP) $(CPPFLAGS) -c glcam.cpp
@@ -23,7 +26,7 @@ openglbutton.o: openglbutton.cpp openglbutton.hh
 lamp.o: lamp.cpp lamp.hh
 	$(CPP) $(CPPFLAGS) -c lamp.cpp
 
-openglmenu.o: openglmenu.cpp openglmenu.hh openglbutton.o
+openglmenu.o: openglmenu.cpp openglmenu.hh openglbutton.o callback_funktionen.o
 	$(CPP) $(CPPFLAGS) -c openglmenu.cpp
 
 lights.o: lights.cpp lights.hh

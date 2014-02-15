@@ -9,6 +9,7 @@
    Models* Openglwidget::models = NULL;
    Fonttextures* Openglwidget::fonttextures = NULL;
    
+#include "openglmenu.hh"
 #include "station.hh"
 #include "zone.hh"
 #include "district.hh"
@@ -23,8 +24,6 @@
 #include "openglwidget_events.h"
 #include "openglwidget_zeichne.h"
 
-#include "callback_funktionen.h"
-
 #define TEXTURES_DIR    "textures"
 #define NORMALMAPS_DIR  "textures/normalmaps"
 #define MODELS_DIR      "models"
@@ -32,57 +31,61 @@
 Openglwidget::Openglwidget(int breite_, int hoehe_)
 {
     //~ audio_init();
+    textures = new Textures(TEXTURES_DIR);
+    normalmaps = new Textures(NORMALMAPS_DIR);
+    fonttextures = new Fonttextures;
+    audio = new Audio;
+    audio->set_music_playlist("default");
     
-   gettimeofday(&zeit, 0);
-   models   = new Models(MODELS_DIR);
-   lights   = new Lights(laufzeit);
-   
-   running = true;
-   antialiasing = true;
-   fullscreen = false;
-   gamemenu = false;
-   
-   picking = false;
-   
-   info = SDL_GetVideoInfo();
-   
-   fenster_modus = SDL_OPENGL;
-   bpp = info->vfmt->BitsPerPixel;
-   
-   fullscreen_x = info->current_w;
-   fullscreen_y = info->current_h;
-   
-   window_x = breite_;
-   window_y = hoehe_;
+    gettimeofday(&zeit, 0);
+    models   = new Models(MODELS_DIR);
+    lights   = new Lights(laufzeit);
+    
+    running = true;
+    antialiasing = true;
+    fullscreen = false;
+    gamemenu = false;
+    
+    picking = false;
+    
+    info = SDL_GetVideoInfo();
+    
+    fenster_modus = SDL_OPENGL;
+    
+    bpp = info->vfmt->BitsPerPixel;
+    fullscreen_x = info->current_w;
+    fullscreen_y = info->current_h;
+    
+    window_x = breite_;
+    window_y = hoehe_;
 
-   fenster_breite = window_x;
-   fenster_hoehe =  window_y;
-   
-   view_angle = 45;
-   
-   fps_counter = 0;
-   fps_sum = 0.0;
+    fenster_breite = window_x;
+    fenster_hoehe =  window_y;
+    
+    view_angle = 45;
+    
+    fps_counter = 0;
+    fps_sum = 0.0;
 
-   kamera_x = 0;
-   kamera_y = 0;
-   kamera_z = 0;
+    kamera_x = 0;
+    kamera_y = 0;
+    kamera_z = 0;
+    
+    oben_x = 0;
+    oben_y = 0;
+    oben_z = 0;
+    
+    pos_x = 0;
+    pos_y = 0;
+    pos_z = 0;
+    
+    target_id = 0;
+    target_x = 0;
+    target_y = 0;
+    target_z = 0;
+    
+    menu = new Openglmenu(this);
    
-   oben_x = 0;
-   oben_y = 0;
-   oben_z = 0;
-   
-   pos_x = 0;
-   pos_y = 0;
-   pos_z = 0;
-   
-   target_id = 0;
-   target_x = 0;
-   target_y = 0;
-   target_z = 0;
-   
-   menu_bg = 0;
-   menu_bg_soll = 0;
-
     station = NULL;
     active_cam = &std_cam;
     std_cam.set_start(5, 250, 0, 600, -30, 90);
@@ -94,27 +97,7 @@ Openglwidget::Openglwidget(int breite_, int hoehe_)
                            90, 90);
     std_cam.set_upside(3);
    
-   Openglbutton button_close;
-   button_close.set_callback(close_callback);
-   button_close.set_modell(models->get("button_menu"));
-   menu.add_button(&button_close, 2, -3, 5, 1); // pos_x, pos_y, scale_x, scale_y
-   
-   Openglbutton button_return;
-   button_return.set_callback(return_callback);
-   button_return.set_modell(models->get("button_menu"));
-   menu.add_button(&button_return, -3, -3, 3, 1); // pos_x, pos_y, scale_x, scale_y
-   
-   Opengltogglebutton button_fullscreen(&fullscreen);
-   button_fullscreen.set_callback(toggle_fullscreen_callback);
-   button_fullscreen.set_modell(models->get("button_gruen"), models->get("button_rot"));
-   menu.add_togglebutton(&button_fullscreen, 2.0, 1.0, 0.7, 0.7);
-   
-   Opengltogglebutton button_aa(&antialiasing);
-   button_aa.set_callback(toggle_antialiasing_callback);
-   button_aa.set_modell(models->get("button_gruen"), models->get("button_rot"));
-   menu.add_togglebutton(&button_aa, 2.0, 0.0, 0.7, 0.7);
-   
-//    lamp.set_lamptype(LAMP_FLICKER);  // TEST
+    initialisiere_gl();
 }
 
 
@@ -154,7 +137,7 @@ void Openglwidget::parameter_regelung()
         regelung(oben_x, active_cam->oben_x, zeit_faktor, 2, 0.005);
         regelung(oben_y, active_cam->oben_y, zeit_faktor, 2, 0.005);
         regelung(oben_z, active_cam->oben_z, zeit_faktor, 2, 0.005);
-        regelung(menu_bg, menu_bg_soll, zeit_faktor, 5, 0.001);
+        regelung(menu->menu_bg, menu->menu_bg_soll, zeit_faktor, 5, 0.001);
     }
 }
 
@@ -233,12 +216,12 @@ Mausobjekt& Openglwidget::get_target()
         }
     }
 
-    for (std::list<Togglebutton_and_coords>::iterator it = menu.togglebuttons.begin(); it != menu.togglebuttons.end(); it++)
+    for (std::list<Togglebutton_and_coords>::iterator it = menu->togglebuttons.begin(); it != menu->togglebuttons.end(); it++)
     {
         if (it->button.objekt_id == target_id) { return (Mausobjekt&) it->button; }
     }
 
-    for (std::list<Button_and_coords>::iterator it = menu.buttons.begin(); it != menu.buttons.end(); it++)
+    for (std::list<Button_and_coords>::iterator it = menu->buttons.begin(); it != menu->buttons.end(); it++)
     {
         if (it->button.objekt_id == target_id) { return (Mausobjekt&) it->button; }
     }
@@ -335,11 +318,6 @@ void Openglwidget::selektiere_pos()
 
 void Openglwidget::initialisiere_gl()
 {
-    textures = new Textures(TEXTURES_DIR);
-    normalmaps = new Textures(NORMALMAPS_DIR);
-    fonttextures = new Fonttextures;
-    audio = new Audio;
-    audio->set_music_playlist("default");
 
 //     glLineWidth(2);
 //     glPolygonOffset(1.0,1.0);
@@ -570,15 +548,17 @@ void Openglwidget::set_fullscreen(bool wert)
             SDL_SetVideoMode(window_x, window_y, bpp, fenster_modus);
             initialisiere_gl();
             fullscreen = false;
+            LOG(INFO) << "Swiching to window " << window_x << "x" << window_y;
          }
          else
          {
+            fenster_modus = SDL_OPENGL | SDL_FULLSCREEN;
+            SDL_Surface* screen = SDL_SetVideoMode(fullscreen_x, fullscreen_y, bpp, fenster_modus);
             fenster_breite = fullscreen_x;
             fenster_hoehe  = fullscreen_y;
-            fenster_modus = SDL_OPENGL | SDL_FULLSCREEN;
-            SDL_SetVideoMode(fullscreen_x, fullscreen_y, bpp, fenster_modus);
             initialisiere_gl();
             fullscreen = true;
+            LOG(INFO) << "Swiching to fullscreen " << fullscreen_x << "x" << fullscreen_y;
          }
 }
 

@@ -14,11 +14,11 @@
 static float zeit_diff(timeval& zeit_alt)
 {
     float zeit_diff_; 
-  timeval zeit_;
-  gettimeofday(&zeit_, 0);
-  zeit_diff_ += (0.000001*zeit_.tv_usec + float(zeit_.tv_sec%3600)) - (0.000001*zeit_alt.tv_usec + float(zeit_alt.tv_sec%3600));
-  zeit_alt = zeit_;
-  return zeit_diff_;
+    timeval zeit_;
+    gettimeofday(&zeit_, 0);
+    zeit_diff_ += (0.000001*zeit_.tv_usec + float(zeit_.tv_sec%3600)) - (0.000001*zeit_alt.tv_usec + float(zeit_alt.tv_sec%3600));
+    zeit_alt = zeit_;
+    return zeit_diff_;
 }
 
 static float zeit_aktuell()

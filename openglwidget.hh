@@ -21,9 +21,11 @@
 #include "zeit.h"
 #include "enumerationen.h"
 #include "openglbutton.hh"
+#include "callback_funktionen.hh"
 #include "openglmenu.hh"
 #include "lights.hh"
 #include "lamp.hh"
+
 
 class Station;
 class Zone;
@@ -47,7 +49,7 @@ public:
    
 //    Lamp lamp; // TEST
    
-   Openglmenu menu;
+   Openglmenu* menu;
    
    bool gamemenu;
    bool fullscreen;
@@ -55,9 +57,6 @@ public:
    bool antialiasing;
    
    bool picking;
-   
-   float menu_bg;
-   float menu_bg_soll;
    
    int fullscreen_x, fullscreen_y;
    int window_x, window_y;

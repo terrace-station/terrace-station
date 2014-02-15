@@ -25,8 +25,11 @@ class Fonttextures
 
 public:
     GLuint get_id(std::string text, std::string label, std::string font, unsigned char r,  unsigned char g,  unsigned char b);
+    void  load_id(std::string text, std::string label, std::string font, unsigned char r,  unsigned char g,  unsigned char b); // macht dasselbe wie get_id, ohne die id zurückzugeben
+    GLuint get_id(std::string label);
     TTF_Font* get_font(std::string label);
     void text_rendern_m(std::string text, std::string label, float hoehe, std::string font, unsigned char r, unsigned char g, unsigned char b, unsigned char a);
+    void text_rendern_m(std::string label, float hoehe=1.0, unsigned char a=255);
     
     Fonttextures();
 };

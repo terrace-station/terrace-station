@@ -1,6 +1,6 @@
 #define NEAR_CLIP 1.00
 #define FAR_CLIP 25000
-#define VIEWPORT_PADDING 50
+#define VIEWPORT_PADDING 0
 
 void Openglwidget::draw()
 {
@@ -59,7 +59,7 @@ void Openglwidget::draw()
    
    for (int i=station->get_zones().size()-1; i >= 0; i--) // Winkelpositionen aller Zonen aktualisieren
    {
-      float winkel = laufzeit*station->get_zones()[i].get_omega()/RAD;
+      float winkel = laufzeit*station->get_zones()[i].get_omega()*GRAD;
       if(i%2==0) winkel*=-1;
       station->get_zones()[i].set_angle(winkel);
    }
@@ -133,7 +133,7 @@ void Openglwidget::zeichne_gamemenu()
    glDisable(GL_LIGHTING);
    glDisable(GL_DEPTH_TEST);
    
-   glColor4f(0.0, 0.2, 0.1, 0.5*menu_bg); // hintergrund des Menüs
+   glColor4f(menu->bg_color_r, menu->bg_color_g, menu->bg_color_b, 0.5*menu->menu_bg); // hintergrund des Menüs
    glBegin(GL_QUADS);
       glVertex3f(-100.0, -100.0, -10.0);
       glVertex3f( 100.0, -100.0, -10.0);
@@ -153,9 +153,9 @@ void Openglwidget::zeichne_gamemenu()
    set_material_spec(1.00, 1.00, 1.00, 1.0);
    set_material_shin(128.0);
 
-   glTranslatef(0.0, 0.0, (1.0-menu_bg)*10);
+   glTranslatef(0.0, 0.0, (1.0-menu->menu_bg)*10);
    
-   for (std::list<Togglebutton_and_coords>::iterator it = menu.togglebuttons.begin(); it != menu.togglebuttons.end(); it++)
+   for (std::list<Togglebutton_and_coords>::iterator it = menu->togglebuttons.begin(); it != menu->togglebuttons.end(); it++)
    {
       glPushMatrix();
          glTranslatef(it->x, it->y, 0.0);
@@ -164,7 +164,7 @@ void Openglwidget::zeichne_gamemenu()
       glPopMatrix();
    }
    
-   for (std::list<Button_and_coords>::iterator it = menu.buttons.begin(); it != menu.buttons.end(); it++)
+   for (std::list<Button_and_coords>::iterator it = menu->buttons.begin(); it != menu->buttons.end(); it++)
    {
       glPushMatrix();
          glTranslatef(it->x, it->y, 0.0);
@@ -175,11 +175,14 @@ void Openglwidget::zeichne_gamemenu()
    glLoadName(0);
    
    glDisable(GL_DEPTH_TEST);
-   glPushMatrix(); glTranslatef(0.0, 3.0, 0.0); fonttextures->text_rendern_m("Game Menu", "gamemenu", 1.5, "jupiter", 180, 255, 180, 150); glPopMatrix();
-   glPushMatrix(); glTranslatef(-2.0, 1.0, 0.0); fonttextures->text_rendern_m("fullscreen", "fullscreen", 0.8, "jupiter", 180, 255, 180, 150); glPopMatrix();
-   glPushMatrix(); glTranslatef(-2.0, 0.0, 0.0); fonttextures->text_rendern_m("anti-aliasing", "aa", 0.8, "jupiter", 180, 250, 180, 150); glPopMatrix();
-   glPushMatrix(); glTranslatef(2.0,-3.0, 0.0); fonttextures->text_rendern_m("Leave Program", "close", 0.8, "jupiter", 180, 255, 180, 150); glPopMatrix();
-   glPushMatrix(); glTranslatef(-3.0,-3.0, 0.0); fonttextures->text_rendern_m("Return", "return", 0.8, "jupiter", 180, 255, 180, 150); glPopMatrix();
+   for (std::list<Label_and_coords>::iterator it = menu->labels.begin(); it != menu->labels.end(); it++)
+   {
+      glPushMatrix();
+         glTranslatef(it->x, it->y, 0.0);
+//          glScalef(it->sx, it->sy, 1);
+         fonttextures->text_rendern_m(it->label, it->s, 150);
+      glPopMatrix();
+   }
    glEnable(GL_DEPTH_TEST);
    
    glGetIntegerv(GL_VIEWPORT, viewport);
@@ -189,28 +192,31 @@ void Openglwidget::zeichne_gamemenu()
 }
 
 
-
 void Openglwidget::zeichne_station()
 {
-   if (station == NULL)
-      return;
+    if (station == NULL)
+        return;
+    
+    float new_angle;
 
-   for (int i=station->get_zones().size()-1; i >= 0; i--)
-   {
-      glPushMatrix();
-      glRotatef(station->get_zones()[i].get_angle(), 0.0, 0.0, 1.0);
-         zeichne_zone(station->get_zones()[i]);
-      glPopMatrix();
-      
-      // do not draw inner zones, if a district is activated:
-      if (station->get_active_district() != NULL) {
-         Zone& current_zone = station->get_zones()[i];
-         Zone& active_zone = *station->get_active_district()->get_zone();
-         if (&current_zone == &active_zone) {
-            break;
-         }
-      }
-   }
+    for (int i=station->get_zones().size()-1; i >= 0; i--)
+    {
+        new_angle = station->get_zones()[i].get_angle();
+//         glPushMatrix();
+        glRotatef(new_angle, 0.0, 0.0, 1.0);
+            zeichne_zone(station->get_zones()[i]);
+        glRotatef(-new_angle, 0.0, 0.0, 1.0);
+//         glPopMatrix();
+        
+        // do not draw inner zones, if a district is activated:
+        if (station->get_active_district() != NULL) {
+            Zone& current_zone = station->get_zones()[i];
+            Zone& active_zone = *station->get_active_district()->get_zone();
+            if (&current_zone == &active_zone) {
+                break;
+            }
+        }
+    }
 }
 
 

@@ -11,7 +11,7 @@
 
 #define CF_MIN      400     // Minimum circumference
 #define CF_DELTA    110     // Difference in circumference
-#define NR_OF_ZONES 4
+#define NR_OF_ZONES 2
 
 Station::Station()
 {
