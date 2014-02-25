@@ -250,6 +250,13 @@ void Openglwidget::zeichne_deck(Deck& deck)
     glGetIntegerv(GL_VIEWPORT, viewport_system);
     glGetDoublev(GL_MODELVIEW_MATRIX, model_matrix_system);
     glGetDoublev(GL_PROJECTION_MATRIX, project_matrix_system);
+    
+// // // // // // // // // // //     TEST
+//                     glPushMatrix();
+//                     hilf::transform_to_station(deck.get_radius(), 0.5*(deck.get_district()->get_phi_max()+deck.get_district()->get_phi_min()), 0.5*(deck.get_district()->get_z_max()+deck.get_district()->get_z_min()));
+//                     models->get("robot1")->zeichne();
+//                     glPopMatrix();
+// // // // // // // // // // //     
      
     for (std::list<Room>::iterator room_it = deck.get_rooms().begin(); room_it != deck.get_rooms().end(); room_it++)
     {

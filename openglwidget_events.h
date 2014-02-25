@@ -243,9 +243,15 @@ void Openglwidget::handle_mousebuttondown(SDL_MouseButtonEvent& button)
     case SDL_BUTTON_LEFT:
     case SDL_BUTTON_MIDDLE:
     case SDL_BUTTON_RIGHT:
-        selektiere_id();
-        selektiere_pos();
+        get_id();
+        get_pos();
         LOG(DEBUG) << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")";
+// // // // // // // // // // //         
+        float x;
+        float y;
+        get_coordinates(x, y);
+        LOG(DEBUG) << "Stationskoordinaten: (" << x << ", " << y << ")";
+// // // // // // // // // // //         
         interact_with(get_target(), button);
         break;
          
@@ -274,8 +280,8 @@ void Openglwidget::handle_mousebuttondown_menu(SDL_MouseButtonEvent& button)
    switch(button.button)
    {
       case SDL_BUTTON_LEFT:
-         selektiere_id();
-         selektiere_pos();
+         get_id();
+         get_pos();
          LOG(DEBUG) << "Objekt getroffen, id: " << target_id << ", bei (" << target_x << ", " << target_y << ", " << target_z << ")";
          interact_with(get_target(), button);
          break;

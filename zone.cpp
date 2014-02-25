@@ -72,7 +72,9 @@ float Zone::get_angle() {
 }
 
 void Zone::set_angle(float angle_) {
-   angle = angle_;
+    if (angle_ > 360) angle_ -= 360;
+    if (angle_ < 0)   angle_ += 360;
+    angle = angle_;
 }
 
 

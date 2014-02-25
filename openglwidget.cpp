@@ -235,7 +235,7 @@ Mausobjekt& Openglwidget::get_target()
 }
 
 
-void Openglwidget::selektiere_id()
+void Openglwidget::get_id()
 {
    float maus_x = event.button.x;
    float maus_y = fenster_hoehe-event.button.y;
@@ -294,9 +294,7 @@ void Openglwidget::selektiere_id()
 }
 
 
-
-
-void Openglwidget::selektiere_pos()
+void Openglwidget::get_pos()
 {
     if (target_id)
     {
@@ -312,6 +310,16 @@ void Openglwidget::selektiere_pos()
         target_x = -1;
         target_y = -1;
         target_z = -1;
+    }
+}
+
+
+void Openglwidget::get_coordinates(float& deck_x, float& deck_y)
+{
+    get_pos();
+    hilf::station2deck(target_x, target_y, target_z, deck_x, deck_y);
+    if (station->get_active_district() != NULL) {
+        deck_x -= (station->get_active_district()->get_radius()-0.5)*(station->get_active_district()->get_angle())*RAD;
     }
 }
 

@@ -94,8 +94,9 @@ public:
    void handle_mousebuttondown_menu(SDL_MouseButtonEvent& button);
 
    void zeichne_szene();
-   void selektiere_id();
-   void selektiere_pos();
+   void get_id();
+   void get_pos();
+   void get_coordinates(float& deck_x, float& deck_y);
    
    void bindTextures(std::string label);
    void unbindTextures();

@@ -11,7 +11,7 @@ dis: dis.cpp station.o
 system.o: system.hh system.cpp glhilf.h
 	$(CPP) $(CPPFLAGS) -c system.cpp
 
-openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h zeit.h station.o mausobjekt.o openglwidget_audio.h openglwidget_material.h openglwidget_events.h openglwidget_zeichne.h openglbutton.o openglmenu.o modell.o audio.o fonttextures.o textures.o tile.o callback_funktionen.h models.o lights.o lamp.o glcam.o callback_funktionen.o
+openglwidget.o: openglwidget.cpp openglwidget.hh glhilf.h zeit.h station.o mausobjekt.o openglwidget_audio.h openglwidget_material.h openglwidget_events.h openglwidget_zeichne.h openglbutton.o openglmenu.o modell.o audio.o fonttextures.o textures.o tile.o models.o lights.o lamp.o glcam.o callback_funktionen.o
 	$(CPP) $(CPPFLAGS) -c openglwidget.cpp
 
 callback_funktionen.o: callback_funktionen.hh callback_funktionen.cpp

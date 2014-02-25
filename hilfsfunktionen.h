@@ -50,7 +50,27 @@ namespace hilf
     }
 
 
-    static void transform_to_station(GLfloat& tmp_r, GLfloat& tmp_phi, GLfloat& tmp_z)
+    static void station2deck(float& station_x, float& station_y, float& station_z, float& deck_x, float& deck_y)
+    {
+        float district_radius = sqrt(station_x*station_x + station_y*station_y);
+        float phi = atan2(station_y, station_x);
+        
+        deck_x = district_radius * phi;
+        deck_y = station_z;
+    }
+
+
+    static void station2deck(double& station_x, double& station_y, double& station_z, float& deck_x, float& deck_y)
+    {
+        float district_radius = sqrt(station_x*station_x + station_y*station_y);
+        float phi = atan2(station_y, station_x);
+        
+        deck_x = district_radius * phi;
+        deck_y = station_z;
+    }
+
+
+    static void transform_to_station(GLfloat tmp_r, GLfloat tmp_phi, GLfloat tmp_z)
     {
         glRotatef(-90, 1.0, 0.0, 0.0);
         glRotatef(-90-tmp_phi/RAD, 0.0, 1.0, 0.0);
